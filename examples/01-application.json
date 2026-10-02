@@ -1,0 +1,116 @@
+{
+  "id": "Process_Application",
+  "name": "Обработка заявки",
+  "description": "Клиент отправляет заявку. Менеджер проверяет заявку. После проверки менеджер принимает решение и уведомляет клиента.",
+  "participants": [
+    {
+      "id": "Client",
+      "name": "Клиент",
+      "type": "role"
+    },
+    {
+      "id": "Manager",
+      "name": "Менеджер",
+      "type": "role"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "Start",
+      "type": "start_event",
+      "name": "Заявка поступила",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Submit",
+      "type": "user_task",
+      "name": "Отправить заявку",
+      "participant_id": "Client",
+      "source_text": "Клиент отправляет заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "Check",
+      "type": "user_task",
+      "name": "Проверить заявку",
+      "participant_id": "Manager",
+      "source_text": "Менеджер проверяет заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "Decide",
+      "type": "user_task",
+      "name": "Принять решение",
+      "participant_id": "Manager",
+      "source_text": "После проверки менеджер принимает решение и уведомляет клиента.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "Notify",
+      "type": "user_task",
+      "name": "Уведомить клиента",
+      "participant_id": "Manager",
+      "source_text": "После проверки менеджер принимает решение и уведомляет клиента.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "End",
+      "type": "end_event",
+      "name": "Клиент уведомлён",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "Flow_0",
+      "source": "Start",
+      "target": "Submit",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_1",
+      "source": "Submit",
+      "target": "Check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_2",
+      "source": "Check",
+      "target": "Decide",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_3",
+      "source": "Decide",
+      "target": "Notify",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_4",
+      "source": "Notify",
+      "target": "End",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "ambiguities": []
+}

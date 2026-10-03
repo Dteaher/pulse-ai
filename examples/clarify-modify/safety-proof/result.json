@@ -1,0 +1,397 @@
+{
+  "process": {
+    "id": "Process_ClientApplication",
+    "name": "Обработка заявки клиента",
+    "description": "Клиент отправляет заявку. Менеджер проверяет документы. Потом её проверяют юрист и служба безопасности. После этого руководитель принимает решение.",
+    "participants": [
+      {
+        "id": "P_Client",
+        "name": "Клиент",
+        "type": "role"
+      },
+      {
+        "id": "P_Manager",
+        "name": "Менеджер",
+        "type": "role"
+      },
+      {
+        "id": "P_Lawyer",
+        "name": "Юрист",
+        "type": "role"
+      },
+      {
+        "id": "P_Security",
+        "name": "Служба_безопасности",
+        "type": "role"
+      },
+      {
+        "id": "P_Head",
+        "name": "Руководитель",
+        "type": "role"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "N_Start",
+        "type": "start_event",
+        "name": "Заявка клиента поступила",
+        "participant_id": "P_Manager",
+        "source_text": "Клиент отправляет заявку.",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "G_Parallel_Split",
+        "type": "parallel_gateway",
+        "name": "Разделение на проверки",
+        "participant_id": "P_Manager",
+        "source_text": "Потом её проверяют юрист и служба безопасности.",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Lawyer_CheckApplication",
+        "type": "task",
+        "name": "Проверить заявку (Юрист)",
+        "participant_id": "P_Lawyer",
+        "source_text": "Потом её проверяют юрист и служба безопасности.",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Security_CheckApplication",
+        "type": "task",
+        "name": "Проверить заявку (Служба безопасности)",
+        "participant_id": "P_Security",
+        "source_text": "Потом её проверяют юрист и служба безопасности.",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "G_Parallel_Join",
+        "type": "parallel_gateway",
+        "name": "Объединение проверок",
+        "participant_id": "P_Manager",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Cost_Check",
+        "type": "task",
+        "name": "Проверить стоимость договора",
+        "participant_id": "P_Head",
+        "source_text": "Проверка стоимости > 500 000 рублей",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "G_Cost_Decision",
+        "type": "exclusive_gateway",
+        "name": "Проверка стоимости > 500 000 рублей",
+        "participant_id": "P_Head",
+        "source_text": "Проверка стоимости > 500 000 рублей",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Head_AdditionalApproval",
+        "type": "task",
+        "name": "Дополнительное согласование руководителем",
+        "participant_id": "P_Head",
+        "source_text": "Дополнительное согласование руководителем при стоимости > 500 000 рублей",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Head_MakeDecision",
+        "type": "task",
+        "name": "Принять решение",
+        "participant_id": "P_Head",
+        "source_text": "После этого руководитель принимает решение.",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "G_Exclusive_Decision",
+        "type": "exclusive_gateway",
+        "name": "Решение руководителя",
+        "participant_id": "P_Head",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Manager_NotifyClient_Approved",
+        "type": "task",
+        "name": "Уведомить клиента об одобрении",
+        "participant_id": "P_Manager",
+        "source_text": "При одобрении менеджер уведомляет клиента об одобрении",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Manager_NotifyClient_Rejected",
+        "type": "task",
+        "name": "Уведомить клиента об отказе",
+        "participant_id": "P_Manager",
+        "source_text": "При отказе менеджер уведомляет клиента об отказе",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "E_End_Approved",
+        "type": "end_event",
+        "name": "Заявка одобрена",
+        "participant_id": "P_Head",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "E_End_Rejected",
+        "type": "end_event",
+        "name": "Заявка отклонена",
+        "participant_id": "P_Head",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "T_Manager_CheckDocuments",
+        "type": "task",
+        "name": "Проверить документы",
+        "participant_id": "P_Manager",
+        "source_text": "Менеджер проверяет документы.",
+        "confidence": "confirmation_required",
+        "inferred": true
+      }
+    ],
+    "flows": [
+      {
+        "id": "F_Start_to_ManagerCheck",
+        "source": "N_Start",
+        "target": "T_Manager_CheckDocuments",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_ManagerCheck_to_ParallelSplit",
+        "source": "T_Manager_CheckDocuments",
+        "target": "G_Parallel_Split",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_ParallelSplit_to_LawyerCheck",
+        "source": "G_Parallel_Split",
+        "target": "T_Lawyer_CheckApplication",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_ParallelSplit_to_SecurityCheck",
+        "source": "G_Parallel_Split",
+        "target": "T_Security_CheckApplication",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_LawyerCheck_to_ParallelJoin",
+        "source": "T_Lawyer_CheckApplication",
+        "target": "G_Parallel_Join",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_SecurityCheck_to_ParallelJoin",
+        "source": "T_Security_CheckApplication",
+        "target": "G_Parallel_Join",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_ParallelJoin_to_HeadDecision",
+        "source": "G_Parallel_Join",
+        "target": "T_Cost_Check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_CostCheck_to_CostDecision",
+        "source": "T_Cost_Check",
+        "target": "G_Cost_Decision",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_CostDecision_to_AdditionalApproval",
+        "source": "G_Cost_Decision",
+        "target": "T_Head_AdditionalApproval",
+        "name": "Стоимость > 500000",
+        "condition": "Стоимость > 500000",
+        "is_default": false
+      },
+      {
+        "id": "F_CostDecision_to_HeadDecision",
+        "source": "G_Cost_Decision",
+        "target": "T_Head_MakeDecision",
+        "name": "Стоимость <= 500000",
+        "condition": "Стоимость <= 500000",
+        "is_default": true
+      },
+      {
+        "id": "F_AdditionalApproval_to_HeadDecision",
+        "source": "T_Head_AdditionalApproval",
+        "target": "T_Head_MakeDecision",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_HeadDecision_to_ExclusiveGateway",
+        "source": "T_Head_MakeDecision",
+        "target": "G_Exclusive_Decision",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_Decision_to_ApprovedEnd",
+        "source": "G_Exclusive_Decision",
+        "target": "T_Manager_NotifyClient_Approved",
+        "name": "Одобрено",
+        "condition": "Решение = Одобрено",
+        "is_default": false
+      },
+      {
+        "id": "F_Decision_to_RejectedEnd",
+        "source": "G_Exclusive_Decision",
+        "target": "T_Manager_NotifyClient_Rejected",
+        "name": "Отклонено",
+        "condition": null,
+        "is_default": true
+      },
+      {
+        "id": "F_NotifyClientApproved_to_EndApproved",
+        "source": "T_Manager_NotifyClient_Approved",
+        "target": "E_End_Approved",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "F_NotifyClientRejected_to_EndRejected",
+        "source": "T_Manager_NotifyClient_Rejected",
+        "target": "E_End_Rejected",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "ambiguities": []
+  },
+  "ambiguities": [],
+  "xml": "<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"Definitions\" targetNamespace=\"https://pulse.local/bpmn\" exporter=\"PULSE\" exporterVersion=\"0.1\">\n  <bpmn:process id=\"Process_ClientApplication\" name=\"Обработка заявки клиента\" isExecutable=\"false\">\n    <bpmn:documentation>Клиент отправляет заявку. Менеджер проверяет документы. Потом её проверяют юрист и служба безопасности. После этого руководитель принимает решение.</bpmn:documentation>\n    <bpmn:laneSet id=\"LaneSet\">\n      <bpmn:lane id=\"P_Client\" name=\"Клиент\"/>\n      <bpmn:lane id=\"P_Manager\" name=\"Менеджер\">\n        <bpmn:flowNodeRef>N_Start</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>G_Parallel_Split</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>G_Parallel_Join</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>T_Manager_NotifyClient_Approved</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>T_Manager_NotifyClient_Rejected</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>T_Manager_CheckDocuments</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"P_Lawyer\" name=\"Юрист\">\n        <bpmn:flowNodeRef>T_Lawyer_CheckApplication</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"P_Security\" name=\"Служба_безопасности\">\n        <bpmn:flowNodeRef>T_Security_CheckApplication</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"P_Head\" name=\"Руководитель\">\n        <bpmn:flowNodeRef>T_Cost_Check</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>G_Cost_Decision</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>T_Head_AdditionalApproval</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>T_Head_MakeDecision</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>G_Exclusive_Decision</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>E_End_Approved</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>E_End_Rejected</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"N_Start\" name=\"Заявка клиента поступила\">\n      <bpmn:documentation>Клиент отправляет заявку.</bpmn:documentation>\n      <bpmn:outgoing>F_Start_to_ManagerCheck</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:parallelGateway id=\"G_Parallel_Split\" name=\"Разделение на проверки\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation>Потом её проверяют юрист и служба безопасности.</bpmn:documentation>\n      <bpmn:incoming>F_ManagerCheck_to_ParallelSplit</bpmn:incoming>\n      <bpmn:outgoing>F_ParallelSplit_to_LawyerCheck</bpmn:outgoing>\n      <bpmn:outgoing>F_ParallelSplit_to_SecurityCheck</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:task id=\"T_Lawyer_CheckApplication\" name=\"Проверить заявку (Юрист)\">\n      <bpmn:documentation>Потом её проверяют юрист и служба безопасности.</bpmn:documentation>\n      <bpmn:incoming>F_ParallelSplit_to_LawyerCheck</bpmn:incoming>\n      <bpmn:outgoing>F_LawyerCheck_to_ParallelJoin</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"T_Security_CheckApplication\" name=\"Проверить заявку (Служба безопасности)\">\n      <bpmn:documentation>Потом её проверяют юрист и служба безопасности.</bpmn:documentation>\n      <bpmn:incoming>F_ParallelSplit_to_SecurityCheck</bpmn:incoming>\n      <bpmn:outgoing>F_SecurityCheck_to_ParallelJoin</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:parallelGateway id=\"G_Parallel_Join\" name=\"Объединение проверок\" gatewayDirection=\"Converging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>F_LawyerCheck_to_ParallelJoin</bpmn:incoming>\n      <bpmn:incoming>F_SecurityCheck_to_ParallelJoin</bpmn:incoming>\n      <bpmn:outgoing>F_ParallelJoin_to_HeadDecision</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:task id=\"T_Cost_Check\" name=\"Проверить стоимость договора\">\n      <bpmn:documentation>Проверка стоимости &gt; 500 000 рублей</bpmn:documentation>\n      <bpmn:incoming>F_ParallelJoin_to_HeadDecision</bpmn:incoming>\n      <bpmn:outgoing>F_CostCheck_to_CostDecision</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:exclusiveGateway id=\"G_Cost_Decision\" name=\"Проверка стоимости &gt; 500 000 рублей\" gatewayDirection=\"Diverging\" default=\"F_CostDecision_to_HeadDecision\">\n      <bpmn:documentation>Проверка стоимости &gt; 500 000 рублей</bpmn:documentation>\n      <bpmn:incoming>F_CostCheck_to_CostDecision</bpmn:incoming>\n      <bpmn:outgoing>F_CostDecision_to_AdditionalApproval</bpmn:outgoing>\n      <bpmn:outgoing>F_CostDecision_to_HeadDecision</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:task id=\"T_Head_AdditionalApproval\" name=\"Дополнительное согласование руководителем\">\n      <bpmn:documentation>Дополнительное согласование руководителем при стоимости &gt; 500 000 рублей</bpmn:documentation>\n      <bpmn:incoming>F_CostDecision_to_AdditionalApproval</bpmn:incoming>\n      <bpmn:outgoing>F_AdditionalApproval_to_HeadDecision</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"T_Head_MakeDecision\" name=\"Принять решение\">\n      <bpmn:documentation>После этого руководитель принимает решение.</bpmn:documentation>\n      <bpmn:incoming>F_CostDecision_to_HeadDecision</bpmn:incoming>\n      <bpmn:incoming>F_AdditionalApproval_to_HeadDecision</bpmn:incoming>\n      <bpmn:outgoing>F_HeadDecision_to_ExclusiveGateway</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:exclusiveGateway id=\"G_Exclusive_Decision\" name=\"Решение руководителя\" gatewayDirection=\"Diverging\" default=\"F_Decision_to_RejectedEnd\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>F_HeadDecision_to_ExclusiveGateway</bpmn:incoming>\n      <bpmn:outgoing>F_Decision_to_ApprovedEnd</bpmn:outgoing>\n      <bpmn:outgoing>F_Decision_to_RejectedEnd</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:task id=\"T_Manager_NotifyClient_Approved\" name=\"Уведомить клиента об одобрении\">\n      <bpmn:documentation>При одобрении менеджер уведомляет клиента об одобрении</bpmn:documentation>\n      <bpmn:incoming>F_Decision_to_ApprovedEnd</bpmn:incoming>\n      <bpmn:outgoing>F_NotifyClientApproved_to_EndApproved</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:task id=\"T_Manager_NotifyClient_Rejected\" name=\"Уведомить клиента об отказе\">\n      <bpmn:documentation>При отказе менеджер уведомляет клиента об отказе</bpmn:documentation>\n      <bpmn:incoming>F_Decision_to_RejectedEnd</bpmn:incoming>\n      <bpmn:outgoing>F_NotifyClientRejected_to_EndRejected</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:endEvent id=\"E_End_Approved\" name=\"Заявка одобрена\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>F_NotifyClientApproved_to_EndApproved</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:endEvent id=\"E_End_Rejected\" name=\"Заявка отклонена\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>F_NotifyClientRejected_to_EndRejected</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:task id=\"T_Manager_CheckDocuments\" name=\"Проверить документы\">\n      <bpmn:documentation>Менеджер проверяет документы.</bpmn:documentation>\n      <bpmn:incoming>F_Start_to_ManagerCheck</bpmn:incoming>\n      <bpmn:outgoing>F_ManagerCheck_to_ParallelSplit</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:sequenceFlow id=\"F_Start_to_ManagerCheck\" sourceRef=\"N_Start\" targetRef=\"T_Manager_CheckDocuments\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_ManagerCheck_to_ParallelSplit\" sourceRef=\"T_Manager_CheckDocuments\" targetRef=\"G_Parallel_Split\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_ParallelSplit_to_LawyerCheck\" sourceRef=\"G_Parallel_Split\" targetRef=\"T_Lawyer_CheckApplication\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_ParallelSplit_to_SecurityCheck\" sourceRef=\"G_Parallel_Split\" targetRef=\"T_Security_CheckApplication\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_LawyerCheck_to_ParallelJoin\" sourceRef=\"T_Lawyer_CheckApplication\" targetRef=\"G_Parallel_Join\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_SecurityCheck_to_ParallelJoin\" sourceRef=\"T_Security_CheckApplication\" targetRef=\"G_Parallel_Join\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_ParallelJoin_to_HeadDecision\" sourceRef=\"G_Parallel_Join\" targetRef=\"T_Cost_Check\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_CostCheck_to_CostDecision\" sourceRef=\"T_Cost_Check\" targetRef=\"G_Cost_Decision\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_CostDecision_to_AdditionalApproval\" sourceRef=\"G_Cost_Decision\" targetRef=\"T_Head_AdditionalApproval\" name=\"Стоимость &gt; 500000\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Стоимость &gt; 500000</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"F_CostDecision_to_HeadDecision\" sourceRef=\"G_Cost_Decision\" targetRef=\"T_Head_MakeDecision\" name=\"Стоимость &lt;= 500000\"/>\n    <bpmn:sequenceFlow id=\"F_AdditionalApproval_to_HeadDecision\" sourceRef=\"T_Head_AdditionalApproval\" targetRef=\"T_Head_MakeDecision\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_HeadDecision_to_ExclusiveGateway\" sourceRef=\"T_Head_MakeDecision\" targetRef=\"G_Exclusive_Decision\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_Decision_to_ApprovedEnd\" sourceRef=\"G_Exclusive_Decision\" targetRef=\"T_Manager_NotifyClient_Approved\" name=\"Одобрено\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Решение = Одобрено</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"F_Decision_to_RejectedEnd\" sourceRef=\"G_Exclusive_Decision\" targetRef=\"T_Manager_NotifyClient_Rejected\" name=\"Отклонено\"/>\n    <bpmn:sequenceFlow id=\"F_NotifyClientApproved_to_EndApproved\" sourceRef=\"T_Manager_NotifyClient_Approved\" targetRef=\"E_End_Approved\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"F_NotifyClientRejected_to_EndRejected\" sourceRef=\"T_Manager_NotifyClient_Rejected\" targetRef=\"E_End_Rejected\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:collaboration id=\"Collaboration\">\n    <bpmn:participant id=\"Pool\" name=\"Обработка заявки клиента\" processRef=\"Process_ClientApplication\"/>\n  </bpmn:collaboration>\n  <bpmndi:BPMNDiagram id=\"Diagram\">\n    <bpmndi:BPMNPlane id=\"Plane\" bpmnElement=\"Collaboration\">\n      <bpmndi:BPMNShape id=\"Shape_Pool\" bpmnElement=\"Pool\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"70\" width=\"2420\" height=\"1015\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_P_Client\" bpmnElement=\"P_Client\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"70\" width=\"2390\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_P_Manager\" bpmnElement=\"P_Manager\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"225\" width=\"2390\" height=\"275\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_P_Lawyer\" bpmnElement=\"P_Lawyer\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"500\" width=\"2390\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_P_Security\" bpmnElement=\"P_Security\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"655\" width=\"2390\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_P_Head\" bpmnElement=\"P_Head\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"810\" width=\"2390\" height=\"275\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_N_Start\" bpmnElement=\"N_Start\">\n        <dc:Bounds x=\"241.0\" y=\"343.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_G_Parallel_Split\" bpmnElement=\"G_Parallel_Split\">\n        <dc:Bounds x=\"614.0\" y=\"336.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Lawyer_CheckApplication\" bpmnElement=\"T_Lawyer_CheckApplication\">\n        <dc:Bounds x=\"760.0\" y=\"537.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Security_CheckApplication\" bpmnElement=\"T_Security_CheckApplication\">\n        <dc:Bounds x=\"760.0\" y=\"692.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_G_Parallel_Join\" bpmnElement=\"G_Parallel_Join\">\n        <dc:Bounds x=\"994.0\" y=\"336.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Cost_Check\" bpmnElement=\"T_Cost_Check\">\n        <dc:Bounds x=\"1140.0\" y=\"907.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_G_Cost_Decision\" bpmnElement=\"G_Cost_Decision\">\n        <dc:Bounds x=\"1374.0\" y=\"921.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Head_AdditionalApproval\" bpmnElement=\"T_Head_AdditionalApproval\">\n        <dc:Bounds x=\"1520.0\" y=\"907.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Head_MakeDecision\" bpmnElement=\"T_Head_MakeDecision\">\n        <dc:Bounds x=\"1710.0\" y=\"907.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_G_Exclusive_Decision\" bpmnElement=\"G_Exclusive_Decision\">\n        <dc:Bounds x=\"1944.0\" y=\"921.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Manager_NotifyClient_Approved\" bpmnElement=\"T_Manager_NotifyClient_Approved\">\n        <dc:Bounds x=\"2090.0\" y=\"276.6666666666667\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Manager_NotifyClient_Rejected\" bpmnElement=\"T_Manager_NotifyClient_Rejected\">\n        <dc:Bounds x=\"2090.0\" y=\"368.33333333333337\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_E_End_Approved\" bpmnElement=\"E_End_Approved\">\n        <dc:Bounds x=\"2331.0\" y=\"882.6666666666666\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_E_End_Rejected\" bpmnElement=\"E_End_Rejected\">\n        <dc:Bounds x=\"2331.0\" y=\"974.3333333333334\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_T_Manager_CheckDocuments\" bpmnElement=\"T_Manager_CheckDocuments\">\n        <dc:Bounds x=\"380.0\" y=\"322.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"Edge_F_Start_to_ManagerCheck\" bpmnElement=\"F_Start_to_ManagerCheck\">\n        <di:waypoint x=\"279.0\" y=\"362.5\"/>\n        <di:waypoint x=\"380.0\" y=\"362.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_ManagerCheck_to_ParallelSplit\" bpmnElement=\"F_ManagerCheck_to_ParallelSplit\">\n        <di:waypoint x=\"520.0\" y=\"362.5\"/>\n        <di:waypoint x=\"614.0\" y=\"362.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_ParallelSplit_to_LawyerCheck\" bpmnElement=\"F_ParallelSplit_to_LawyerCheck\">\n        <di:waypoint x=\"666.0\" y=\"362.5\"/>\n        <di:waypoint x=\"701.0\" y=\"362.5\"/>\n        <di:waypoint x=\"701.0\" y=\"577.5\"/>\n        <di:waypoint x=\"760.0\" y=\"577.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_ParallelSplit_to_SecurityCheck\" bpmnElement=\"F_ParallelSplit_to_SecurityCheck\">\n        <di:waypoint x=\"666.0\" y=\"362.5\"/>\n        <di:waypoint x=\"701.0\" y=\"362.5\"/>\n        <di:waypoint x=\"701.0\" y=\"732.5\"/>\n        <di:waypoint x=\"760.0\" y=\"732.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_LawyerCheck_to_ParallelJoin\" bpmnElement=\"F_LawyerCheck_to_ParallelJoin\">\n        <di:waypoint x=\"900.0\" y=\"577.5\"/>\n        <di:waypoint x=\"935.0\" y=\"577.5\"/>\n        <di:waypoint x=\"935.0\" y=\"362.5\"/>\n        <di:waypoint x=\"994.0\" y=\"362.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_SecurityCheck_to_ParallelJoin\" bpmnElement=\"F_SecurityCheck_to_ParallelJoin\">\n        <di:waypoint x=\"900.0\" y=\"732.5\"/>\n        <di:waypoint x=\"935.0\" y=\"732.5\"/>\n        <di:waypoint x=\"935.0\" y=\"362.5\"/>\n        <di:waypoint x=\"994.0\" y=\"362.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_ParallelJoin_to_HeadDecision\" bpmnElement=\"F_ParallelJoin_to_HeadDecision\">\n        <di:waypoint x=\"1046.0\" y=\"362.5\"/>\n        <di:waypoint x=\"1081.0\" y=\"362.5\"/>\n        <di:waypoint x=\"1081.0\" y=\"947.5\"/>\n        <di:waypoint x=\"1140.0\" y=\"947.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_CostCheck_to_CostDecision\" bpmnElement=\"F_CostCheck_to_CostDecision\">\n        <di:waypoint x=\"1280.0\" y=\"947.5\"/>\n        <di:waypoint x=\"1374.0\" y=\"947.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_CostDecision_to_AdditionalApproval\" bpmnElement=\"F_CostDecision_to_AdditionalApproval\">\n        <di:waypoint x=\"1426.0\" y=\"947.5\"/>\n        <di:waypoint x=\"1520.0\" y=\"947.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1434.0\" y=\"921.5\" width=\"110\" height=\"22\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_CostDecision_to_HeadDecision\" bpmnElement=\"F_CostDecision_to_HeadDecision\">\n        <di:waypoint x=\"1426.0\" y=\"947.5\"/>\n        <di:waypoint x=\"1710.0\" y=\"947.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1434.0\" y=\"921.5\" width=\"110\" height=\"22\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_AdditionalApproval_to_HeadDecision\" bpmnElement=\"F_AdditionalApproval_to_HeadDecision\">\n        <di:waypoint x=\"1660.0\" y=\"947.5\"/>\n        <di:waypoint x=\"1710.0\" y=\"947.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_HeadDecision_to_ExclusiveGateway\" bpmnElement=\"F_HeadDecision_to_ExclusiveGateway\">\n        <di:waypoint x=\"1850.0\" y=\"947.5\"/>\n        <di:waypoint x=\"1944.0\" y=\"947.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_Decision_to_ApprovedEnd\" bpmnElement=\"F_Decision_to_ApprovedEnd\">\n        <di:waypoint x=\"1996.0\" y=\"947.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"947.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"316.6666666666667\"/>\n        <di:waypoint x=\"2090.0\" y=\"316.6666666666667\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"2004.0\" y=\"921.5\" width=\"110\" height=\"22\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_Decision_to_RejectedEnd\" bpmnElement=\"F_Decision_to_RejectedEnd\">\n        <di:waypoint x=\"1996.0\" y=\"947.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"947.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"408.33333333333337\"/>\n        <di:waypoint x=\"2090.0\" y=\"408.33333333333337\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"2004.0\" y=\"921.5\" width=\"110\" height=\"22\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_NotifyClientApproved_to_EndApproved\" bpmnElement=\"F_NotifyClientApproved_to_EndApproved\">\n        <di:waypoint x=\"2230.0\" y=\"316.6666666666667\"/>\n        <di:waypoint x=\"2265.0\" y=\"316.6666666666667\"/>\n        <di:waypoint x=\"2265.0\" y=\"901.6666666666666\"/>\n        <di:waypoint x=\"2331.0\" y=\"901.6666666666666\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_F_NotifyClientRejected_to_EndRejected\" bpmnElement=\"F_NotifyClientRejected_to_EndRejected\">\n        <di:waypoint x=\"2230.0\" y=\"408.33333333333337\"/>\n        <di:waypoint x=\"2265.0\" y=\"408.33333333333337\"/>\n        <di:waypoint x=\"2265.0\" y=\"993.3333333333334\"/>\n        <di:waypoint x=\"2331.0\" y=\"993.3333333333334\"/>\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+  "attempts": 1,
+  "semantic_warnings": [],
+  "changes": [
+    {
+      "type": "gateway_added",
+      "element_ids": [
+        "G_Cost_Decision"
+      ],
+      "description": "Добавлен шлюз «Проверка стоимости > 500 000 рублей».",
+      "category": "branching",
+      "action": "added"
+    },
+    {
+      "type": "node_added",
+      "element_ids": [
+        "T_Cost_Check"
+      ],
+      "description": "Добавлен элемент «Проверить стоимость договора».",
+      "category": "structure",
+      "action": "added"
+    },
+    {
+      "type": "node_added",
+      "element_ids": [
+        "T_Head_AdditionalApproval"
+      ],
+      "description": "Добавлен элемент «Дополнительное согласование руководителем».",
+      "category": "structure",
+      "action": "added"
+    },
+    {
+      "type": "sequence_changed",
+      "element_ids": [
+        "F_ParallelJoin_to_HeadDecision",
+        "G_Parallel_Join",
+        "T_Cost_Check"
+      ],
+      "description": "Изменён порядок: «Объединение проверок» → «Проверить стоимость договора».",
+      "category": "branching",
+      "action": "changed"
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_AdditionalApproval_to_HeadDecision",
+        "T_Head_AdditionalApproval",
+        "T_Head_MakeDecision"
+      ],
+      "description": "Добавлен переход «Дополнительное согласование руководителем» → «Принять решение».",
+      "category": "structure",
+      "action": "added"
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_CostCheck_to_CostDecision",
+        "T_Cost_Check",
+        "G_Cost_Decision"
+      ],
+      "description": "Добавлен переход «Проверить стоимость договора» → «Проверка стоимости > 500 000 рублей».",
+      "category": "branching",
+      "action": "added"
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_CostDecision_to_AdditionalApproval",
+        "G_Cost_Decision",
+        "T_Head_AdditionalApproval"
+      ],
+      "description": "Добавлен переход «Проверка стоимости > 500 000 рублей» → «Дополнительное согласование руководителем».",
+      "category": "branching",
+      "action": "added"
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_CostDecision_to_HeadDecision",
+        "G_Cost_Decision",
+        "T_Head_MakeDecision"
+      ],
+      "description": "Добавлен переход «Проверка стоимости > 500 000 рублей» → «Принять решение».",
+      "category": "branching",
+      "action": "added"
+    }
+  ],
+  "metadata": {
+    "provider_used": "groq",
+    "model_used": "openai/gpt-oss-120b",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "accepted_assumptions": []
+}

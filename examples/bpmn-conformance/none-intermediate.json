@@ -1,0 +1,70 @@
+{
+  "id": "P",
+  "name": "Проверка subset",
+  "description": "",
+  "participants": [
+    {
+      "id": "Role",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": null
+    }
+  ],
+  "nodes": [
+    {
+      "id": "N0",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Этап 0",
+      "participant_id": "Role",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "N1",
+      "type": "intermediate_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Этап 1",
+      "participant_id": "Role",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "N2",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Этап 2",
+      "participant_id": "Role",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    }
+  ],
+  "flows": [
+    {
+      "id": "F0",
+      "source": "N0",
+      "target": "N1",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F1",
+      "source": "N1",
+      "target": "N2",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [],
+  "message_flows": [],
+  "ambiguities": []
+}

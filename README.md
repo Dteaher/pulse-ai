@@ -5,8 +5,8 @@
 ## Возможности
 
 - Текст → строгий Process JSON → программная проверка → BPMN XML с координатами → редактор bpmn-js.
-- Участники в дорожках общего пула; задачи, условия, исключающие, параллельные и включающие шлюзы, возвраты, несколько завершений.
-- До четырёх вопросов за итерацию. При критичных неопределённостях схема не публикуется до ответа.
+- Внешние участники в отдельных раскрытых пулах, внутренние роли в дорожках организации. Sequence Flow внутри пула, Message Flow между пулами; задачи, условия, XOR, parallel split/join и возвраты.
+- До трёх вопросов за итерацию. При критичных неопределённостях схема не публикуется до ответа.
 - Ручное редактирование, масштаб, Undo/Redo, импорт `.bpmn`, экспорт текущего полотна.
 - Изменение естественным языком; до 20 предыдущих версий в памяти сессии.
 - BPMN Doctor: XSD, графовые проверки и бизнес-правила; с реальной моделью также LLM-аудит. Замечания подсвечивают элементы.
@@ -36,13 +36,13 @@ LLM не генерирует XML и не выполняет код. Промп�
 
 ## LLM-архитектура
 
-Текущая конфигурация: **Groq / `openai/gpt-oss-120b` → при сбое Vertex Gemini / `gemini-2.5-flash` → ProcessDefinition → Validator → BPMNBuilder**. Бизнес-логика не импортирует SDK и конкретные адаптеры. `GroqProvider` использует совместимый API, `VertexGeminiProvider` — официальный `google-genai` (зафиксированная версия 2.28.0), `genai.Client(vertexai=True, api_key=...)`, Vertex Express Google Cloud. Google AI Studio для этого резерва не используется. Endpoint и Express-режим выбирает SDK; дополнительный Google project/location для выбранного режима не требуются. Нужен Google Cloud API key с доступом к Vertex Express. Доступность модели и права ключа проверяются реальным запросом.
+Текущая конфигурация: **MultiAI / `gpt-6.1-sol` → при сбое Vertex Gemini / `gemini-2.5-flash` → ProcessDefinition → Validator → BPMNBuilder**. Бизнес-логика не импортирует SDK и конкретные адаптеры. `MultiAIProvider` использует общий OpenAI-compatible адаптер с валидацией Pydantic; активный адаптер Groq удалён, `VertexGeminiProvider` — официальный `google-genai` (зафиксированная версия 2.28.0), `genai.Client(vertexai=True, api_key=...)`, Vertex Express Google Cloud. Google AI Studio для этого резерва не используется. Endpoint и Express-режим выбирает SDK; дополнительный Google project/location для выбранного режима не требуются. Нужен Google Cloud API key с доступом к Vertex Express. Доступность модели и права ключа проверяются реальным запросом.
 
 ```dotenv
-# PRIMARY — GROQ
-PRIMARY_LLM_PROVIDER=groq
-PRIMARY_LLM_BASE_URL=https://api.groq.com/openai/v1
-PRIMARY_LLM_MODEL=openai/gpt-oss-120b
+# PRIMARY — MULTIAI
+PRIMARY_LLM_PROVIDER=multiai
+PRIMARY_LLM_BASE_URL=https://multiai.store/v1
+PRIMARY_LLM_MODEL=gpt-6.1-sol
 PRIMARY_LLM_API_KEY=
 
 # FALLBACK — GOOGLE CLOUD / VERTEX EXPRESS
@@ -53,7 +53,7 @@ FALLBACK_LLM_API_KEY=
 # FAILOVER
 LLM_FALLBACK_ENABLED=true
 LLM_MAX_RETRIES=2
-LLM_TIMEOUT=90
+LLM_TIMEOUT=180
 LLM_MAX_TOKENS=8000
 ```
 
@@ -65,14 +65,28 @@ LLM_MAX_TOKENS=8000
 
 ```json
 {
-  "primary": {"provider": "groq", "model": "openai/gpt-oss-120b"},
+  "primary": {"provider": "multiai", "model": "gpt-6.1-sol"},
   "fallback": {"enabled": true, "provider": "vertex_gemini", "model": "gemini-2.5-flash"}
 }
 ```
 
-Ключи остаются только в `.env`, файл исключён из Git. Чтобы сменить модель, измените `.env`; существующие API процесса, JSON, экспорт BPMN и bpmn-js не меняются. Проверено с реальными ключами: Groq `openai/gpt-oss-120b` и отдельно Vertex `gemini-2.5-flash` вернули валидные процессы и BPMN. Сквозная генерация через frontend на Groq получила HTTP 200 и отобразилась в bpmn-js без ошибок; metadata attempts=1. Автоматический failover и ошибки 401/429/5xx, timeout, network, invalid JSON проверены через mock HTTP/SDK, без намеренного сбоя реального API. Три UI-теста статуса primary/fallback и контролируемой ошибки после этой доработки также прошли без AI-запросов. Результаты unit-тестов не заменяют проверку реального доступа.
+Ключи остаются только в `.env`, файл исключён из Git. Чтобы сменить модель, измените `.env`; существующие API процесса, JSON, экспорт BPMN и bpmn-js не меняются. MultiAI использует тот же проверяемый контракт ProcessDefinition. Резерв Vertex Gemini сохранён. Проверки primary success и failover при 401/429/5xx, timeout и network выполняются для MultiAI и общего совместимого провайдера через mock HTTP/SDK. Реальная проверка сохраняется отдельно в `examples/multiai/verification.json`; автоматические тесты не доказывают доступность внешнего API. Старые результаты Groq ниже и в fixtures относятся к предыдущей конфигурации и сохранены для регрессионной проверки BPMN.
+
+Проверка MultiAI: короткий запрос вернул HTTP 200 за 2,6 секунды. Полная генерация договора заняла около 89 секунд; прежний лимит 90 секунд приводил к timeout. В `.env` и `.env.example` установлен `LLM_TIMEOUT=180`, добавлен `LLM_REASONING_EFFORT=low` (применяется только адаптером MultiAI; пустое значение сохраняет режим API по умолчанию). После двух реальных графовых corrective retry получен BPMN с двумя пулами, шестью участниками и 26 узлами: Pydantic, граф, семантика, OMG XSD и импорт в bpmn-js прошли, fallback не использовался. Суммарное время первичной генерации и исправлений — около 264 секунд: это проверка работоспособности, а не гарантия постоянной скорости API. Результаты и снимок находятся в `examples/multiai/`. 228 backend-тестов прошли; Gemini сохранена как резерв.
+
+## Семантика событий и альтернативных ветвей
+
+PULSE поддерживает Event-Based Gateway, Message Start Event и Intermediate Catch Message Event. В ProcessDefinition это `event_based_gateway`, `event_definition=message` и `decision_basis=data|event|unspecified`. Ожидание будущих альтернативных сообщений отличается от решения по уже полученным данным. Перед валидацией безопасная нормализация уточняет нотацию, сохраняет исходные участники и связи, добавляет XOR merge перед повторным ожиданием и при объединении альтернативных ветвей. Повреждённые ссылки и дубликаты не скрываются.
+
+Validator проверяет один вход и минимум два различных event/receive выхода Event-Based Gateway, отсутствие условий/default, отсутствие смешения Receive Task и Catch Event, отдельный вход каждого ожидания и входящий межпуловый Message Flow у Message Start. Альтернативные ветви не объединяются Parallel Join. Существующие проверки циклов, связности и бизнес-семантики сохранены. Возвратные линии используют отдельные коридоры; размещение подписей учитывает границы узлов и других подписей.
+
+`examples/event-semantics/` содержит детерминированные эталоны с Receive Task и Catch Message Event, BPMN XML и снимки. Они проходят OMG XSD, импорт/экспорт в bpmn-js, повторный импорт в PULSE и импорт в официальный demo.bpmn.io. Проверены оба цикла, стоимость/согласование → XOR merge, стабильность ID, ChangeSet, Modify и Undo. Профиль AI ограничен описательными сообщениями: таймеры, сложная корреляция и messageRef не преобразуются автоматически, чтобы не потерять их смысл.
+
+Последняя проверка: **206 backend + 28 browser = 234 passed**, TypeScript и Vite build прошли. Добавлено 22 backend и 2 browser теста. Реальная генерация сложного процесса после этих изменений пока нестабильна: два запроса закончились HTTP 502 после исчерпания исправлений и резерва из-за некорректного графа модели. Такой результат не публикуется как готовая схема; автоматические тесты не заменяют успешную проверку реальной генерации перед демонстрацией.
 
 ## Независимость от LLM
+
+После HTTP 429 LLMRouter запоминает паузу между запросами: учитывает `Retry-After` (секунды или HTTP date), при отсутствии корректного заголовка использует 60 секунд. Пока пауза действует, новые запросы идут в настроенный резерв без обращения к основному API. Без резерва возвращается безопасное сообщение с оставшимся временем ожидания. Резерв также защищён от повторных обращений после своего 429. JSON corrective retry не запускается для ограничения квоты. Ключ, модель и endpoint определяют независимую паузу; ключ хранится только в составе хеша, в журнал выводятся лишь provider, код и время ожидания. Это память одного backend-процесса: после перезапуска она очищается, между несколькими worker-процессами не разделяется. Изменение не увеличивает квоту внешнего провайдера и не гарантирует доступность резервного API.
 
 PULSE использует Adapter / Provider: основные маршруты и BPMN pipeline знают только `LLMProvider`. Конкретные подключения создаёт `get_llm_provider()` в `backend/app/services/llm/factory.py`. HTTP-запросы, авторизация, формат сообщений и обработка внешнего ответа находятся внутри адаптеров. Process JSON не зависит от модели.
 
@@ -84,6 +98,9 @@ backend/app/services/llm/
     factory.py                    # выбор провайдера по .env
     openai_provider.py
     openai_compatible_provider.py
+    multiai_provider.py            # MultiAI, общий OpenAI-compatible контракт
+    gemini_provider.py
+    vertex_gemini_provider.py
     yandex_provider.py
     mock_provider.py
     router.py                     # LLMRouter, failover и metadata
@@ -266,7 +283,45 @@ npm run build
 npm test
 ```
 
-Frontend browser-тесты по умолчанию используют установленный Microsoft Edge. Для Chromium: `npx playwright install chromium`, затем `PULSE_TEST_CHANNEL=chromium npm test` (PowerShell: `$env:PULSE_TEST_CHANNEL='chromium'; npm test`). Они требуют запущенных backend с `LLM_PROVIDER=mock` и frontend. Backend-тесты не требуют ключей: модели, плохие ссылки, дубликаты, события, шлюзы, XSD, roundtrip, уточнения, bounded retries и ошибки провайдера. Интеграционные тесты транспорта LLM используют httpx mock, не платный API.
+Frontend browser-тесты по умолчанию используют установленный Microsoft Edge. Для Chromium: `npx playwright install chromium`, затем `PULSE_TEST_CHANNEL=chromium npm test` (PowerShell: `$env:PULSE_TEST_CHANNEL='chromium'; npm test`). Требуется запущенный frontend. Playwright сам запускает изолированный mock-backend на порту 8001, не меняя `.env`; тесты не отправляют запросов к реальным LLM. Рабочий backend на порту 8000 можно оставить включённым. Backend-тесты не требуют ключей: модели, плохие ссылки, дубликаты, события, шлюзы, XSD, roundtrip, уточнения, bounded retries и ошибки провайдера. Интеграционные тесты транспорта LLM используют httpx mock, не платный API.
+
+## Clarify, Modify и Undo
+
+Реальные материалы проверки: `examples/clarify-modify/` — исходный текст, вопросы модели, v1/v2 JSON и BPMN, ChangeSet, XML с ручной раскладкой и безопасные metadata провайдеров.
+
+Generate возвращает черновик и до трёх вопросов в `ambiguities`. Приоритеты: `critical` — «Критично», `warning` — «Желательно уточнить». Критичные вопросы блокируют XML и не могут быть пропущены даже после лимита уточнений. Некритичные можно ответить либо явно принять как допущения; поле `assumption` объясняет предложенный вариант. UI показывает «Приняты допущения: N» с подробностями.
+
+`/api/process/clarify` принимает черновик, `original_text`, ответы по ID, `accepted_ambiguity_ids`, ранее принятые `accepted_assumptions` и `clarification_round`. Ответы поддерживают словарь или список `{ambiguity_id, answer}`. Неясный ответ может вызвать следующий вопрос. `MAX_CLARIFICATION_ROUNDS=3` ограничивает итерации; после лимита разрешено принять только некритичные вопросы (`continue_with_draft=true`). При критичных нужно уточнить исходное описание или команду. Допущения сохраняются в версии, передаются в следующие AI-команды и восстанавливаются через Undo. До явного разрешения вопросов интерфейс сохраняет текущую диаграмму. Сохраняется до 30 допущений; превышение лимита требует уточнить исходное описание.
+
+Modify принимает `instruction` (старое `command` также поддерживается) и актуальный Process JSON. Перед запросом frontend экспортирует XML из bpmn-js и синхронизирует ручные правки через importer. Неоднозначная команда использует Clarify с `operation=modify`, исходной `instruction` и `base_process`. Кандидат проходит Pydantic, проверку графа и семантики, сборку/XSD и пробный импорт bpmn-js. Затем появляется превью добавлений, удалений и изменений; v2 применяется только по кнопке «Применить». Отмена оставляет текущую версию. Ручное изменение диаграммы во время просмотра делает превью устаревшим: оно не перезапишет диаграмму, команда возвращается в редактор для повторной отправки.
+
+Семантическая проверка после Modify обнаруживает явные противоречия положительных/отрицательных исходов, противоречие подписи ветви её условию, пустые/шаблонные и повторяющиеся условия. Для параллельных ветвей проверяется общий parallel join на всех завершающихся путях и соответствие отдельных входов ветвям, включая вложенные split/join. Ошибки передаются модели для corrective retry; после двух исправлений выдаётся краткая безопасная причина, а v1 сохраняется. Предупреждения о циклах показываются в превью. Это консервативные правила, а не доказательство всей бизнес-логики; поддерживается структурированный split/join, независимые окончания параллельных ветвей без join отклоняются.
+
+`ChangeSet` вычисляется на backend по фактическим v1/v2. Модель не пишет diff. `changes` содержит добавления, удаления и изменения узлов, участников, переходов, условий и порядка. Каждое изменение имеет `action` (`added`, `removed`, `changed`) и `category` (`structure`, `condition`, `participant`, `branching`); UI группирует категории. ID сохраняются в prompt; программа дополнительно восстанавливает ID при однозначном совпадении имени, типа, участника и связей. Регрессионный тест проверяет сохранение всех ID неизменённых узлов при изменении 10% процесса. Неоднозначные совпадения не склеиваются; ID изменённого по смыслу элемента может остаться новым.
+
+Единый frontend state/history слой хранит Process JSON, XML, ChangeSet, допущения и до 20 снимков с номерами v1/v2/v3 и описаниями команд. Перед AI-командой snapshot содержит точный XML, синхронизированный Process JSON, время и причину. Undo восстанавливает их атомарно и удаляет последний снимок. Возврат через историю откатывает выбранную версию и более поздние изменения. Ручные координаты восстанавливаются точно; при построении v2 раскладка рассчитывается заново. История действует в текущей вкладке и не переживает перезагрузку.
+
+Логи failover содержат провайдер, операцию и безопасный код причины: `http_429`, `http_503`, `timeout`, `network_error`, `model_unavailable` и другие разрешённые коды. Ответ API, ключи и исключения провайдера в эти записи не попадают. Публичные metadata содержат название провайдера/модели, факт fallback и число попыток.
+
+Реально проверено: Groq `openai/gpt-oss-120b` вернул существенные вопросы, а `/clarify` получил HTTP 200, завершил уточнение без дополнительных вопросов и построил BPMN (primary, attempts=1). Команда о параллельных проверках также выполнена реальным Groq. Полный браузерный цикл с ручным перемещением, условием стоимости > 500 000, ChangeSet и Undo прошёл с прежней цепочкой Groq → Vertex Gemini; часть запросов выполнил fallback. После Undo экспорт побайтно совпал с XML перед AI-командой, ошибок JavaScript не было. Эта проверка не является измерением качества на всех процессах.
+
+Свежая проверка усиленного Modify: `examples/clarify-modify/safety-proof/`. Реальный Groq `openai/gpt-oss-120b` вернул HTTP 200 без fallback, attempts=1: условное согласование > 500 000 рублей, восемь изменений, семантическая проверка без предупреждений, отображение bpmn-js. Превью сохранило исходный XML, подтверждение применило v2, Undo восстановил XML точно; ошибок браузера нет. Скриншот превью обновлён с тем же записанным ответом после улучшения отображения длинной команды.
+
+## Качество BPMN и несколько Pool
+
+`ProcessDefinition` содержит `pools: [{id, name, kind}]`, у участников есть `kind: internal | external` и `pool_id`, а `message_flows` хранится отдельно от управляющих `flows`. Каждый Pool получает собственный BPMN process; внутренние роли — lanes, внешний участник — раскрытый Pool с действиями. Классификацию делает модель по контексту, без словаря названий ролей. Старые JSON без `pools` сохраняют прежний совместимый режим одного процесса.
+
+Общие правила `backend/app/prompts/bpmn_rules.txt` используются Extraction, Clarify и Modify. Начало без явного триггера — «Начало процесса», первое человеческое действие — отдельная задача. На стрелках обычной последовательности не требуется name; условия XOR подписаны. Имена на языке входа, технический английский допустим в ID. Program validation отправляет на corrective retry старт с человеческим действием, английские технические подписи, повторение исполнителя в названии задачи и очевидное объединение нескольких действий. Evidence сохраняет полную исходную фразу.
+
+Validator запрещает Sequence Flow между пулами и Message Flow внутри одного пула, проверяет ссылки, начало/действия/завершение каждого процесса, достижимость и допустимые концы сообщений. Семантические правила проверяют XOR-исходы и соответствие parallel split/join при Generate, Clarify и Modify новой модели. Сборщик повторяет проверки перед XML/XSD. Импортер поддерживает тот же ограниченный набор и сохраняет Pool, kind, дорожки и сообщения после ручного экспорта; расширенные неподдерживаемые элементы остаются доступны для ручной работы без тихого удаления.
+
+Раскладка горизонтальная: отдельные пулы, выравнивание обменов по колонкам, место для условий, обходные коридоры для возвратов и длинных переходов. Это layout для типичных небольших процессов, без обещания оптимальной трассировки любого графа. Modify сохраняет принадлежность существующих ролей и задач; явные команды о переносе/смене ответственности разрешают её менять. ChangeSet учитывает пулы и сообщения. Undo хранит исходный XML целиком.
+
+`examples/collaboration/` содержит независимый эталон, исходный текст и тест изменения; `real/` — ответы реальных моделей, XML и проверка браузера. Последняя генерация прошла через Groq → Vertex Gemini (`gemini-2.5-flash`, fallback=true, attempts=4). Получены два пула, пять сообщений, отдельные формирование/отправка договора, параллельные проверки, человеческая подача заявки как User Task. bpmn-js импорт и экспорт → повторный импорт: HTTP 200, ошибок браузера нет. Groq ранее вернул существенный вопрос о порядке проверок; предыдущий реальный Clarify через Vertex также прошёл. Это отдельные проверки, не оценка качества на всех процессах.
+
+Эталон новой collaboration открыт в официальном `demo.bpmn.io`, название задачи изменено в его редакторе; подтверждение — `bpmn-io-edited.png`. Схема реального ответа проверена в PULSE на 1366×768 и 1920×1080. Компания в реальном ответе названа нейтрально «Организация», поскольку исходный текст не содержит её имени; в эталоне использовано название «Энергоснабжающая компания» из контекста задания.
+
+Некорректный JSON проходит corrective retry на том же провайдере; необработанный ответ не попадает в pipeline. Специфичный адаптер Groq удалён; исторические результаты сохранены только как BPMN fixtures. Vertex Gemini 2.5 Flash использует thinking_budget=0, чтобы заданный лимит вывода оставался для структурированного ответа. Ключи и .env при доработке не изменялись.
 
 ## API
 
@@ -276,19 +331,26 @@ Frontend browser-тесты по умолчанию используют уст�
 | GET | `/api/llm/info` | Primary и fallback: провайдер, модель и enabled; без ключей |
 | GET | `/api/examples` | Три описания |
 | POST | `/api/process/generate` | `{text}` → процесс, вопросы, XML или null |
-| POST | `/api/process/clarify` | `{process, answers}` → уточнённая модель |
-| POST | `/api/process/modify` | `{process, command}` → новая модель |
+| POST | `/api/process/clarify` | `{process, answers, accepted_ambiguity_ids?, accepted_assumptions?, original_text?, clarification_round?, operation?, instruction?, base_process?}` → уточнённая модель, вопросы, XML, ChangeSet |
+| POST | `/api/process/modify` | `{process, instruction}` → проверенная v2, `changes`, вопросы, XML или null |
 | POST | `/api/process/bpmn` | `{process}` → проверенный XML |
 | POST | `/api/process/import` | `{xml, previous?}` → актуальный Process JSON |
 | POST | `/api/process/audit` | `{xml, previous?}` → технические и бизнес-проверки |
 
 ## Ограничения MVP
 
-Проверено при разработке: **104 backend-теста**, **11 браузерных тестов**, TypeScript и production-сборка Vite. Выполнен ручной импорт экспорта PULSE в официальный `demo.bpmn.io` и переименование задачи там. Проверены экраны 1366×768 и 1920×1080. Выполнены реальные запросы OpenRouter к `nvidia/nemotron-3-super-120b-a12b:free`: HTTP 200, Pydantic, граф, XSD и отображение результата в bpmn-js проверены на процессе ремонта электросчётчика. Повторная генерация через сайт также успешна. Это проверка подключения и одного сквозного сценария, а не оценка качества на всех 15 кейсах. TO-BE интерфейс проверен с подменой транспорта, качество рекомендаций модели ещё требует проверки. Примеры и экспорт проходят локальные XSD OMG.
+Актуальный BPMN target — **PULSE non-executable Process/Collaboration subset**
+на основе BPMN 2.0.2. Полная Descriptive/Analytic conformance и execution не
+заявляются. Матрица всех элементов, нормативные ссылки, аудит до/после,
+официальные XSD, тесты и ограничения: [BPMN 2.0.2 conformance](docs/bpmn-2.0.2-conformance.md).
+Исторические результаты проверок ниже отражают этапы разработки; текущие
+ограничения и итоговая проверка указаны в этой матрице.
+
+Проверено при разработке: **184 backend-теста**, **26 браузерных тестов**, TypeScript и production-сборка Vite. Выполнен ручной импорт экспорта PULSE в официальный `demo.bpmn.io` и переименование задачи там. Проверены экраны 1366×768 и 1920×1080. Выполнены реальные запросы OpenRouter к `nvidia/nemotron-3-super-120b-a12b:free`: HTTP 200, Pydantic, граф, XSD и отображение результата в bpmn-js проверены на процессе ремонта электросчётчика. Повторная генерация через сайт также успешна. Это проверка подключения и одного сквозного сценария, а не оценка качества на всех 15 кейсах. TO-BE интерфейс проверен с подменой транспорта, качество рекомендаций модели ещё требует проверки. Примеры и экспорт проходят локальные XSD OMG.
 
 - Реальные LLM-вызовы требуют API-ключа и доступной модели. Отдельно протестируйте качество выбранной модели на энергетических процессах перед демонстрацией.
 - Размер ответа регулируется `LLM_MAX_TOKENS` (по умолчанию 16000). При обрезанном ответе выводится понятное сообщение; лимит нужно согласовать с возможностями выбранной модели.
-- Генерация: один процесс с дорожками общего пула. Взаимодействие автономных пулов через message flow, вложенные подпроцессы и исполняемые интеграции не генерируются.
+- Генерация поддерживает collaboration с раскрытыми Pool, плоскими Lane и Message Flow. Альтернативные внешние ответы моделируются Event-Based Gateway и Receive Tasks либо Message Catch Events; решения по данным — XOR. Поддержаны Message Start и None Intermediate Throw. Условия — non-executable Expression, не XPath. Подпроцессы, choreography, boundary/timer/error events и исполняемые интеграции не генерируются.
 - Импорт сложного BPMN доступен для ручного редактирования и экспорта. AI-операции отклоняются при неподдерживаемых элементах, чтобы не терять их при перестроении.
 - Графовая и XSD-валидация не доказывают полную корректность токеновой семантики, взаимоисключаемость текстовых условий и отсутствие deadlock сложных parallel/inclusive моделей. Это честно отмечено в аудите.
 - Layout рассчитан на небольшие процессы до 150 узлов, возможны пересечения длинных связей. Большие диаграммы требуют масштабирования и ручной компоновки.
@@ -303,3 +365,67 @@ Frontend browser-тесты по умолчанию используют уст�
 - [BPMN 2.0.2 и официальные XML-схемы OMG](https://www.omg.org/spec/BPMN/machine-readable) — локальная копия пяти XSD в `backend/app/schemas`.
 - [bpmn-js walkthrough](https://bpmn.io/toolkit/bpmn-js/walkthrough/) — импорт, моделирование и экспорт.
 - [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs) — строгий JSON Schema контракт.
+
+
+## Валидация нескольких процессов и контролируемых циклов
+
+Исправление проверено на полном описании договора из `examples/controlled-loops/input.txt`, без упрощения текста. Эталонный ProcessDefinition и XML находятся в `reference.json` / `reference.bpmn`; отдельные `groq`, `vertex`, `failover` — сохранённые реальные результаты, `backend.bpmn` — ответ работающего `/api/process/generate`. Сводка — `verification.json`.
+
+Точная воспроизведённая причина: первая генерация Groq оставила действия компании без Sequence Flow и создала XOR с несколькими входами/выходами, который старое правило отклоняло. Последующие реальные ответы Vertex создавали Message Flow внутри Pool организации. Отсутствующие переходы и внутренние сообщения действительно ошибочны; запрещать смешанный XOR как таковой было излишним. Message Flow ранее уже исключались из reachability: проблема не сводилась к смешиванию всех сообщений в один граф.
+
+Теперь reachability и семантический анализ явно выполняются отдельно по Pool (логический `process_id` в ошибке равен Pool ID; у legacy single-pool он равен ProcessDefinition.id). Межпроцессные Sequence Flow исключены из обхода и возвращают ошибку. Messages проверяются отдельно и не делают receive task достижимой без локального предшественника. Разрешены контролируемые возвраты и смешанные XOR с условиями; параллельные ветви по-прежнему требуют собственного корректного join, альтернативные пути не могут объединяться parallel join. Проверка пути к end не доказывает завершение любого исполнения цикла.
+
+Только ERROR запускает два графовых corrective retry на том же провайдере. WARNING о подписях не блокируют XML. После исчерпания исправлений router может перейти в настроенный fallback, передавая ему последний результат и точные ошибки. Неверный JSON отдельно исправляется в адаптере и проверяется Pydantic. Полные ошибки имеют `code`, `node_id`/`node_ids`, `flow_id`, `gateway_id`, `process_id`, при пересечении границ — `source_pool`, `target_pool`. В UI остаётся короткая безопасная причина. При `APP_ENV=development` backend пишет номер validation attempt / corrective retry, provider/model и оставшиеся ошибки; ключи не включаются. Для отключения этих журналов задайте `APP_ENV=production`.
+
+Добавленные коды ERROR:
+
+- `DUPLICATE_ID`, `BROKEN_REFERENCE`, `UNKNOWN_POOL`, `UNKNOWN_PARTICIPANT`, `POOL_KIND_MISMATCH`, `INCOMPLETE_LOCAL_PROCESS`.
+- `CROSS_POOL_SEQUENCE_FLOW`, `SAME_POOL_MESSAGE_FLOW`, `INVALID_MESSAGE_ENDPOINT`.
+- `ORPHAN_NODE`, `UNREACHABLE_NODE`, `DEAD_END`, `NO_PATH_TO_END`, `START_HAS_INCOMING`, `END_HAS_OUTGOING`, `ACTION_AS_START_EVENT`.
+- `INVALID_GATEWAY_TOPOLOGY`, `MISSING_BRANCH_CONDITION`, `MULTIPLE_OUTGOING_WITHOUT_GATEWAY`, `CONDITION_OUTSIDE_GATEWAY`, `PARALLEL_HAS_CONDITION`, `PARALLEL_JOIN_MISMATCH`, `INVALID_BRANCH_SEMANTICS`.
+- `SCHEMA_VALIDATION`, общий код для оставшихся графовых ограничений — `INVALID_PROCESS_GRAPH`.
+
+WARNING: `LABEL_STYLE`, `LONG_TASK_LABEL`, `EMPTY_GATEWAY_LABEL`.
+После аудита BPMN 2.0.2 `ACTION_AS_START_EVENT` и
+`MULTIPLE_OUTGOING_WITHOUT_GATEWAY` также являются рекомендациями, не ERROR.
+Несколько Start Events, отсутствие обоих явных Start/End и implicit merge
+допустимы. Message Start без показанного отправителя не блокирует генерацию.
+
+Файлы этого исправления: `backend/app/validator.py`, `semantics.py`, `quality.py`, `pipeline.py`, `models.py`, `bpmn.py`, `main.py`, `config.py`, `services/llm/base.py`, `services/llm/router.py`, `prompts/extraction.txt`, `prompts/bpmn_rules.txt`; `backend/tests/test_controlled_loops.py`, обновлённые ожидания `backend/tests/test_collaboration.py`; `frontend/src/types.ts`, `frontend/tests/controlled-loops.spec.ts`; `.env.example`, README и `examples/controlled-loops/`. Секретный `.env` не изменён.
+
+Новые 16 backend-тестов проверяют полный договор с внешним клиентом и пятью внутренними дорожками, оба цикла, parallel split/join, порог стоимости, согласование и XOR merge; отдельные ошибки и corrective feedback; локальную достижимость; косметические warnings; debug-журнал; fallback после исчерпания исправлений; недопустимый parallel merge альтернатив; message activity/event endpoints; контролируемый XOR self-return и цикл без выхода. Четыре браузерных теста импортируют, отображают, экспортируют и повторно импортируют эталон и реальные XML Groq, Vertex и fallback, проверяя отсутствие ошибок bpmn-js. Старые Clarify/Modify/Undo и failover тесты также прошли.
+
+Реальная проверка: Groq `openai/gpt-oss-120b` — HTTP 200, Pydantic, граф и XML приняты; Vertex `gemini-2.5-flash` — HTTP 200, один графовый corrective retry до XML. Автоматический резерв реально сработал после Groq HTTP 429. Работающий backend вернул HTTP 200 с XML и `fallback_used=true`. Groq периодически ограничивает запросы квотой; успешная проверка не является гарантией постоянной доступности сервиса. Валидация не доказывает полное соответствие каждой фразы бизнес-смыслу: остаётся проверка аналитиком. Итог: 184 backend + 26 browser = 210 passed; TypeScript и Vite build прошли.
+
+
+## Устойчивость pipeline и Clarify до extraction
+
+Текущий production-сценарий: текст → семантический ambiguity analysis →
+critical Clarify → typed ProcessDefinition → normalization → structural и
+semantic validation → deterministic BPMN → XSD/reference/DI → bpmn-js.
+При critical возвращаются `process=null`, `xml=null`, `preflight`; `/clarify`
+поддерживает этот контекст и прежний payload с `process`. Optional (`warning`
+в совместимом API) не блокирует production-генерацию и сохраняется как assumption.
+Не больше трёх вопросов за раунд, по умолчанию максимум три раунда.
+
+Assumptions имеют text/source/confidence и сохраняются в ProcessDefinition,
+BPMN Documentation и exact Undo. Copilot показывает компактный список.
+Modify проходит тот же gate и проверку; v1 не меняется до применения preview.
+TO-BE после уточнений остаётся предложением, AS-IS сохраняется.
+
+Граф получает один focused corrective retry перед fallback:
+`LLM_GRAPH_MAX_RETRIES=1`, JSON/Pydantic budget внутри adapter отдельно
+задаётся `LLM_MAX_RETRIES`. Ошибки builder/XSD не передаются LLM на исправление.
+Диагностика имеет type/category/code/IDs/spec_section/suggested_fix;
+`human_message` дополняет прежний `detail`. Бизнес-риски Doctor не блокируют
+технически корректный BPMN. Циклы с выходом допустимы; retry bound — warning.
+
+[Полный аудит и отчёт по 20 пунктам](docs/pipeline-resilience.md).
+[Матрица BPMN 2.0.2 subset](docs/bpmn-2.0.2-conformance.md).
+Реальные входы/JSON/BPMN, эталон и визуальные подтверждения:
+`examples/pipeline-resilience/`. `real-verification.json` фиксирует MultiAI
+и реальный Vertex через контролируемый timeout primary; `checks.json` — тесты/build.
+Исторические количества тестов и retry policies в предыдущих разделах
+описывают прежние этапы; актуальный graph budget указан в этом разделе.
+
+Итог этого этапа: **313 backend + 55 browser = 368 passed**; TypeScript и production build прошли.

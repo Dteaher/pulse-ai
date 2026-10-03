@@ -1,0 +1,70 @@
+{
+  "changes": [
+    {
+      "type": "gateway_added",
+      "element_ids": [
+        "G_Exclusive_ContractValueCheck"
+      ],
+      "description": "Добавлен шлюз «Проверить стоимость договора»."
+    },
+    {
+      "type": "node_added",
+      "element_ids": [
+        "T_Head_ApproveContract"
+      ],
+      "description": "Добавлен элемент «Согласовать договор»."
+    },
+    {
+      "type": "condition_changed",
+      "element_ids": [
+        "F_Decision_to_RejectedEnd"
+      ],
+      "description": "Изменено условие перехода «Решение руководителя» → «Уведомить клиента об отказе»: Отклонено."
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_ContractValueCheck_to_HeadApprove_HighValue",
+        "G_Exclusive_ContractValueCheck",
+        "T_Head_ApproveContract"
+      ],
+      "description": "Добавлен переход «Проверить стоимость договора» → «Согласовать договор»."
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_ContractValueCheck_to_HeadDecision_LowValue",
+        "G_Exclusive_ContractValueCheck",
+        "T_Head_MakeDecision"
+      ],
+      "description": "Добавлен переход «Проверить стоимость договора» → «Принять решение»."
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_HeadApprove_to_HeadDecision_AfterApproval",
+        "T_Head_ApproveContract",
+        "T_Head_MakeDecision"
+      ],
+      "description": "Добавлен переход «Согласовать договор» → «Принять решение»."
+    },
+    {
+      "type": "flow_added",
+      "element_ids": [
+        "F_ParallelJoin_to_ContractValueCheck",
+        "G_Parallel_Join",
+        "G_Exclusive_ContractValueCheck"
+      ],
+      "description": "Добавлен переход «Объединение проверок» → «Проверить стоимость договора»."
+    },
+    {
+      "type": "flow_removed",
+      "element_ids": [
+        "F_ParallelJoin_to_HeadDecision",
+        "G_Parallel_Join",
+        "T_Head_MakeDecision"
+      ],
+      "description": "Удалён переход «Объединение проверок» → «Принять решение»."
+    }
+  ]
+}

@@ -6,7 +6,7 @@ from google.genai import types, errors
 from pydantic import ValidationError
 from .base import LLMProvider, ProviderError
 from .common import prompt_text, validated_json, corrective_message
-from ...models import ProcessDefinition, ClarificationResult, ModificationResult, AuditResult
+from ...models import ProcessDefinition, ClarificationResult, ModificationResult, AuditResult, AmbiguityAnalysis
 
 
 def vertex_schema(model_class):
@@ -63,7 +63,7 @@ class VertexGeminiProvider(LLMProvider):
                 correction = corrective_message(exc)
                 if initial_correction:
                     correction = initial_correction + '\n' + correction
-        raise ProviderError(f'Vertex вернул некорректный JSON после {self.max_retries} попыток исправления.', retryable=True)
+        raise ProviderError(f'Vertex вернул некорректный JSON после {self.max_retries} попыток исправления.', retryable=True, reason='invalid_response')
 
     async def _request_once(self, operation, payload, model_class, correction):
         schema = model_class.model_json_schema()
@@ -76,6 +76,10 @@ class VertexGeminiProvider(LLMProvider):
             max_output_tokens=self.max_tokens,
             automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
         )
+        if self.model.startswith(('gemini-2.5-flash', 'publishers/google/models/gemini-2.5-flash')):
+            # Keep the configured output budget for the structured process,
+            # rather than consuming it on hidden thinking in Flash 2.5.
+            config.thinking_config = types.ThinkingConfig(thinking_budget=0)
         options = types.HttpOptions(api_version='v1', timeout=self.timeout * 1000,
                                     retry_options=types.HttpRetryOptions(attempts=1))
         try:
@@ -94,24 +98,28 @@ class VertexGeminiProvider(LLMProvider):
                     raise ProviderError('Vertex отказался обрабатывать запрос. Уточните описание процесса.')
             return validated_json(response.text, model_class)
         except (asyncio.TimeoutError, httpx.TimeoutException) as exc:
-            raise ProviderError('Vertex не ответил вовремя.', retryable=True) from exc
+            raise ProviderError('Vertex не ответил вовремя.', retryable=True, reason='timeout') from exc
         except httpx.RequestError as exc:
-            raise ProviderError('Не удалось соединиться с Vertex AI.', retryable=True) from exc
+            raise ProviderError('Не удалось соединиться с Vertex AI.', retryable=True, reason='network_error') from exc
         except errors.APIError as exc:
             code = exc.code
             if code in (401, 403):
-                raise ProviderError('Vertex отклонил доступ. Проверьте Google Cloud API key и права Vertex Express.', retryable=code == 401) from exc
+                raise ProviderError('Vertex отклонил доступ. Проверьте Google Cloud API key и права Vertex Express.', retryable=code == 401, reason=f'http_{code}') from exc
             if code == 429:
-                raise ProviderError('Лимит запросов Vertex исчерпан.', retryable=True) from exc
+                from .cooldown import retry_delay
+                raise ProviderError('Лимит запросов Vertex исчерпан.', retryable=True, reason='http_429', retry_after=retry_delay(exc.response.headers)) from exc
             if code == 404 or code == 408 or code >= 500:
-                raise ProviderError('Модель или сервис Vertex временно недоступны.', retryable=True) from exc
+                raise ProviderError('Модель или сервис Vertex временно недоступны.', retryable=True, reason=f'http_{code}') from exc
             raise ProviderError(f'Vertex вернул HTTP {code}. Проверьте модель и настройки Google Cloud.') from exc
 
     async def parse_process(self, text, correction=''):
         return await self._request('extraction', {'description': text}, ProcessDefinition, correction)
 
+    async def analyze_ambiguities(self, text, context=None):
+        return await self._request('ambiguity', {'description': text, 'context': context or {}}, AmbiguityAnalysis)
+
     async def clarify_process(self, process, answers, correction=''):
-        result = await self._request('clarification', {'process': process.model_dump(), 'answers': answers}, ProcessDefinition, correction)
+        result = await self._request('clarification', {'original_text': process.description, 'process': process.model_dump(), 'ambiguities': [a.model_dump() for a in process.ambiguities], 'answers': answers}, ProcessDefinition, correction)
         return ClarificationResult(process=result)
 
     async def modify_process(self, process, command, correction=''):

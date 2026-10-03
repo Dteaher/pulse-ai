@@ -1,0 +1,10 @@
+{
+  "stable_node_ids_percent": 97.44,
+  "removed_ids": [
+    "o_get_application"
+  ],
+  "added_ids": [
+    "o_decision_gateway",
+    "o_docs_gateway"
+  ]
+}

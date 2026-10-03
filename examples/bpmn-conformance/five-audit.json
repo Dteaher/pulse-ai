@@ -1,0 +1,37 @@
+[
+  {
+    "scenario": "basic",
+    "build_ms": 11.53,
+    "xml_validation_ms": 0.59,
+    "second_audit_issues": [],
+    "roundtrip_equal": true
+  },
+  {
+    "scenario": "implicit",
+    "build_ms": 0.7,
+    "xml_validation_ms": 0.44,
+    "second_audit_issues": [],
+    "roundtrip_equal": true
+  },
+  {
+    "scenario": "none-intermediate",
+    "build_ms": 0.79,
+    "xml_validation_ms": 0.58,
+    "second_audit_issues": [],
+    "roundtrip_equal": true
+  },
+  {
+    "scenario": "collaboration-loops",
+    "build_ms": 9.07,
+    "xml_validation_ms": 4.24,
+    "second_audit_issues": [],
+    "roundtrip_equal": true
+  },
+  {
+    "scenario": "event-wait",
+    "build_ms": 8.29,
+    "xml_validation_ms": 4.06,
+    "second_audit_issues": [],
+    "roundtrip_equal": true
+  }
+]

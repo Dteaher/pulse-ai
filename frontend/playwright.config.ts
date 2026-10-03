@@ -5,6 +5,18 @@ export default defineConfig({
   workers: 1,
   timeout: 45_000,
   retries: 0,
+  webServer: [
+    {
+      command: '..\\.venv\\Scripts\\python.exe tests/serve_mock.py',
+      url: 'http://127.0.0.1:8001/api/health',
+      reuseExistingServer: false,
+    },
+    {
+      command: 'node node_modules/vite/bin/vite.js --host 127.0.0.1',
+      url: 'http://127.0.0.1:5173',
+      reuseExistingServer: true,
+    },
+  ],
   use: {
     baseURL: 'http://127.0.0.1:5173',
     viewport: { width: 1366, height: 768 },

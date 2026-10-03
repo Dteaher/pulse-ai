@@ -1,0 +1,13 @@
+{
+  "scenario": "exact_complex",
+  "status": 200,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 3
+  },
+  "bpmn": true,
+  "questions": 0,
+  "duration_s": 273.93
+}

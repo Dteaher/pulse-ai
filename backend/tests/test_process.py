@@ -168,7 +168,7 @@ def test_corrective_retry():
         p = demo_process()
         if len(calls) < 3: p.flows[0].target = 'Missing'
         return p
-    result = asyncio.run(generate_valid(call))
+    result = asyncio.run(generate_valid(call, max_retries=2))
     assert result['attempts'] == 3
     assert 'previous_result' in calls[1]
 

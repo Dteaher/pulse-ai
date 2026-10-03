@@ -15,7 +15,11 @@ export async function api<T>(path: string, body?: unknown): Promise<T> {
   const data = await response.json();
   if (!response.ok)
     throw new Error(
-      typeof data.detail === 'string' ? data.detail : 'Не удалось обработать запрос.',
+      typeof data.human_message === 'string'
+        ? data.human_message
+        : typeof data.detail === 'string'
+          ? data.detail
+          : 'Не удалось обработать запрос.',
     );
   return data as T;
 }

@@ -1,0 +1,23 @@
+{
+  "http_statuses": [
+    200
+  ],
+  "attempts": 1,
+  "ambiguities": [],
+  "document_issues": [],
+  "bpmn_generated": true,
+  "counts": {
+    "pools": 2,
+    "participants": 6,
+    "nodes": 40,
+    "flows": 43,
+    "message_flows": 8
+  },
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "elapsed_seconds": 128.48
+}

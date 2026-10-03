@@ -1,0 +1,34 @@
+{
+  "initial_real_request_http_status": 200,
+  "http_statuses": [
+    200,
+    200
+  ],
+  "configured_timeout_seconds": 180,
+  "reasoning_effort": "low",
+  "bpmn_generated": true,
+  "pydantic_valid": true,
+  "graph_valid": true,
+  "pipeline_attempts": 3,
+  "ambiguities": 0,
+  "xml_schema_valid": true,
+  "counts": {
+    "pools": 2,
+    "participants": 6,
+    "nodes": 26,
+    "flows": 29,
+    "message_flows": 4
+  },
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 3
+  },
+  "elapsed_seconds": 174.72,
+  "bpmn_js_import_valid": true,
+  "browser_screenshot": "browser.png",
+  "initial_generation_seconds": 89.42,
+  "total_generation_and_correction_seconds": 264.14,
+  "note": "Initial real response reused for corrective feedback; two additional real requests, no fallback."
+}

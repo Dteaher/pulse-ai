@@ -5,7 +5,8 @@ from .openai_compatible_provider import OpenAICompatibleProvider
 from .yandex_provider import YandexProvider
 from .mock_provider import MockLLMProvider
 from .router import LLMRouter
-from .groq_provider import GroqProvider
+from .cooldown import cooldowns
+from .multiai_provider import MultiAIProvider
 from .gemini_provider import GeminiProvider
 from .vertex_gemini_provider import VertexGeminiProvider
 
@@ -31,16 +32,18 @@ def _create(settings: Settings, name: str, *, fallback=False) -> LLMProvider:
         return OpenAIProvider(key, url, model, **options)
     if name == 'openai_compatible':
         return OpenAICompatibleProvider(key, url, model, **options)
-    if name in ('groq', 'gemini'):
-        adapter = GroqProvider if name == 'groq' else GeminiProvider
-        return adapter(key, url, model, **options)
+    if name == 'multiai':
+        return MultiAIProvider(key, url, model, reasoning_effort=settings.llm_reasoning_effort,
+                               **options)
+    if name == 'gemini':
+        return GeminiProvider(key, url, model, **options)
     if name == 'vertex_gemini':
         return VertexGeminiProvider(key, model, timeout=settings.llm_timeout,
                                     max_tokens=settings.llm_max_tokens, max_retries=settings.llm_max_retries)
     if name == 'yandex':
         folder_id = settings.fallback_llm_folder_id if fallback else settings.yandex_folder_id
         return YandexProvider(key, url, model, folder_id=folder_id, **options)
-    raise ProviderError('Неизвестный LLM_PROVIDER. Используйте groq, vertex_gemini, gemini, openai, openai_compatible, yandex или mock.')
+    raise ProviderError('Неизвестный LLM_PROVIDER. Используйте multiai, vertex_gemini, gemini, openai, openai_compatible, yandex или mock.')
 
 
 def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
@@ -49,6 +52,6 @@ def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
     name = (settings.primary_llm_provider or settings.llm_provider).strip().replace('-', '_')
     primary = _create(settings, name)
     if not settings.llm_fallback_enabled or not settings.fallback_llm_provider.strip():
-        return LLMRouter(primary)
+        return LLMRouter(primary, cooldowns=cooldowns)
     fallback = _create(settings, settings.fallback_llm_provider.strip().replace('-', '_'), fallback=True)
-    return LLMRouter(primary, fallback)
+    return LLMRouter(primary, fallback, cooldowns)

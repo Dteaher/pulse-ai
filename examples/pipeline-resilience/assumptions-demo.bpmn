@@ -1,0 +1,158 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.2">
+  <bpmn:process id="Process_applicant_pool" name="Заявитель" isExecutable="false">
+    <bpmn:startEvent id="app_start" name="Начало процесса">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>f_app_start_send</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sendTask id="app_send" name="Отправить заявку">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>f_app_start_send</bpmn:incoming>
+      <bpmn:outgoing>f_app_send_receive</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:receiveTask id="app_receive" name="Получить подтверждение регистрации">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>f_app_send_receive</bpmn:incoming>
+      <bpmn:outgoing>f_app_receive_end</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:endEvent id="app_end" name="Завершение процесса">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>f_app_receive_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="f_app_start_send" sourceRef="app_start" targetRef="app_send" name=""/>
+    <bpmn:sequenceFlow id="f_app_send_receive" sourceRef="app_send" targetRef="app_receive" name=""/>
+    <bpmn:sequenceFlow id="f_app_receive_end" sourceRef="app_receive" targetRef="app_end" name=""/>
+  </bpmn:process>
+  <bpmn:process id="Process_internal_pool" name="Организация" isExecutable="false">
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="operator" name="Оператор">
+        <bpmn:flowNodeRef>op_start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>op_register</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>op_confirm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>op_end</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="op_start" name="Получена заявка">
+      <bpmn:documentation>Оператор получает заявку</bpmn:documentation>
+      <bpmn:outgoing>f_op_start_register</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_op_start"/>
+    </bpmn:startEvent>
+    <bpmn:userTask id="op_register" name="Зарегистрировать заявку в системе">
+      <bpmn:documentation>регистрирует её в системе</bpmn:documentation>
+      <bpmn:incoming>f_op_start_register</bpmn:incoming>
+      <bpmn:outgoing>f_op_register_confirm</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="op_confirm" name="Отправить заявителю подтверждение регистрации">
+      <bpmn:documentation>отправляет заявителю подтверждение регистрации</bpmn:documentation>
+      <bpmn:incoming>f_op_register_confirm</bpmn:incoming>
+      <bpmn:outgoing>f_op_confirm_end</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="op_end" name="Завершение обработки">
+      <bpmn:documentation>завершает обработку</bpmn:documentation>
+      <bpmn:incoming>f_op_confirm_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="f_op_start_register" sourceRef="op_start" targetRef="op_register" name=""/>
+    <bpmn:sequenceFlow id="f_op_register_confirm" sourceRef="op_register" targetRef="op_confirm" name=""/>
+    <bpmn:sequenceFlow id="f_op_confirm_end" sourceRef="op_confirm" targetRef="op_end" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="process_application_registration" name="Регистрация заявки">
+    <bpmn:documentation>Оператор получает заявку, регистрирует её в системе, отправляет заявителю подтверждение регистрации и завершает обработку.</bpmn:documentation>
+    <bpmn:documentation>PULSE_ASSUMPTIONS:[{"id": "demo_assumption", "text": "Регистрация выполняется вручную (демонстрационное допущение).", "source": "model_inference", "confidence": 0.8}]</bpmn:documentation>
+    <bpmn:participant id="applicant_pool" name="Заявитель" processRef="Process_applicant_pool">
+      <bpmn:documentation>PULSE:{"kind": "external", "roles": [{"id": "applicant", "name": "Заявитель", "type": "external", "kind": "external", "pool_id": "applicant_pool"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:participant id="internal_pool" name="Организация" processRef="Process_internal_pool">
+      <bpmn:documentation>PULSE:{"kind": "internal", "roles": [{"id": "operator", "name": "Оператор", "type": "role", "kind": "internal", "pool_id": "internal_pool"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:messageFlow id="mf_application" sourceRef="app_send" targetRef="op_start" name="Заявка"/>
+    <bpmn:messageFlow id="mf_registration_confirmation" sourceRef="op_confirm" targetRef="app_receive" name="Подтверждение регистрации"/>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="process_application_registration">
+      <bpmndi:BPMNShape id="Shape_applicant_pool" bpmnElement="applicant_pool" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="1090" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_internal_pool" bpmnElement="internal_pool" isHorizontal="true">
+        <dc:Bounds x="60" y="390" width="1090" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_operator" bpmnElement="operator" isHorizontal="true">
+        <dc:Bounds x="90" y="390" width="1060" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_op_start" bpmnElement="op_start">
+        <dc:Bounds x="431.0" y="513.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_op_register" bpmnElement="op_register">
+        <dc:Bounds x="570.0" y="492.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_op_confirm" bpmnElement="op_confirm">
+        <dc:Bounds x="760.0" y="492.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_op_end" bpmnElement="op_end">
+        <dc:Bounds x="1001.0" y="513.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_app_start" bpmnElement="app_start">
+        <dc:Bounds x="241.0" y="193.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_app_send" bpmnElement="app_send">
+        <dc:Bounds x="380.0" y="172.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_app_receive" bpmnElement="app_receive">
+        <dc:Bounds x="760.0" y="172.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_app_end" bpmnElement="app_end">
+        <dc:Bounds x="1001.0" y="193.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_f_op_start_register" bpmnElement="f_op_start_register">
+        <di:waypoint x="469.0" y="532.5"/>
+        <di:waypoint x="570.0" y="532.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_op_register_confirm" bpmnElement="f_op_register_confirm">
+        <di:waypoint x="710.0" y="532.5"/>
+        <di:waypoint x="760.0" y="532.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_op_confirm_end" bpmnElement="f_op_confirm_end">
+        <di:waypoint x="900.0" y="532.5"/>
+        <di:waypoint x="1001.0" y="532.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_app_start_send" bpmnElement="f_app_start_send">
+        <di:waypoint x="279.0" y="212.5"/>
+        <di:waypoint x="380.0" y="212.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_app_send_receive" bpmnElement="f_app_send_receive">
+        <di:waypoint x="520.0" y="212.5"/>
+        <di:waypoint x="538.0" y="212.5"/>
+        <di:waypoint x="538.0" y="96"/>
+        <di:waypoint x="742.0" y="96"/>
+        <di:waypoint x="742.0" y="212.5"/>
+        <di:waypoint x="760.0" y="212.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_app_receive_end" bpmnElement="f_app_receive_end">
+        <di:waypoint x="900.0" y="212.5"/>
+        <di:waypoint x="1001.0" y="212.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_mf_application" bpmnElement="mf_application">
+        <di:waypoint x="520.0" y="212.5"/>
+        <di:waypoint x="548" y="212.5"/>
+        <di:waypoint x="548" y="315"/>
+        <di:waypoint x="548" y="315"/>
+        <di:waypoint x="548" y="404"/>
+        <di:waypoint x="450.0" y="404"/>
+        <di:waypoint x="450.0" y="513.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="528.0" y="297" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_mf_registration_confirmation" bpmnElement="mf_registration_confirmation">
+        <di:waypoint x="900.0" y="532.5"/>
+        <di:waypoint x="928" y="532.5"/>
+        <di:waypoint x="928" y="365"/>
+        <di:waypoint x="928" y="365"/>
+        <di:waypoint x="928" y="276"/>
+        <di:waypoint x="830.0" y="276"/>
+        <di:waypoint x="830.0" y="252.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="908.0" y="347" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

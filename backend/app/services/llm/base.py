@@ -19,6 +19,11 @@ class LLMProvider(ABC):
     business_audit_available: bool = True
     attempt_count: int = 0
 
+    @abstractmethod
+    async def analyze_ambiguities(self, text: str, context: dict | None = None):
+        """Analyze business information without constructing a graph."""
+        ...
+
     @property
     def configured(self):
         return not self.missing_settings()
@@ -28,6 +33,10 @@ class LLMProvider(ABC):
 
     def new_request(self):
         return self
+
+    def use_validation_fallback(self) -> bool:
+        """Optional failover only after the pipeline exhausts corrective retries."""
+        return False
 
     @property
     def connection_info(self):

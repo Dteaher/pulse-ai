@@ -1,0 +1,866 @@
+{
+  "id": "process_connection",
+  "name": "Подключение объекта",
+  "description": "Клиент подаёт заявку на подключение объекта.\nОператор получает заявку и проверяет документы.\nЕсли документов не хватает или они заполнены неправильно,\nоператор возвращает заявку клиенту на доработку.\nКлиент исправляет документы и повторно отправляет их оператору.\n\nЕсли документы корректны,\nюридический отдел и служба безопасности одновременно проверяют заявку.\nПосле завершения обеих проверок руководитель принимает решение.\n\nЕсли заявка отклонена,\nоператор отправляет клиенту уведомление об отказе,\nпосле чего процесс завершается.\n\nЕсли заявка одобрена,\nменеджер формирует договор и отправляет его клиенту.\n\nКлиент проверяет договор.\nЕсли клиент не согласен с условиями,\nон возвращает договор менеджеру на доработку.\nМенеджер вносит изменения и повторно отправляет договор клиенту.\n\nЕсли клиент согласен,\nон подписывает договор и отправляет его менеджеру.\nМенеджер регистрирует подписанный договор,\nпосле чего процесс завершается.\n",
+  "participants": [
+    {
+      "id": "operator",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "organization_pool"
+    },
+    {
+      "id": "legal",
+      "name": "Юридический отдел",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "organization_pool"
+    },
+    {
+      "id": "security",
+      "name": "Служба безопасности",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "organization_pool"
+    },
+    {
+      "id": "manager",
+      "name": "Менеджер",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "organization_pool"
+    },
+    {
+      "id": "client",
+      "name": "Клиент",
+      "type": "external",
+      "kind": "external",
+      "pool_id": "client_pool"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "c_start",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начало процесса",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_submit",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подать заявку",
+      "participant_id": "client",
+      "source_text": "Клиент подаёт заявку на подключение объекта.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_wait",
+      "type": "event_based_gateway",
+      "event_definition": "none",
+      "decision_basis": "event",
+      "name": "Ожидать ответ",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_receive_rework",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить запрос на доработку",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_receive_refusal",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить уведомление об отказе",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_receive_contract",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить договор",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_correct",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Исправить документы",
+      "participant_id": "client",
+      "source_text": "Клиент исправляет документы и повторно отправляет их оператору.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_resend_docs",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Повторно отправить документы",
+      "participant_id": "client",
+      "source_text": "Клиент исправляет документы и повторно отправляет их оператору.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_end_refusal",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Процесс завершён после отказа",
+      "participant_id": "client",
+      "source_text": "Если заявка отклонена, ... после чего процесс завершается.",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_check_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить договор",
+      "participant_id": "client",
+      "source_text": "Клиент проверяет договор.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_contract_decision",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Решение по условиям договора",
+      "participant_id": "client",
+      "source_text": "Если клиент не согласен с условиями,... Если клиент согласен,",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_return_contract",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Вернуть договор менеджеру на доработку",
+      "participant_id": "client",
+      "source_text": "он возвращает договор менеджеру на доработку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_end_client_rework",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Ожидание доработанного договора",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_sign_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подписать договор",
+      "participant_id": "client",
+      "source_text": "он подписывает договор и отправляет его менеджеру.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_send_signed",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить подписанный договор",
+      "participant_id": "client",
+      "source_text": "он подписывает договор и отправляет его менеджеру.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_end_client_signed",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Завершить процесс клиента",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_start",
+      "type": "start_event",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получить заявку",
+      "participant_id": "operator",
+      "source_text": "Оператор получает заявку и проверяет документы.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_check_docs",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить документы",
+      "participant_id": "operator",
+      "source_text": "Оператор получает заявку и проверяет документы.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_docs_decision",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Документы корректны?",
+      "participant_id": "operator",
+      "source_text": "Если документов не хватает или они заполнены неправильно, ... Если документы корректны,",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_return_rework",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Вернуть заявку клиенту на доработку",
+      "participant_id": "operator",
+      "source_text": "оператор возвращает заявку клиенту на доработку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_wait_corrected",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить исправленные документы",
+      "participant_id": "operator",
+      "source_text": "Клиент исправляет документы и повторно отправляет их оператору.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_parallel_split",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начать одновременные проверки",
+      "participant_id": "operator",
+      "source_text": "юридический отдел и служба безопасности одновременно проверяют заявку.",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_legal_check",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить заявку",
+      "participant_id": "legal",
+      "source_text": "юридический отдел ... проверяет заявку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_security_check",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить заявку",
+      "participant_id": "security",
+      "source_text": "служба безопасности ... проверяет заявку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_parallel_join",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Завершить одновременные проверки",
+      "participant_id": "operator",
+      "source_text": "После завершения обеих проверок",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_decision",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Решение по заявке",
+      "participant_id": "manager",
+      "source_text": "руководитель принимает решение.",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_send_refusal",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить уведомление об отказе",
+      "participant_id": "operator",
+      "source_text": "оператор отправляет клиенту уведомление об отказе,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_end_refusal",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Процесс завершён после отказа",
+      "participant_id": "operator",
+      "source_text": "после чего процесс завершается.",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_form_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Сформировать договор",
+      "participant_id": "manager",
+      "source_text": "менеджер формирует договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_send_contract",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить договор клиенту",
+      "participant_id": "manager",
+      "source_text": "и отправляет его клиенту.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_wait_contract_response",
+      "type": "event_based_gateway",
+      "event_definition": "none",
+      "decision_basis": "event",
+      "name": "Ожидать ответ клиента",
+      "participant_id": "manager",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_receive_returned_contract",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить договор на доработку",
+      "participant_id": "manager",
+      "source_text": "он возвращает договор менеджеру на доработку.",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_receive_signed_contract",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить подписанный договор",
+      "participant_id": "manager",
+      "source_text": "отправляет его менеджеру.",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_modify_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Внести изменения в договор",
+      "participant_id": "manager",
+      "source_text": "Менеджер вносит изменения",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_resend_contract",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Повторно отправить договор клиенту",
+      "participant_id": "manager",
+      "source_text": "и повторно отправляет договор клиенту.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_register_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Зарегистрировать подписанный договор",
+      "participant_id": "manager",
+      "source_text": "Менеджер регистрирует подписанный договор,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_end_success",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Процесс завершён",
+      "participant_id": "manager",
+      "source_text": "после чего процесс завершается.",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "Merge_c_wait",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Объединить пути",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Merge_o_wait_contract_response",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Объединить пути",
+      "participant_id": "manager",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "f01",
+      "source": "c_start",
+      "target": "c_submit",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f02",
+      "source": "c_submit",
+      "target": "Merge_c_wait",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f03",
+      "source": "c_wait",
+      "target": "c_receive_rework",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f04",
+      "source": "c_wait",
+      "target": "c_receive_refusal",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f05",
+      "source": "c_wait",
+      "target": "c_receive_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f06",
+      "source": "c_receive_rework",
+      "target": "c_correct",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f07",
+      "source": "c_correct",
+      "target": "c_resend_docs",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f08",
+      "source": "c_resend_docs",
+      "target": "Merge_c_wait",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f09",
+      "source": "c_receive_refusal",
+      "target": "c_end_refusal",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f10",
+      "source": "c_receive_contract",
+      "target": "c_check_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f11",
+      "source": "c_contract_decision",
+      "target": "c_return_contract",
+      "name": "Доработка договора",
+      "condition": "Не согласен с условиями",
+      "is_default": false
+    },
+    {
+      "id": "f12",
+      "source": "c_contract_decision",
+      "target": "c_sign_contract",
+      "name": "Подписание договора",
+      "condition": "Согласен с условиями",
+      "is_default": false
+    },
+    {
+      "id": "f13",
+      "source": "c_check_contract",
+      "target": "c_contract_decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f14",
+      "source": "c_return_contract",
+      "target": "c_end_client_rework",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f15",
+      "source": "c_sign_contract",
+      "target": "c_send_signed",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f16",
+      "source": "c_send_signed",
+      "target": "c_end_client_signed",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f17",
+      "source": "o_start",
+      "target": "o_check_docs",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f18",
+      "source": "o_docs_decision",
+      "target": "o_return_rework",
+      "name": "Доработка документов",
+      "condition": "Документы неполные или заполнены неправильно",
+      "is_default": false
+    },
+    {
+      "id": "f19",
+      "source": "o_docs_decision",
+      "target": "o_parallel_split",
+      "name": "Проверки",
+      "condition": "Документы корректны",
+      "is_default": false
+    },
+    {
+      "id": "f20",
+      "source": "o_check_docs",
+      "target": "o_docs_decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f21",
+      "source": "o_return_rework",
+      "target": "o_wait_corrected",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f22",
+      "source": "o_wait_corrected",
+      "target": "o_check_docs",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f23",
+      "source": "o_parallel_split",
+      "target": "o_legal_check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f24",
+      "source": "o_parallel_split",
+      "target": "o_security_check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f25",
+      "source": "o_legal_check",
+      "target": "o_parallel_join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f26",
+      "source": "o_security_check",
+      "target": "o_parallel_join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f27",
+      "source": "o_parallel_join",
+      "target": "o_decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f28",
+      "source": "o_decision",
+      "target": "o_send_refusal",
+      "name": "Отказ",
+      "condition": "Заявка отклонена",
+      "is_default": false
+    },
+    {
+      "id": "f29",
+      "source": "o_decision",
+      "target": "o_form_contract",
+      "name": "Одобрение",
+      "condition": "Заявка одобрена",
+      "is_default": false
+    },
+    {
+      "id": "f30",
+      "source": "o_send_refusal",
+      "target": "o_end_refusal",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f31",
+      "source": "o_form_contract",
+      "target": "o_send_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f32",
+      "source": "o_send_contract",
+      "target": "Merge_o_wait_contract_response",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f33",
+      "source": "o_wait_contract_response",
+      "target": "o_receive_returned_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f34",
+      "source": "o_wait_contract_response",
+      "target": "o_receive_signed_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f35",
+      "source": "o_receive_returned_contract",
+      "target": "o_modify_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f36",
+      "source": "o_modify_contract",
+      "target": "o_resend_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f37",
+      "source": "o_resend_contract",
+      "target": "Merge_o_wait_contract_response",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f38",
+      "source": "o_receive_signed_contract",
+      "target": "o_register_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f39",
+      "source": "o_register_contract",
+      "target": "o_end_success",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_Merge_c_wait",
+      "source": "Merge_c_wait",
+      "target": "c_wait",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_Merge_o_wait_contract_response",
+      "source": "Merge_o_wait_contract_response",
+      "target": "o_wait_contract_response",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "organization_pool",
+      "name": "Организация",
+      "kind": "internal"
+    },
+    {
+      "id": "client_pool",
+      "name": "Клиент",
+      "kind": "external"
+    }
+  ],
+  "message_flows": [
+    {
+      "id": "mf01",
+      "source": "c_submit",
+      "target": "o_start",
+      "name": "Заявка"
+    },
+    {
+      "id": "mf02",
+      "source": "o_return_rework",
+      "target": "c_receive_rework",
+      "name": "Запрос на доработку"
+    },
+    {
+      "id": "mf03",
+      "source": "c_resend_docs",
+      "target": "o_wait_corrected",
+      "name": "Исправленные документы"
+    },
+    {
+      "id": "mf04",
+      "source": "o_send_refusal",
+      "target": "c_receive_refusal",
+      "name": "Уведомление об отказе"
+    },
+    {
+      "id": "mf05",
+      "source": "o_send_contract",
+      "target": "c_receive_contract",
+      "name": "Договор"
+    },
+    {
+      "id": "mf06",
+      "source": "c_return_contract",
+      "target": "o_receive_returned_contract",
+      "name": "Договор на доработку"
+    },
+    {
+      "id": "mf07",
+      "source": "o_resend_contract",
+      "target": "c_receive_contract",
+      "name": "Договор с изменениями"
+    },
+    {
+      "id": "mf08",
+      "source": "c_send_signed",
+      "target": "o_receive_signed_contract",
+      "name": "Подписанный договор"
+    }
+  ],
+  "ambiguities": []
+}

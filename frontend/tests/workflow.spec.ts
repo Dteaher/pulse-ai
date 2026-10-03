@@ -2,6 +2,14 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/**', async (route) => {
+    const url = new URL(route.request().url());
+    const response = await route.fetch({ url: 'http://127.0.0.1:8001' + url.pathname });
+    await route.fulfill({ response });
+  });
+});
+
 async function generate(page: import('@playwright/test').Page, name = 'Подключение к электросети') {
   await page.goto('/');
   await page.getByRole('button', { name: 'Загрузить пример', exact: true }).click();
@@ -36,9 +44,10 @@ test('основной сценарий: XML, ручное движение, AI,
   const undone = await source.boundingBox();
   expect(Math.abs(undone!.y - before.y)).toBeLessThan(1);
   await page
-    .getByLabel('Изменить процесс', { exact: true })
+    .getByLabel('Что хотите изменить?', { exact: true })
     .fill('После проверки документов добавь согласование руководителем');
-  await page.getByRole('button', { name: 'Отправить команду', exact: true }).click();
+  await page.getByRole('button', { name: 'Подготовить изменения', exact: true }).click();
+  await page.getByRole('button', { name: 'Применить изменения', exact: true }).click();
   await expect(page.locator('.canvas-footer')).toContainText('11 действий');
   await page.getByRole('button', { name: 'Проверить', exact: true }).click();
   await expect(page.locator('.checks')).toContainText('BPMN XML / XSD');
@@ -76,7 +85,7 @@ test('неоднозначности блокируют XML до ответов'
   await expect(page.locator('.bpmn-canvas')).toHaveCount(0);
   await page.getByRole('button', { name: 'Последовательно', exact: true }).click();
   await page.getByRole('button', { name: 'Уведомить клиента об отказе', exact: true }).click();
-  await page.getByRole('button', { name: 'Подтвердить и построить', exact: true }).click();
+  await page.getByRole('button', { name: 'Продолжить', exact: true }).click();
   await expect(page.locator('.djs-shape[data-element-id="LegalCheck"]')).toBeVisible();
   await expect(page.locator('.djs-shape[data-element-id="Fork"]')).toHaveCount(0);
   await expect(page.getByRole('alert')).toHaveCount(0);
@@ -102,7 +111,7 @@ test('ручное переименование сохраняется в экс
 test('неверный текст в mock не подменяется примером', async ({ page }) => {
   await page.goto('/');
   await page
-    .getByLabel('Опишите бизнес-процесс обычным языком')
+    .getByLabel('Описание процесса')
     .fill('Произвольный процесс, для которого требуется реальная модель.');
   await page.getByRole('button', { name: 'Создать BPMN', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('Тестовый режим поддерживает только');
@@ -127,7 +136,7 @@ test('уточнение нового процесса открывается п
 test('визуальная проверка 1366×768 и Full HD', async ({ page }) => {
   await page.goto('/');
   await expect(
-    page.getByRole('heading', { name: 'Сложный процесс. Понятная схема.' }),
+    page.getByRole('heading', { name: 'От описания к BPMN-модели.' }),
   ).toBeVisible();
   fs.mkdirSync('../examples/screenshots', { recursive: true });
   await page.screenshot({ path: '../examples/screenshots/start-1366.png' });
@@ -155,7 +164,7 @@ test('сложный импорт доступен для редактирова
     buffer: Buffer.from(xml),
   });
   await expect(page.locator('.feedback.success')).toContainText('AI-операции доступны только');
-  await expect(page.getByLabel('Изменить процесс', { exact: true })).toBeDisabled();
+  await expect(page.getByLabel('Что хотите изменить?', { exact: true })).toBeDisabled();
   const preservedDownload = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Экспорт BPMN', exact: true }).click();
   const saved = await preservedDownload;
@@ -169,7 +178,7 @@ test('TO-BE UI: предложение требует применения, AS-I
   await generate(page);
   await page.route('**/api/process/modify', async (route) => {
     const body = route.request().postDataJSON();
-    const response = await page.request.post('/api/process/modify', {
+    const response = await page.request.post('http://127.0.0.1:8001/api/process/modify', {
       data: {
         process: body.process,
         command: 'После проверки документов добавь согласование руководителем',

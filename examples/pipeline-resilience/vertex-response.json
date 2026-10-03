@@ -1,0 +1,222 @@
+{
+  "process": {
+    "id": "process_operator_registers_request",
+    "name": "Обработка заявки оператором",
+    "description": "Оператор получает заявку, регистрирует её в системе, отправляет заявителю подтверждение регистрации и завершает обработку.",
+    "participants": [
+      {
+        "id": "operator",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "org_pool"
+      },
+      {
+        "id": "applicant",
+        "name": "Заявитель",
+        "type": "external",
+        "kind": "external",
+        "pool_id": "applicant_pool"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "start_event_operator",
+        "type": "start_event",
+        "event_definition": "message",
+        "decision_basis": "unspecified",
+        "name": "Получено сообщение: Заявка",
+        "participant_id": "operator",
+        "source_text": "Оператор получает заявку",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "register_request",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Регистрация заявки в системе",
+        "participant_id": "operator",
+        "source_text": "регистрирует её в системе",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "send_confirmation",
+        "type": "send_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Отправить подтверждение регистрации",
+        "participant_id": "operator",
+        "source_text": "отправляет заявителю подтверждение регистрации",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "end_event_operator",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Завершение обработки",
+        "participant_id": "operator",
+        "source_text": "завершает обработку",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "start_event_applicant",
+        "type": "start_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Начало процесса",
+        "participant_id": "applicant",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "send_request",
+        "type": "send_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Отправить заявку",
+        "participant_id": "applicant",
+        "source_text": "Оператор получает заявку",
+        "confidence": "medium",
+        "inferred": true
+      },
+      {
+        "id": "receive_confirmation",
+        "type": "receive_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Получить подтверждение",
+        "participant_id": "applicant",
+        "source_text": "отправляет заявителю подтверждение регистрации",
+        "confidence": "medium",
+        "inferred": true
+      },
+      {
+        "id": "end_event_applicant",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Конец",
+        "participant_id": "applicant",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      }
+    ],
+    "flows": [
+      {
+        "id": "flow_1",
+        "source": "start_event_operator",
+        "target": "register_request",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_3",
+        "source": "register_request",
+        "target": "send_confirmation",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_4",
+        "source": "send_confirmation",
+        "target": "end_event_operator",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_5",
+        "source": "start_event_applicant",
+        "target": "send_request",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_6",
+        "source": "send_request",
+        "target": "receive_confirmation",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_7",
+        "source": "receive_confirmation",
+        "target": "end_event_applicant",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "org_pool",
+        "name": "Организация",
+        "kind": "internal"
+      },
+      {
+        "id": "applicant_pool",
+        "name": "Заявитель",
+        "kind": "external"
+      }
+    ],
+    "message_flows": [
+      {
+        "id": "mf_1",
+        "source": "send_request",
+        "target": "start_event_operator",
+        "name": "Заявка"
+      },
+      {
+        "id": "mf_2",
+        "source": "send_confirmation",
+        "target": "receive_confirmation",
+        "name": "Подтверждение регистрации"
+      }
+    ],
+    "ambiguities": [],
+    "assumptions": [
+      {
+        "id": "operator_starts_process",
+        "text": "Процесс инициируется получением заявки Оператором.",
+        "source": "user_accepted",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "ambiguities": [],
+  "xml": "<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"Definitions\" targetNamespace=\"https://pulse.local/bpmn\" exporter=\"PULSE\" exporterVersion=\"0.2\">\n  <bpmn:process id=\"Process_applicant_pool\" name=\"Заявитель\" isExecutable=\"false\">\n    <bpmn:startEvent id=\"start_event_applicant\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>flow_5</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:sendTask id=\"send_request\" name=\"Отправить заявку\">\n      <bpmn:documentation>Оператор получает заявку</bpmn:documentation>\n      <bpmn:incoming>flow_5</bpmn:incoming>\n      <bpmn:outgoing>flow_6</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:receiveTask id=\"receive_confirmation\" name=\"Получить подтверждение\">\n      <bpmn:documentation>отправляет заявителю подтверждение регистрации</bpmn:documentation>\n      <bpmn:incoming>flow_6</bpmn:incoming>\n      <bpmn:outgoing>flow_7</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:endEvent id=\"end_event_applicant\" name=\"Конец\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>flow_7</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"flow_5\" sourceRef=\"start_event_applicant\" targetRef=\"send_request\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_6\" sourceRef=\"send_request\" targetRef=\"receive_confirmation\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_7\" sourceRef=\"receive_confirmation\" targetRef=\"end_event_applicant\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:process id=\"Process_org_pool\" name=\"Организация\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"LaneSet\">\n      <bpmn:lane id=\"operator\" name=\"Оператор\">\n        <bpmn:flowNodeRef>start_event_operator</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>register_request</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>send_confirmation</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>end_event_operator</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"start_event_operator\" name=\"Получено сообщение: Заявка\">\n      <bpmn:documentation>Оператор получает заявку</bpmn:documentation>\n      <bpmn:outgoing>flow_1</bpmn:outgoing>\n      <bpmn:messageEventDefinition id=\"MessageEvent_start_event_operator\"/>\n    </bpmn:startEvent>\n    <bpmn:userTask id=\"register_request\" name=\"Регистрация заявки в системе\">\n      <bpmn:documentation>регистрирует её в системе</bpmn:documentation>\n      <bpmn:incoming>flow_1</bpmn:incoming>\n      <bpmn:outgoing>flow_3</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:sendTask id=\"send_confirmation\" name=\"Отправить подтверждение регистрации\">\n      <bpmn:documentation>отправляет заявителю подтверждение регистрации</bpmn:documentation>\n      <bpmn:incoming>flow_3</bpmn:incoming>\n      <bpmn:outgoing>flow_4</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:endEvent id=\"end_event_operator\" name=\"Завершение обработки\">\n      <bpmn:documentation>завершает обработку</bpmn:documentation>\n      <bpmn:incoming>flow_4</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"flow_1\" sourceRef=\"start_event_operator\" targetRef=\"register_request\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_3\" sourceRef=\"register_request\" targetRef=\"send_confirmation\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_4\" sourceRef=\"send_confirmation\" targetRef=\"end_event_operator\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:collaboration id=\"process_operator_registers_request\" name=\"Обработка заявки оператором\">\n    <bpmn:documentation>Оператор получает заявку, регистрирует её в системе, отправляет заявителю подтверждение регистрации и завершает обработку.</bpmn:documentation>\n    <bpmn:documentation>PULSE_ASSUMPTIONS:[{\"id\": \"operator_starts_process\", \"text\": \"Процесс инициируется получением заявки Оператором.\", \"source\": \"user_accepted\", \"confidence\": 0.9}]</bpmn:documentation>\n    <bpmn:participant id=\"applicant_pool\" name=\"Заявитель\" processRef=\"Process_applicant_pool\">\n      <bpmn:documentation>PULSE:{\"kind\": \"external\", \"roles\": [{\"id\": \"applicant\", \"name\": \"Заявитель\", \"type\": \"external\", \"kind\": \"external\", \"pool_id\": \"applicant_pool\"}]}</bpmn:documentation>\n    </bpmn:participant>\n    <bpmn:participant id=\"org_pool\" name=\"Организация\" processRef=\"Process_org_pool\">\n      <bpmn:documentation>PULSE:{\"kind\": \"internal\", \"roles\": [{\"id\": \"operator\", \"name\": \"Оператор\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"org_pool\"}]}</bpmn:documentation>\n    </bpmn:participant>\n    <bpmn:messageFlow id=\"mf_1\" sourceRef=\"send_request\" targetRef=\"start_event_operator\" name=\"Заявка\"/>\n    <bpmn:messageFlow id=\"mf_2\" sourceRef=\"send_confirmation\" targetRef=\"receive_confirmation\" name=\"Подтверждение регистрации\"/>\n  </bpmn:collaboration>\n  <bpmndi:BPMNDiagram id=\"Diagram\">\n    <bpmndi:BPMNPlane id=\"Plane\" bpmnElement=\"process_operator_registers_request\">\n      <bpmndi:BPMNShape id=\"Shape_applicant_pool\" bpmnElement=\"applicant_pool\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"70\" width=\"1090\" height=\"220\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_org_pool\" bpmnElement=\"org_pool\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"390\" width=\"1090\" height=\"220\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_operator\" bpmnElement=\"operator\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"390\" width=\"1060\" height=\"220\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_start_event_operator\" bpmnElement=\"start_event_operator\">\n        <dc:Bounds x=\"431.0\" y=\"513.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_register_request\" bpmnElement=\"register_request\">\n        <dc:Bounds x=\"570.0\" y=\"492.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_send_confirmation\" bpmnElement=\"send_confirmation\">\n        <dc:Bounds x=\"760.0\" y=\"492.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_event_operator\" bpmnElement=\"end_event_operator\">\n        <dc:Bounds x=\"1001.0\" y=\"513.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_start_event_applicant\" bpmnElement=\"start_event_applicant\">\n        <dc:Bounds x=\"241.0\" y=\"193.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_send_request\" bpmnElement=\"send_request\">\n        <dc:Bounds x=\"380.0\" y=\"172.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_receive_confirmation\" bpmnElement=\"receive_confirmation\">\n        <dc:Bounds x=\"760.0\" y=\"172.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_event_applicant\" bpmnElement=\"end_event_applicant\">\n        <dc:Bounds x=\"1001.0\" y=\"193.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"Edge_flow_1\" bpmnElement=\"flow_1\">\n        <di:waypoint x=\"469.0\" y=\"532.5\"/>\n        <di:waypoint x=\"570.0\" y=\"532.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_3\" bpmnElement=\"flow_3\">\n        <di:waypoint x=\"710.0\" y=\"532.5\"/>\n        <di:waypoint x=\"760.0\" y=\"532.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_4\" bpmnElement=\"flow_4\">\n        <di:waypoint x=\"900.0\" y=\"532.5\"/>\n        <di:waypoint x=\"1001.0\" y=\"532.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_5\" bpmnElement=\"flow_5\">\n        <di:waypoint x=\"279.0\" y=\"212.5\"/>\n        <di:waypoint x=\"380.0\" y=\"212.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_6\" bpmnElement=\"flow_6\">\n        <di:waypoint x=\"520.0\" y=\"212.5\"/>\n        <di:waypoint x=\"538.0\" y=\"212.5\"/>\n        <di:waypoint x=\"538.0\" y=\"96\"/>\n        <di:waypoint x=\"742.0\" y=\"96\"/>\n        <di:waypoint x=\"742.0\" y=\"212.5\"/>\n        <di:waypoint x=\"760.0\" y=\"212.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_7\" bpmnElement=\"flow_7\">\n        <di:waypoint x=\"900.0\" y=\"212.5\"/>\n        <di:waypoint x=\"1001.0\" y=\"212.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf_1\" bpmnElement=\"mf_1\">\n        <di:waypoint x=\"520.0\" y=\"212.5\"/>\n        <di:waypoint x=\"548\" y=\"212.5\"/>\n        <di:waypoint x=\"548\" y=\"315\"/>\n        <di:waypoint x=\"548\" y=\"315\"/>\n        <di:waypoint x=\"548\" y=\"404\"/>\n        <di:waypoint x=\"450.0\" y=\"404\"/>\n        <di:waypoint x=\"450.0\" y=\"513.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"528.0\" y=\"297\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf_2\" bpmnElement=\"mf_2\">\n        <di:waypoint x=\"900.0\" y=\"532.5\"/>\n        <di:waypoint x=\"928\" y=\"532.5\"/>\n        <di:waypoint x=\"928\" y=\"365\"/>\n        <di:waypoint x=\"928\" y=\"365\"/>\n        <di:waypoint x=\"928\" y=\"276\"/>\n        <di:waypoint x=\"830.0\" y=\"276\"/>\n        <di:waypoint x=\"830.0\" y=\"252.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"908.0\" y=\"347\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+  "attempts": 1,
+  "semantic_warnings": [],
+  "diagnostics": [],
+  "timings": {
+    "llm_parse_ms": 5879.03,
+    "normalization_ms": 0.17,
+    "semantic_validation_ms": 0.19,
+    "bpmn_build_ms": 2.81,
+    "xsd_validation_ms": 0.35,
+    "post_validation_ms": 1.44,
+    "ambiguity_analysis_ms": 2426.88,
+    "total_ms": 8311.09
+  },
+  "metadata": {
+    "provider_used": "vertex_gemini",
+    "model_used": "gemini-2.5-flash",
+    "fallback_used": true,
+    "attempts": 3
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": []
+}

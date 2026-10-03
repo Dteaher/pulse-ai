@@ -1,12 +1,32 @@
 import json
 from pathlib import Path
 from pydantic import ValidationError
+from ...models import ProcessDefinition, Assumption
 
 PROMPTS = Path(__file__).resolve().parents[2] / 'prompts'
 
 
 def prompt_text(operation):
-    return (PROMPTS / f'{operation}.txt').read_text(encoding='utf-8')
+    text = (PROMPTS / f'{operation}.txt').read_text(encoding='utf-8')
+    if operation in ('extraction', 'clarification', 'modification'):
+        text += '\n' + (PROMPTS / 'bpmn_rules.txt').read_text(encoding='utf-8')
+    return text
+
+
+def _typed_result(text, model_class):
+    result = model_class.model_validate_json(text)
+    if isinstance(result, ProcessDefinition):
+        # Every production adapter exposes the same optional-detail policy.
+        # Fixture providers do not use JSON transport and retain legacy questions.
+        assumptions = {a.id: a for a in result.assumptions}
+        for question in result.ambiguities:
+            if question.severity == 'warning':
+                assumptions.setdefault(question.id, Assumption(
+                    id=question.id, text=question.assumption or question.question))
+        result.assumptions = list(assumptions.values())
+        result.ambiguities = [q for q in result.ambiguities if q.severity == 'critical']
+        return ProcessDefinition.model_validate(result.model_dump())
+    return result
 
 
 def validated_json(text, model_class):
@@ -15,7 +35,7 @@ def validated_json(text, model_class):
         raise ValueError('Модель не вернула JSON.')
     text = text.strip()
     try:
-        return model_class.model_validate_json(text)
+        return _typed_result(text, model_class)
     except ValidationError as exc:
         if not any(error['type'] == 'json_invalid' for error in exc.errors()):
             raise
@@ -35,7 +55,7 @@ def validated_json(text, model_class):
         position = start + consumed
     if len(objects) != 1:
         raise ValueError('Ответ должен содержать один JSON-объект.')
-    return model_class.model_validate_json(objects[0][0])
+    return _typed_result(objects[0][0], model_class)
 
 
 def corrective_message(exc):

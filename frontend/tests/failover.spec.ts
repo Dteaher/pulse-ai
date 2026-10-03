@@ -17,8 +17,8 @@ for (const fallback of [false, true]) {
         json: {
           ...result,
           metadata: {
-            provider_used: fallback ? 'vertex_gemini' : 'groq',
-            model_used: fallback ? 'gemini-2.5-flash' : 'openai/gpt-oss-120b',
+            provider_used: fallback ? 'vertex_gemini' : 'multiai',
+            model_used: fallback ? 'gemini-2.5-flash' : 'gpt-6.1-sol',
             fallback_used: fallback,
             attempts: fallback ? 2 : 1,
           },
@@ -30,7 +30,7 @@ for (const fallback of [false, true]) {
     await page.getByRole('button', { name: 'Подключение к электросети', exact: true }).click();
     await page.getByRole('button', { name: 'Создать BPMN', exact: true }).click();
     await expect(page.locator('.provider-info')).toContainText(
-      fallback ? 'Резервная модель активирована: Gemini' : 'Модель: gpt-oss-120b',
+      fallback ? 'gemini-2.5-flash · резервная модель' : 'Модель: gpt-6.1-sol',
     );
     await expect(page.locator('.djs-shape[data-element-id="Check"]')).toBeVisible();
     await expect(page.getByRole('alert')).toHaveCount(0);

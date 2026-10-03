@@ -3,7 +3,7 @@ import httpx
 from pydantic import ValidationError
 from .base import LLMProvider, ProviderError, LLMMessage
 from .common import validated_json, corrective_message, prompt_text
-from ...models import ProcessDefinition, AuditResult, ClarificationResult, ModificationResult
+from ...models import ProcessDefinition, AuditResult, ClarificationResult, ModificationResult, AmbiguityAnalysis
 
 def strict_schema(model):
     schema = model.model_json_schema()
@@ -51,6 +51,9 @@ class OpenAICompatibleProvider(LLMProvider):
     def token_budget(self):
         return {'max_tokens': self.max_tokens}
 
+    def request_options(self):
+        return {}
+
     async def _request(self, prompt, payload, model_class, correction=''):
         # JSON syntax and Pydantic validation belong to the adapter, for all operations.
         graph_correction = correction
@@ -61,20 +64,24 @@ class OpenAICompatibleProvider(LLMProvider):
                 correction = corrective_message(exc)
                 if graph_correction:
                     correction = graph_correction + '\n' + correction
-        raise ProviderError(f'Модель вернула некорректный JSON после {self.max_retries} попыток исправления.', retryable=True)
+        raise ProviderError(f'Модель вернула некорректный JSON после {self.max_retries} попыток исправления.', retryable=True, reason='invalid_response')
 
     async def _request_once(self, prompt, payload, model_class, correction=''):
         if not self.configured:
             raise ProviderError('Заполните ' + ', '.join(self.missing_settings()) + ' в .env в корне проекта. Для встроенных примеров доступен LLM_PROVIDER=mock.')
         schema = strict_schema(model_class)
         system = prompt_text(prompt)
-        messages = [LLMMessage('system', system + '\nJSON Schema:\n' + json.dumps(schema, ensure_ascii=False)),
-                    LLMMessage('user', json.dumps(payload, ensure_ascii=False))]
+        schema_prompt = '\nJSON Schema:\n' + json.dumps(schema, ensure_ascii=False, separators=(',', ':'))
+        # Native structured output already supplies the schema. Repeating it in
+        # the prompt wastes context and the provider's token budget.
+        messages = [LLMMessage('system', system + (schema_prompt if self.structured is False else '')),
+                    LLMMessage('user', json.dumps(payload, ensure_ascii=False, separators=(',', ':')))]
         if correction:
             messages.append(LLMMessage('user', 'Исправь ошибки предыдущего результата: ' + correction))
         body = {'model': self.model, 'messages': [{'role': m.role, 'content': m.content} for m in messages]}
         body['response_format'] = {'type': 'json_schema', 'json_schema': {'name': model_class.__name__, 'strict': True, 'schema': schema}} if self.structured is not False else {'type': 'json_object'}
         body.update(self.token_budget())
+        body.update(self.request_options())
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 self.attempt_count += 1
@@ -90,6 +97,8 @@ class OpenAICompatibleProvider(LLMProvider):
                         body['response_format'] = {'type': mode}
                     else:
                         body.pop('response_format', None)
+                    if not body['messages'][0]['content'].endswith(schema_prompt):
+                        body['messages'][0]['content'] += schema_prompt
                     self.attempt_count += 1
                     response = await client.post(self.base_url + '/chat/completions', headers=self.headers(), json=body)
             response.raise_for_status()
@@ -101,26 +110,28 @@ class OpenAICompatibleProvider(LLMProvider):
                 raise ProviderError('Модель отказалась обрабатывать запрос. Уточните описание процесса.')
             return validated_json(message['content'], model_class)
         except httpx.TimeoutException as exc:
-            raise ProviderError('Модель не ответила вовремя. Повторите запрос или проверьте настройки провайдера.', retryable=True) from exc
+            raise ProviderError('Модель не ответила вовремя. Повторите запрос или проверьте настройки провайдера.', retryable=True, reason='timeout') from exc
         except httpx.HTTPStatusError as exc:
             code = exc.response.status_code
             if code in (401, 403):
-                raise ProviderError('Провайдер отклонил доступ. Проверьте backend API-ключ и права на модель.', retryable=code == 401) from exc
+                raise ProviderError('Провайдер отклонил доступ. Проверьте backend API-ключ и права на модель.', retryable=code == 401, reason=f'http_{code}') from exc
             if code == 429:
-                raise ProviderError('Лимит запросов к модели исчерпан. Повторите позже.', retryable=True) from exc
+                from .cooldown import retry_delay
+                delay = retry_delay(exc.response.headers)
+                raise ProviderError(f'Лимит модели исчерпан. Повторите через {int(delay) + 1} с.', retryable=True, reason='http_429', retry_after=delay) from exc
             error = exc.response.text.lower()
             if code in (400, 404) and 'unavailable for free' in error:
                 raise ProviderError('Выбранная модель больше недоступна бесплатно у провайдера. Выберите другую бесплатную модель или явно настройте платную версию.') from exc
             temporary = any(marker in error for marker in ('model_unavailable', 'model unavailable', 'no endpoints found', 'no available provider', 'temporarily unavailable', 'overloaded', 'service_unavailable'))
             if code in (400, 404, 408, 409, 422) and temporary:
-                raise ProviderError('Модель временно недоступна у провайдера. Повторите запрос позже.', retryable=True) from exc
+                raise ProviderError('Модель временно недоступна у провайдера. Повторите запрос позже.', retryable=True, reason='provider_unavailable') from exc
             if code == 408:
-                raise ProviderError('Провайдер не ответил вовремя.', retryable=True) from exc
+                raise ProviderError('Провайдер не ответил вовремя.', retryable=True, reason='timeout') from exc
             if code == 404:
-                raise ProviderError('Модель недоступна у провайдера.', retryable=True) from exc
-            raise ProviderError(f'Провайдер вернул HTTP {code}. Проверьте модель, endpoint и поддержку Structured Outputs.', retryable=code >= 500) from exc
+                raise ProviderError('Модель недоступна у провайдера.', retryable=True, reason='model_unavailable') from exc
+            raise ProviderError(f'Провайдер вернул HTTP {code}. Проверьте модель, endpoint и поддержку Structured Outputs.', retryable=code >= 500, reason=f'http_{code}') from exc
         except httpx.RequestError as exc:
-            raise ProviderError('Не удалось соединиться с провайдером модели.', retryable=True) from exc
+            raise ProviderError('Не удалось соединиться с провайдером модели.', retryable=True, reason='network_error') from exc
         except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
             raise ValueError('Ответ провайдера не содержит корректный JSON.') from exc
         # Pydantic ValidationError is corrected inside _request before returning.
@@ -128,8 +139,11 @@ class OpenAICompatibleProvider(LLMProvider):
     async def parse_process(self, text, correction=''):
         return await self._request('extraction', {'description': text}, ProcessDefinition, correction)
 
+    async def analyze_ambiguities(self, text, context=None):
+        return await self._request('ambiguity', {'description': text, 'context': context or {}}, AmbiguityAnalysis)
+
     async def clarify_process(self, process, answers, correction=''):
-        result = await self._request('clarification', {'process': process.model_dump(), 'answers': answers}, ProcessDefinition, correction)
+        result = await self._request('clarification', {'original_text': process.description, 'process': process.model_dump(), 'ambiguities': [a.model_dump() for a in process.ambiguities], 'answers': answers}, ProcessDefinition, correction)
         return ClarificationResult(process=result)
 
     async def modify_process(self, process, command, correction=''):

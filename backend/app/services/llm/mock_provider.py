@@ -1,6 +1,6 @@
 from uuid import uuid4
 from .base import LLMProvider, ProviderError
-from ...models import Node, Flow, AuditResult, ClarificationResult, ModificationResult
+from ...models import Node, Flow, AuditResult, ClarificationResult, ModificationResult, AmbiguityAnalysis
 from ...examples import TEXTS, demo_process, ambiguous_process
 
 
@@ -9,6 +9,10 @@ class MockLLMProvider(LLMProvider):
     name = 'mock'
     model = 'fixtures'
     business_audit_available = False
+    async def analyze_ambiguities(self, text, context=None):
+        # Fixture questions are deliberately stored in the fixture process.
+        return AmbiguityAnalysis()
+
     async def parse_process(self, text, correction=''):
         normalized = text.strip()
         if normalized not in TEXTS:

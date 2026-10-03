@@ -1,0 +1,56 @@
+{
+  "input": "input.txt",
+  "backend_tests_passed": 184,
+  "browser_tests_passed": 26,
+  "build": "passed",
+  "providers": {
+    "groq": {
+      "http_status": 200,
+      "metadata": {
+        "provider_used": "groq",
+        "model_used": "openai/gpt-oss-120b",
+        "fallback_used": false,
+        "attempts": 2
+      },
+      "bpmn_created": true,
+      "graph_attempts": 1,
+      "questions": 0
+    },
+    "vertex": {
+      "http_status": 200,
+      "metadata": {
+        "provider_used": "vertex_gemini",
+        "model_used": "gemini-2.5-flash",
+        "fallback_used": false,
+        "attempts": 2
+      },
+      "bpmn_created": true,
+      "graph_attempts": 2,
+      "questions": 0
+    },
+    "failover": {
+      "http_status": 200,
+      "metadata": {
+        "provider_used": "vertex_gemini",
+        "model_used": "gemini-2.5-flash",
+        "fallback_used": true,
+        "attempts": 5
+      },
+      "bpmn_created": true,
+      "graph_attempts": 2,
+      "questions": 0
+    },
+    "backend": {
+      "http_status": 200,
+      "metadata": {
+        "provider_used": "vertex_gemini",
+        "model_used": "gemini-2.5-flash",
+        "fallback_used": true,
+        "attempts": 5
+      },
+      "bpmn_created": true,
+      "graph_attempts": 3,
+      "questions": 0
+    }
+  }
+}

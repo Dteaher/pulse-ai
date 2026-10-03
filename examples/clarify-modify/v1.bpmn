@@ -1,0 +1,235 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.1">
+  <bpmn:process id="Process_ClientApplication" name="Обработка заявки клиента" isExecutable="false">
+    <bpmn:documentation>Клиент отправляет заявку. Менеджер проверяет документы. Потом её проверяют юрист и служба безопасности. После этого руководитель принимает решение.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="P_Client" name="Клиент"/>
+      <bpmn:lane id="P_Manager" name="Менеджер">
+        <bpmn:flowNodeRef>N_Start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>T_Manager_CheckDocuments</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>G_Parallel_Split</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>G_Parallel_Join</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>T_Manager_NotifyClient_Approved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>T_Manager_NotifyClient_Rejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P_Lawyer" name="Юрист">
+        <bpmn:flowNodeRef>T_Lawyer_CheckApplication</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P_Security" name="Служба_безопасности">
+        <bpmn:flowNodeRef>T_Security_CheckApplication</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="P_Head" name="Руководитель">
+        <bpmn:flowNodeRef>T_Head_MakeDecision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>G_Exclusive_Decision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>E_End_Approved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>E_End_Rejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="N_Start" name="Заявка клиента поступила">
+      <bpmn:documentation>Клиент отправляет заявку.</bpmn:documentation>
+      <bpmn:outgoing>F_Start_to_ManagerCheck</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="T_Manager_CheckDocuments" name="Проверить документы">
+      <bpmn:documentation>Менеджер проверяет документы.</bpmn:documentation>
+      <bpmn:incoming>F_Start_to_ManagerCheck</bpmn:incoming>
+      <bpmn:outgoing>F_ManagerCheck_to_ParallelSplit</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="G_Parallel_Split" name="Разделение на проверки" gatewayDirection="Diverging">
+      <bpmn:documentation>Потом её проверяют юрист и служба безопасности.</bpmn:documentation>
+      <bpmn:incoming>F_ManagerCheck_to_ParallelSplit</bpmn:incoming>
+      <bpmn:outgoing>F_ParallelSplit_to_LawyerCheck</bpmn:outgoing>
+      <bpmn:outgoing>F_ParallelSplit_to_SecurityCheck</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="T_Lawyer_CheckApplication" name="Проверить заявку (Юрист)">
+      <bpmn:documentation>Потом её проверяют юрист и служба безопасности.</bpmn:documentation>
+      <bpmn:incoming>F_ParallelSplit_to_LawyerCheck</bpmn:incoming>
+      <bpmn:outgoing>F_LawyerCheck_to_ParallelJoin</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="T_Security_CheckApplication" name="Проверить заявку (Служба безопасности)">
+      <bpmn:documentation>Потом её проверяют юрист и служба безопасности.</bpmn:documentation>
+      <bpmn:incoming>F_ParallelSplit_to_SecurityCheck</bpmn:incoming>
+      <bpmn:outgoing>F_SecurityCheck_to_ParallelJoin</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:parallelGateway id="G_Parallel_Join" name="Объединение проверок" gatewayDirection="Converging">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>F_LawyerCheck_to_ParallelJoin</bpmn:incoming>
+      <bpmn:incoming>F_SecurityCheck_to_ParallelJoin</bpmn:incoming>
+      <bpmn:outgoing>F_ParallelJoin_to_HeadDecision</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:task id="T_Head_MakeDecision" name="Принять решение">
+      <bpmn:documentation>После этого руководитель принимает решение.</bpmn:documentation>
+      <bpmn:incoming>F_ParallelJoin_to_HeadDecision</bpmn:incoming>
+      <bpmn:outgoing>F_HeadDecision_to_ExclusiveGateway</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="G_Exclusive_Decision" name="Решение руководителя" gatewayDirection="Diverging" default="F_Decision_to_RejectedEnd">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>F_HeadDecision_to_ExclusiveGateway</bpmn:incoming>
+      <bpmn:outgoing>F_Decision_to_ApprovedEnd</bpmn:outgoing>
+      <bpmn:outgoing>F_Decision_to_RejectedEnd</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="T_Manager_NotifyClient_Approved" name="Уведомить клиента об одобрении">
+      <bpmn:documentation>При одобрении менеджер уведомляет клиента об одобрении</bpmn:documentation>
+      <bpmn:incoming>F_Decision_to_ApprovedEnd</bpmn:incoming>
+      <bpmn:outgoing>F_NotifyClientApproved_to_EndApproved</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="T_Manager_NotifyClient_Rejected" name="Уведомить клиента об отказе">
+      <bpmn:documentation>При отказе менеджер уведомляет клиента об отказе</bpmn:documentation>
+      <bpmn:incoming>F_Decision_to_RejectedEnd</bpmn:incoming>
+      <bpmn:outgoing>F_NotifyClientRejected_to_EndRejected</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="E_End_Approved" name="Заявка одобрена">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>F_NotifyClientApproved_to_EndApproved</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="E_End_Rejected" name="Заявка отклонена">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>F_NotifyClientRejected_to_EndRejected</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="F_Start_to_ManagerCheck" sourceRef="N_Start" targetRef="T_Manager_CheckDocuments" name=""/>
+    <bpmn:sequenceFlow id="F_ManagerCheck_to_ParallelSplit" sourceRef="T_Manager_CheckDocuments" targetRef="G_Parallel_Split" name=""/>
+    <bpmn:sequenceFlow id="F_ParallelSplit_to_LawyerCheck" sourceRef="G_Parallel_Split" targetRef="T_Lawyer_CheckApplication" name=""/>
+    <bpmn:sequenceFlow id="F_ParallelSplit_to_SecurityCheck" sourceRef="G_Parallel_Split" targetRef="T_Security_CheckApplication" name=""/>
+    <bpmn:sequenceFlow id="F_LawyerCheck_to_ParallelJoin" sourceRef="T_Lawyer_CheckApplication" targetRef="G_Parallel_Join" name=""/>
+    <bpmn:sequenceFlow id="F_SecurityCheck_to_ParallelJoin" sourceRef="T_Security_CheckApplication" targetRef="G_Parallel_Join" name=""/>
+    <bpmn:sequenceFlow id="F_ParallelJoin_to_HeadDecision" sourceRef="G_Parallel_Join" targetRef="T_Head_MakeDecision" name=""/>
+    <bpmn:sequenceFlow id="F_HeadDecision_to_ExclusiveGateway" sourceRef="T_Head_MakeDecision" targetRef="G_Exclusive_Decision" name=""/>
+    <bpmn:sequenceFlow id="F_Decision_to_ApprovedEnd" sourceRef="G_Exclusive_Decision" targetRef="T_Manager_NotifyClient_Approved" name="Одобрено">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Решение = Одобрено</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="F_Decision_to_RejectedEnd" sourceRef="G_Exclusive_Decision" targetRef="T_Manager_NotifyClient_Rejected" name="Отклонено"/>
+    <bpmn:sequenceFlow id="F_NotifyClientApproved_to_EndApproved" sourceRef="T_Manager_NotifyClient_Approved" targetRef="E_End_Approved" name=""/>
+    <bpmn:sequenceFlow id="F_NotifyClientRejected_to_EndRejected" sourceRef="T_Manager_NotifyClient_Rejected" targetRef="E_End_Rejected" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="Collaboration">
+    <bpmn:participant id="Pool" name="Обработка заявки клиента" processRef="Process_ClientApplication"/>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="Collaboration">
+      <bpmndi:BPMNShape id="Shape_Pool" bpmnElement="Pool" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="1850" height="1015"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_P_Client" bpmnElement="P_Client" isHorizontal="true">
+        <dc:Bounds x="90" y="70" width="1820" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_P_Manager" bpmnElement="P_Manager" isHorizontal="true">
+        <dc:Bounds x="90" y="225" width="1820" height="275"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_P_Lawyer" bpmnElement="P_Lawyer" isHorizontal="true">
+        <dc:Bounds x="90" y="500" width="1820" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_P_Security" bpmnElement="P_Security" isHorizontal="true">
+        <dc:Bounds x="90" y="655" width="1820" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_P_Head" bpmnElement="P_Head" isHorizontal="true">
+        <dc:Bounds x="90" y="810" width="1820" height="275"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_N_Start" bpmnElement="N_Start">
+        <dc:Bounds x="241.0" y="343.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_T_Manager_CheckDocuments" bpmnElement="T_Manager_CheckDocuments">
+        <dc:Bounds x="380.0" y="322.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_G_Parallel_Split" bpmnElement="G_Parallel_Split">
+        <dc:Bounds x="614.0" y="336.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_T_Lawyer_CheckApplication" bpmnElement="T_Lawyer_CheckApplication">
+        <dc:Bounds x="760.0" y="537.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_T_Security_CheckApplication" bpmnElement="T_Security_CheckApplication">
+        <dc:Bounds x="760.0" y="692.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_G_Parallel_Join" bpmnElement="G_Parallel_Join">
+        <dc:Bounds x="994.0" y="336.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_T_Head_MakeDecision" bpmnElement="T_Head_MakeDecision">
+        <dc:Bounds x="1140.0" y="907.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_G_Exclusive_Decision" bpmnElement="G_Exclusive_Decision">
+        <dc:Bounds x="1374.0" y="921.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_T_Manager_NotifyClient_Approved" bpmnElement="T_Manager_NotifyClient_Approved">
+        <dc:Bounds x="1520.0" y="276.6666666666667" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_T_Manager_NotifyClient_Rejected" bpmnElement="T_Manager_NotifyClient_Rejected">
+        <dc:Bounds x="1520.0" y="368.33333333333337" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_E_End_Approved" bpmnElement="E_End_Approved">
+        <dc:Bounds x="1761.0" y="882.6666666666666" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_E_End_Rejected" bpmnElement="E_End_Rejected">
+        <dc:Bounds x="1761.0" y="974.3333333333334" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_F_Start_to_ManagerCheck" bpmnElement="F_Start_to_ManagerCheck">
+        <di:waypoint x="279.0" y="362.5"/>
+        <di:waypoint x="380.0" y="362.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_ManagerCheck_to_ParallelSplit" bpmnElement="F_ManagerCheck_to_ParallelSplit">
+        <di:waypoint x="520.0" y="362.5"/>
+        <di:waypoint x="614.0" y="362.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_ParallelSplit_to_LawyerCheck" bpmnElement="F_ParallelSplit_to_LawyerCheck">
+        <di:waypoint x="666.0" y="362.5"/>
+        <di:waypoint x="701.0" y="362.5"/>
+        <di:waypoint x="701.0" y="577.5"/>
+        <di:waypoint x="760.0" y="577.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_ParallelSplit_to_SecurityCheck" bpmnElement="F_ParallelSplit_to_SecurityCheck">
+        <di:waypoint x="666.0" y="362.5"/>
+        <di:waypoint x="701.0" y="362.5"/>
+        <di:waypoint x="701.0" y="732.5"/>
+        <di:waypoint x="760.0" y="732.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_LawyerCheck_to_ParallelJoin" bpmnElement="F_LawyerCheck_to_ParallelJoin">
+        <di:waypoint x="900.0" y="577.5"/>
+        <di:waypoint x="935.0" y="577.5"/>
+        <di:waypoint x="935.0" y="362.5"/>
+        <di:waypoint x="994.0" y="362.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_SecurityCheck_to_ParallelJoin" bpmnElement="F_SecurityCheck_to_ParallelJoin">
+        <di:waypoint x="900.0" y="732.5"/>
+        <di:waypoint x="935.0" y="732.5"/>
+        <di:waypoint x="935.0" y="362.5"/>
+        <di:waypoint x="994.0" y="362.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_ParallelJoin_to_HeadDecision" bpmnElement="F_ParallelJoin_to_HeadDecision">
+        <di:waypoint x="1046.0" y="362.5"/>
+        <di:waypoint x="1081.0" y="362.5"/>
+        <di:waypoint x="1081.0" y="947.5"/>
+        <di:waypoint x="1140.0" y="947.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_HeadDecision_to_ExclusiveGateway" bpmnElement="F_HeadDecision_to_ExclusiveGateway">
+        <di:waypoint x="1280.0" y="947.5"/>
+        <di:waypoint x="1374.0" y="947.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_Decision_to_ApprovedEnd" bpmnElement="F_Decision_to_ApprovedEnd">
+        <di:waypoint x="1426.0" y="947.5"/>
+        <di:waypoint x="1461.0" y="947.5"/>
+        <di:waypoint x="1461.0" y="316.6666666666667"/>
+        <di:waypoint x="1520.0" y="316.6666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1434.0" y="921.5" width="110" height="22"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_Decision_to_RejectedEnd" bpmnElement="F_Decision_to_RejectedEnd">
+        <di:waypoint x="1426.0" y="947.5"/>
+        <di:waypoint x="1461.0" y="947.5"/>
+        <di:waypoint x="1461.0" y="408.33333333333337"/>
+        <di:waypoint x="1520.0" y="408.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1434.0" y="921.5" width="110" height="22"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_NotifyClientApproved_to_EndApproved" bpmnElement="F_NotifyClientApproved_to_EndApproved">
+        <di:waypoint x="1660.0" y="316.6666666666667"/>
+        <di:waypoint x="1695.0" y="316.6666666666667"/>
+        <di:waypoint x="1695.0" y="901.6666666666666"/>
+        <di:waypoint x="1761.0" y="901.6666666666666"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_F_NotifyClientRejected_to_EndRejected" bpmnElement="F_NotifyClientRejected_to_EndRejected">
+        <di:waypoint x="1660.0" y="408.33333333333337"/>
+        <di:waypoint x="1695.0" y="408.33333333333337"/>
+        <di:waypoint x="1695.0" y="993.3333333333334"/>
+        <di:waypoint x="1761.0" y="993.3333333333334"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

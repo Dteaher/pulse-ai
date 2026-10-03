@@ -1,0 +1,597 @@
+{
+  "process": {
+    "id": "process_1",
+    "name": "Процесс подключения объекта",
+    "description": "Клиент подаёт заявку на подключение объекта. Оператор проверяет документы. Если документов не хватает, заявку возвращают клиенту на доработку. После получения корректных документов заявку проверяют юридический отдел и служба безопасности. Затем руководитель принимает решение. Если заявка одобрена, менеджер формирует договор и отправляет его клиенту. Если заявка отклонена, клиент получает уведомление об отказе.",
+    "participants": [
+      {
+        "id": "p_client",
+        "name": "Клиент",
+        "type": "role",
+        "kind": "external",
+        "pool_id": "pool_client"
+      },
+      {
+        "id": "p_operator",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "p_legal",
+        "name": "Юридический отдел",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "p_security",
+        "name": "Служба безопасности",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "p_head_of_department",
+        "name": "Руководитель",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "p_manager",
+        "name": "Менеджер",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "start_client",
+        "type": "start_event",
+        "name": "Начало процесса",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_submit_application",
+        "type": "user_task",
+        "name": "Подать заявку",
+        "participant_id": "p_client",
+        "source_text": "Клиент подаёт заявку на подключение объекта.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_wait_for_response",
+        "type": "task",
+        "name": "Ожидать ответ",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "gw_client_response_split",
+        "type": "exclusive_gateway",
+        "name": "Какой ответ получен?",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "receive_correction_request",
+        "type": "receive_task",
+        "name": "Получить запрос доработки",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_correct_documents",
+        "type": "user_task",
+        "name": "Доработать документы",
+        "participant_id": "p_client",
+        "source_text": "Клиент вносит исправления в документы.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "send_corrected_docs",
+        "type": "send_task",
+        "name": "Отправить исправленные документы",
+        "participant_id": "p_client",
+        "source_text": "Клиент отправляет исправленные документы.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "receive_contract",
+        "type": "receive_task",
+        "name": "Получить договор",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "end_contract",
+        "type": "end_event",
+        "name": "Договор получен",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "receive_refusal",
+        "type": "receive_task",
+        "name": "Получить отказ",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "end_refusal_client",
+        "type": "end_event",
+        "name": "Отказ получен",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "start_internal",
+        "type": "start_event",
+        "name": "Начало процесса",
+        "participant_id": "p_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "receive_application",
+        "type": "receive_task",
+        "name": "Получить заявку",
+        "participant_id": "p_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_check_documents",
+        "type": "user_task",
+        "name": "Проверить документы",
+        "participant_id": "p_operator",
+        "source_text": "Оператор проверяет документы.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gw_documents_check_split",
+        "type": "exclusive_gateway",
+        "name": "Документы полные?",
+        "participant_id": "p_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "send_correction_request",
+        "type": "send_task",
+        "name": "Отправить запрос доработки",
+        "participant_id": "p_operator",
+        "source_text": "Если документов не хватает, заявку возвращают клиенту на доработку.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "receive_corrected_docs",
+        "type": "receive_task",
+        "name": "Получить исправленные документы",
+        "participant_id": "p_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "gw_parallel_checks_split",
+        "type": "parallel_gateway",
+        "name": "Параллельные проверки",
+        "participant_id": "p_operator",
+        "source_text": "После получения корректных документов заявку проверяют юридический отдел и служба безопасности.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_legal_check",
+        "type": "user_task",
+        "name": "Проверить юридически",
+        "participant_id": "p_legal",
+        "source_text": "юридический отдел проверяет",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_security_check",
+        "type": "user_task",
+        "name": "Проверить безопасность",
+        "participant_id": "p_security",
+        "source_text": "служба безопасности проверяет",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gw_parallel_checks_join",
+        "type": "parallel_gateway",
+        "name": "Объединение параллельных проверок",
+        "participant_id": "p_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_head_decision",
+        "type": "user_task",
+        "name": "Принять решение",
+        "participant_id": "p_head_of_department",
+        "source_text": "Затем руководитель принимает решение.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gw_head_decision_split",
+        "type": "exclusive_gateway",
+        "name": "Решение руководителя",
+        "participant_id": "p_head_of_department",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_form_contract",
+        "type": "user_task",
+        "name": "Сформировать договор",
+        "participant_id": "p_manager",
+        "source_text": "Если заявка одобрена, менеджер формирует договор",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "send_contract",
+        "type": "send_task",
+        "name": "Отправить договор",
+        "participant_id": "p_manager",
+        "source_text": "отправляет его клиенту",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "end_internal_success",
+        "type": "end_event",
+        "name": "Заявка одобрена",
+        "participant_id": "p_manager",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "send_refusal",
+        "type": "send_task",
+        "name": "Отправить уведомление об отказе",
+        "participant_id": "p_manager",
+        "source_text": "Если заявка отклонена, клиент получает уведомление об отказе.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "end_internal_refusal",
+        "type": "end_event",
+        "name": "Заявка отклонена",
+        "participant_id": "p_manager",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      }
+    ],
+    "flows": [
+      {
+        "id": "f_client_start_to_submit",
+        "source": "start_client",
+        "target": "task_submit_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_client_submit_to_wait",
+        "source": "task_submit_application",
+        "target": "task_wait_for_response",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_client_wait_to_gw_split",
+        "source": "task_wait_for_response",
+        "target": "gw_client_response_split",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_client_gw_split_to_receive_correction",
+        "source": "gw_client_response_split",
+        "target": "receive_correction_request",
+        "name": "Получен запрос доработки",
+        "condition": "Запрос доработки",
+        "is_default": false
+      },
+      {
+        "id": "f_client_receive_correction_to_correct",
+        "source": "receive_correction_request",
+        "target": "task_correct_documents",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_client_correct_to_send_corrected",
+        "source": "task_correct_documents",
+        "target": "send_corrected_docs",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_client_send_corrected_to_wait",
+        "source": "send_corrected_docs",
+        "target": "task_wait_for_response",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_client_gw_split_to_receive_contract",
+        "source": "gw_client_response_split",
+        "target": "receive_contract",
+        "name": "Получен договор",
+        "condition": "Договор",
+        "is_default": false
+      },
+      {
+        "id": "f_client_receive_contract_to_end",
+        "source": "receive_contract",
+        "target": "end_contract",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_client_gw_split_to_receive_refusal",
+        "source": "gw_client_response_split",
+        "target": "receive_refusal",
+        "name": "Получен отказ",
+        "condition": "Отказ",
+        "is_default": false
+      },
+      {
+        "id": "f_client_receive_refusal_to_end",
+        "source": "receive_refusal",
+        "target": "end_refusal_client",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_start_to_receive_app",
+        "source": "start_internal",
+        "target": "receive_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_receive_app_to_check_docs",
+        "source": "receive_application",
+        "target": "task_check_documents",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_check_docs_to_gw_split",
+        "source": "task_check_documents",
+        "target": "gw_documents_check_split",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_gw_split_to_send_correction",
+        "source": "gw_documents_check_split",
+        "target": "send_correction_request",
+        "name": "Документов не хватает",
+        "condition": "Документов не хватает",
+        "is_default": false
+      },
+      {
+        "id": "f_internal_send_correction_to_receive_corrected",
+        "source": "send_correction_request",
+        "target": "receive_corrected_docs",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_receive_corrected_to_check_docs",
+        "source": "receive_corrected_docs",
+        "target": "task_check_documents",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_gw_split_to_parallel_split",
+        "source": "gw_documents_check_split",
+        "target": "gw_parallel_checks_split",
+        "name": "Документы полные",
+        "condition": "Документы полные",
+        "is_default": false
+      },
+      {
+        "id": "f_internal_parallel_split_to_legal",
+        "source": "gw_parallel_checks_split",
+        "target": "task_legal_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_parallel_split_to_security",
+        "source": "gw_parallel_checks_split",
+        "target": "task_security_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_legal_to_parallel_join",
+        "source": "task_legal_check",
+        "target": "gw_parallel_checks_join",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_security_to_parallel_join",
+        "source": "task_security_check",
+        "target": "gw_parallel_checks_join",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_parallel_join_to_head_decision",
+        "source": "gw_parallel_checks_join",
+        "target": "task_head_decision",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_head_decision_to_gw_split",
+        "source": "task_head_decision",
+        "target": "gw_head_decision_split",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_gw_split_to_form_contract",
+        "source": "gw_head_decision_split",
+        "target": "task_form_contract",
+        "name": "Одобрено",
+        "condition": "Заявка одобрена",
+        "is_default": false
+      },
+      {
+        "id": "f_internal_form_contract_to_send_contract",
+        "source": "task_form_contract",
+        "target": "send_contract",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_send_contract_to_end_success",
+        "source": "send_contract",
+        "target": "end_internal_success",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f_internal_gw_split_to_send_refusal",
+        "source": "gw_head_decision_split",
+        "target": "send_refusal",
+        "name": "Отклонено",
+        "condition": "Заявка отклонена",
+        "is_default": false
+      },
+      {
+        "id": "f_internal_send_refusal_to_end_refusal",
+        "source": "send_refusal",
+        "target": "end_internal_refusal",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "pool_client",
+        "name": "Клиент",
+        "kind": "external"
+      },
+      {
+        "id": "pool_internal",
+        "name": "Организация",
+        "kind": "internal"
+      }
+    ],
+    "message_flows": [
+      {
+        "id": "mf_submit_application_to_receive_application",
+        "source": "task_submit_application",
+        "target": "receive_application",
+        "name": "Заявка"
+      },
+      {
+        "id": "mf_send_correction_request_to_receive_correction_request",
+        "source": "send_correction_request",
+        "target": "receive_correction_request",
+        "name": "Запрос доработки"
+      },
+      {
+        "id": "mf_send_corrected_docs_to_receive_corrected_docs",
+        "source": "send_corrected_docs",
+        "target": "receive_corrected_docs",
+        "name": "Исправленные документы"
+      },
+      {
+        "id": "mf_send_contract_to_receive_contract",
+        "source": "send_contract",
+        "target": "receive_contract",
+        "name": "Договор"
+      },
+      {
+        "id": "mf_send_refusal_to_receive_refusal",
+        "source": "send_refusal",
+        "target": "receive_refusal",
+        "name": "Отказ"
+      }
+    ],
+    "ambiguities": []
+  },
+  "ambiguities": [],
+  "xml": "<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"Definitions\" targetNamespace=\"https://pulse.local/bpmn\" exporter=\"PULSE\" exporterVersion=\"0.2\">\n  <bpmn:process id=\"Process_pool_client\" name=\"Клиент\" isExecutable=\"false\">\n    <bpmn:startEvent id=\"start_client\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>f_client_start_to_submit</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:userTask id=\"task_submit_application\" name=\"Подать заявку\">\n      <bpmn:documentation>Клиент подаёт заявку на подключение объекта.</bpmn:documentation>\n      <bpmn:incoming>f_client_start_to_submit</bpmn:incoming>\n      <bpmn:outgoing>f_client_submit_to_wait</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:task id=\"task_wait_for_response\" name=\"Ожидать ответ\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_client_submit_to_wait</bpmn:incoming>\n      <bpmn:incoming>f_client_send_corrected_to_wait</bpmn:incoming>\n      <bpmn:outgoing>f_client_wait_to_gw_split</bpmn:outgoing>\n    </bpmn:task>\n    <bpmn:exclusiveGateway id=\"gw_client_response_split\" name=\"Какой ответ получен?\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_client_wait_to_gw_split</bpmn:incoming>\n      <bpmn:outgoing>f_client_gw_split_to_receive_correction</bpmn:outgoing>\n      <bpmn:outgoing>f_client_gw_split_to_receive_contract</bpmn:outgoing>\n      <bpmn:outgoing>f_client_gw_split_to_receive_refusal</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:receiveTask id=\"receive_correction_request\" name=\"Получить запрос доработки\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_client_gw_split_to_receive_correction</bpmn:incoming>\n      <bpmn:outgoing>f_client_receive_correction_to_correct</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:userTask id=\"task_correct_documents\" name=\"Доработать документы\">\n      <bpmn:documentation>Клиент вносит исправления в документы.</bpmn:documentation>\n      <bpmn:incoming>f_client_receive_correction_to_correct</bpmn:incoming>\n      <bpmn:outgoing>f_client_correct_to_send_corrected</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:sendTask id=\"send_corrected_docs\" name=\"Отправить исправленные документы\">\n      <bpmn:documentation>Клиент отправляет исправленные документы.</bpmn:documentation>\n      <bpmn:incoming>f_client_correct_to_send_corrected</bpmn:incoming>\n      <bpmn:outgoing>f_client_send_corrected_to_wait</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:receiveTask id=\"receive_contract\" name=\"Получить договор\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_client_gw_split_to_receive_contract</bpmn:incoming>\n      <bpmn:outgoing>f_client_receive_contract_to_end</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:endEvent id=\"end_contract\" name=\"Договор получен\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_client_receive_contract_to_end</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:receiveTask id=\"receive_refusal\" name=\"Получить отказ\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_client_gw_split_to_receive_refusal</bpmn:incoming>\n      <bpmn:outgoing>f_client_receive_refusal_to_end</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:endEvent id=\"end_refusal_client\" name=\"Отказ получен\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_client_receive_refusal_to_end</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"f_client_start_to_submit\" sourceRef=\"start_client\" targetRef=\"task_submit_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_client_submit_to_wait\" sourceRef=\"task_submit_application\" targetRef=\"task_wait_for_response\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_client_wait_to_gw_split\" sourceRef=\"task_wait_for_response\" targetRef=\"gw_client_response_split\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_client_gw_split_to_receive_correction\" sourceRef=\"gw_client_response_split\" targetRef=\"receive_correction_request\" name=\"Получен запрос доработки\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Запрос доработки</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f_client_receive_correction_to_correct\" sourceRef=\"receive_correction_request\" targetRef=\"task_correct_documents\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_client_correct_to_send_corrected\" sourceRef=\"task_correct_documents\" targetRef=\"send_corrected_docs\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_client_send_corrected_to_wait\" sourceRef=\"send_corrected_docs\" targetRef=\"task_wait_for_response\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_client_gw_split_to_receive_contract\" sourceRef=\"gw_client_response_split\" targetRef=\"receive_contract\" name=\"Получен договор\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Договор</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f_client_receive_contract_to_end\" sourceRef=\"receive_contract\" targetRef=\"end_contract\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_client_gw_split_to_receive_refusal\" sourceRef=\"gw_client_response_split\" targetRef=\"receive_refusal\" name=\"Получен отказ\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Отказ</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f_client_receive_refusal_to_end\" sourceRef=\"receive_refusal\" targetRef=\"end_refusal_client\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:process id=\"Process_pool_internal\" name=\"Организация\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"LaneSet\">\n      <bpmn:lane id=\"p_operator\" name=\"Оператор\">\n        <bpmn:flowNodeRef>start_internal</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>receive_application</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_check_documents</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gw_documents_check_split</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>send_correction_request</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>receive_corrected_docs</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gw_parallel_checks_split</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gw_parallel_checks_join</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"p_legal\" name=\"Юридический отдел\">\n        <bpmn:flowNodeRef>task_legal_check</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"p_security\" name=\"Служба безопасности\">\n        <bpmn:flowNodeRef>task_security_check</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"p_head_of_department\" name=\"Руководитель\">\n        <bpmn:flowNodeRef>task_head_decision</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gw_head_decision_split</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"p_manager\" name=\"Менеджер\">\n        <bpmn:flowNodeRef>task_form_contract</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>send_contract</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>end_internal_success</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>send_refusal</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>end_internal_refusal</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"start_internal\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>f_internal_start_to_receive_app</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:receiveTask id=\"receive_application\" name=\"Получить заявку\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_internal_start_to_receive_app</bpmn:incoming>\n      <bpmn:outgoing>f_internal_receive_app_to_check_docs</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:userTask id=\"task_check_documents\" name=\"Проверить документы\">\n      <bpmn:documentation>Оператор проверяет документы.</bpmn:documentation>\n      <bpmn:incoming>f_internal_receive_app_to_check_docs</bpmn:incoming>\n      <bpmn:incoming>f_internal_receive_corrected_to_check_docs</bpmn:incoming>\n      <bpmn:outgoing>f_internal_check_docs_to_gw_split</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:exclusiveGateway id=\"gw_documents_check_split\" name=\"Документы полные?\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_internal_check_docs_to_gw_split</bpmn:incoming>\n      <bpmn:outgoing>f_internal_gw_split_to_send_correction</bpmn:outgoing>\n      <bpmn:outgoing>f_internal_gw_split_to_parallel_split</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:sendTask id=\"send_correction_request\" name=\"Отправить запрос доработки\">\n      <bpmn:documentation>Если документов не хватает, заявку возвращают клиенту на доработку.</bpmn:documentation>\n      <bpmn:incoming>f_internal_gw_split_to_send_correction</bpmn:incoming>\n      <bpmn:outgoing>f_internal_send_correction_to_receive_corrected</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:receiveTask id=\"receive_corrected_docs\" name=\"Получить исправленные документы\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_internal_send_correction_to_receive_corrected</bpmn:incoming>\n      <bpmn:outgoing>f_internal_receive_corrected_to_check_docs</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:parallelGateway id=\"gw_parallel_checks_split\" name=\"Параллельные проверки\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation>После получения корректных документов заявку проверяют юридический отдел и служба безопасности.</bpmn:documentation>\n      <bpmn:incoming>f_internal_gw_split_to_parallel_split</bpmn:incoming>\n      <bpmn:outgoing>f_internal_parallel_split_to_legal</bpmn:outgoing>\n      <bpmn:outgoing>f_internal_parallel_split_to_security</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"task_legal_check\" name=\"Проверить юридически\">\n      <bpmn:documentation>юридический отдел проверяет</bpmn:documentation>\n      <bpmn:incoming>f_internal_parallel_split_to_legal</bpmn:incoming>\n      <bpmn:outgoing>f_internal_legal_to_parallel_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_security_check\" name=\"Проверить безопасность\">\n      <bpmn:documentation>служба безопасности проверяет</bpmn:documentation>\n      <bpmn:incoming>f_internal_parallel_split_to_security</bpmn:incoming>\n      <bpmn:outgoing>f_internal_security_to_parallel_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"gw_parallel_checks_join\" name=\"Объединение параллельных проверок\" gatewayDirection=\"Converging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_internal_legal_to_parallel_join</bpmn:incoming>\n      <bpmn:incoming>f_internal_security_to_parallel_join</bpmn:incoming>\n      <bpmn:outgoing>f_internal_parallel_join_to_head_decision</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"task_head_decision\" name=\"Принять решение\">\n      <bpmn:documentation>Затем руководитель принимает решение.</bpmn:documentation>\n      <bpmn:incoming>f_internal_parallel_join_to_head_decision</bpmn:incoming>\n      <bpmn:outgoing>f_internal_head_decision_to_gw_split</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:exclusiveGateway id=\"gw_head_decision_split\" name=\"Решение руководителя\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_internal_head_decision_to_gw_split</bpmn:incoming>\n      <bpmn:outgoing>f_internal_gw_split_to_form_contract</bpmn:outgoing>\n      <bpmn:outgoing>f_internal_gw_split_to_send_refusal</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:userTask id=\"task_form_contract\" name=\"Сформировать договор\">\n      <bpmn:documentation>Если заявка одобрена, менеджер формирует договор</bpmn:documentation>\n      <bpmn:incoming>f_internal_gw_split_to_form_contract</bpmn:incoming>\n      <bpmn:outgoing>f_internal_form_contract_to_send_contract</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:sendTask id=\"send_contract\" name=\"Отправить договор\">\n      <bpmn:documentation>отправляет его клиенту</bpmn:documentation>\n      <bpmn:incoming>f_internal_form_contract_to_send_contract</bpmn:incoming>\n      <bpmn:outgoing>f_internal_send_contract_to_end_success</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:endEvent id=\"end_internal_success\" name=\"Заявка одобрена\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_internal_send_contract_to_end_success</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sendTask id=\"send_refusal\" name=\"Отправить уведомление об отказе\">\n      <bpmn:documentation>Если заявка отклонена, клиент получает уведомление об отказе.</bpmn:documentation>\n      <bpmn:incoming>f_internal_gw_split_to_send_refusal</bpmn:incoming>\n      <bpmn:outgoing>f_internal_send_refusal_to_end_refusal</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:endEvent id=\"end_internal_refusal\" name=\"Заявка отклонена\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f_internal_send_refusal_to_end_refusal</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"f_internal_start_to_receive_app\" sourceRef=\"start_internal\" targetRef=\"receive_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_receive_app_to_check_docs\" sourceRef=\"receive_application\" targetRef=\"task_check_documents\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_check_docs_to_gw_split\" sourceRef=\"task_check_documents\" targetRef=\"gw_documents_check_split\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_gw_split_to_send_correction\" sourceRef=\"gw_documents_check_split\" targetRef=\"send_correction_request\" name=\"Документов не хватает\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Документов не хватает</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f_internal_send_correction_to_receive_corrected\" sourceRef=\"send_correction_request\" targetRef=\"receive_corrected_docs\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_receive_corrected_to_check_docs\" sourceRef=\"receive_corrected_docs\" targetRef=\"task_check_documents\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_gw_split_to_parallel_split\" sourceRef=\"gw_documents_check_split\" targetRef=\"gw_parallel_checks_split\" name=\"Документы полные\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Документы полные</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f_internal_parallel_split_to_legal\" sourceRef=\"gw_parallel_checks_split\" targetRef=\"task_legal_check\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_parallel_split_to_security\" sourceRef=\"gw_parallel_checks_split\" targetRef=\"task_security_check\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_legal_to_parallel_join\" sourceRef=\"task_legal_check\" targetRef=\"gw_parallel_checks_join\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_security_to_parallel_join\" sourceRef=\"task_security_check\" targetRef=\"gw_parallel_checks_join\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_parallel_join_to_head_decision\" sourceRef=\"gw_parallel_checks_join\" targetRef=\"task_head_decision\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_head_decision_to_gw_split\" sourceRef=\"task_head_decision\" targetRef=\"gw_head_decision_split\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_gw_split_to_form_contract\" sourceRef=\"gw_head_decision_split\" targetRef=\"task_form_contract\" name=\"Одобрено\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Заявка одобрена</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f_internal_form_contract_to_send_contract\" sourceRef=\"task_form_contract\" targetRef=\"send_contract\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_send_contract_to_end_success\" sourceRef=\"send_contract\" targetRef=\"end_internal_success\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f_internal_gw_split_to_send_refusal\" sourceRef=\"gw_head_decision_split\" targetRef=\"send_refusal\" name=\"Отклонено\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Заявка отклонена</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f_internal_send_refusal_to_end_refusal\" sourceRef=\"send_refusal\" targetRef=\"end_internal_refusal\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:collaboration id=\"process_1\" name=\"Процесс подключения объекта\">\n    <bpmn:documentation>Клиент подаёт заявку на подключение объекта. Оператор проверяет документы. Если документов не хватает, заявку возвращают клиенту на доработку. После получения корректных документов заявку проверяют юридический отдел и служба безопасности. Затем руководитель принимает решение. Если заявка одобрена, менеджер формирует договор и отправляет его клиенту. Если заявка отклонена, клиент получает уведомление об отказе.</bpmn:documentation>\n    <bpmn:participant id=\"pool_client\" name=\"Клиент\" processRef=\"Process_pool_client\">\n      <bpmn:documentation>PULSE:{\"kind\": \"external\", \"roles\": [{\"id\": \"p_client\", \"name\": \"Клиент\", \"type\": \"role\", \"kind\": \"external\", \"pool_id\": \"pool_client\"}]}</bpmn:documentation>\n    </bpmn:participant>\n    <bpmn:participant id=\"pool_internal\" name=\"Организация\" processRef=\"Process_pool_internal\">\n      <bpmn:documentation>PULSE:{\"kind\": \"internal\", \"roles\": [{\"id\": \"p_operator\", \"name\": \"Оператор\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"p_legal\", \"name\": \"Юридический отдел\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"p_security\", \"name\": \"Служба безопасности\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"p_head_of_department\", \"name\": \"Руководитель\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"p_manager\", \"name\": \"Менеджер\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}]}</bpmn:documentation>\n    </bpmn:participant>\n    <bpmn:messageFlow id=\"mf_submit_application_to_receive_application\" sourceRef=\"task_submit_application\" targetRef=\"receive_application\" name=\"Заявка\"/>\n    <bpmn:messageFlow id=\"mf_send_correction_request_to_receive_correction_request\" sourceRef=\"send_correction_request\" targetRef=\"receive_correction_request\" name=\"Запрос доработки\"/>\n    <bpmn:messageFlow id=\"mf_send_corrected_docs_to_receive_corrected_docs\" sourceRef=\"send_corrected_docs\" targetRef=\"receive_corrected_docs\" name=\"Исправленные документы\"/>\n    <bpmn:messageFlow id=\"mf_send_contract_to_receive_contract\" sourceRef=\"send_contract\" targetRef=\"receive_contract\" name=\"Договор\"/>\n    <bpmn:messageFlow id=\"mf_send_refusal_to_receive_refusal\" sourceRef=\"send_refusal\" targetRef=\"receive_refusal\" name=\"Отказ\"/>\n  </bpmn:collaboration>\n  <bpmndi:BPMNDiagram id=\"Diagram\">\n    <bpmndi:BPMNPlane id=\"Plane\" bpmnElement=\"process_1\">\n      <bpmndi:BPMNShape id=\"Shape_pool_client\" bpmnElement=\"pool_client\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"70\" width=\"2800\" height=\"275\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_pool_internal\" bpmnElement=\"pool_internal\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"415\" width=\"2800\" height=\"1015\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_p_operator\" bpmnElement=\"p_operator\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"415\" width=\"2770\" height=\"275\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_p_legal\" bpmnElement=\"p_legal\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"690\" width=\"2770\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_p_security\" bpmnElement=\"p_security\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"845\" width=\"2770\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_p_head_of_department\" bpmnElement=\"p_head_of_department\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"1000\" width=\"2770\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_p_manager\" bpmnElement=\"p_manager\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"1155\" width=\"2770\" height=\"275\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_start_client\" bpmnElement=\"start_client\">\n        <dc:Bounds x=\"241.0\" y=\"188.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_submit_application\" bpmnElement=\"task_submit_application\">\n        <dc:Bounds x=\"380.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_wait_for_response\" bpmnElement=\"task_wait_for_response\">\n        <dc:Bounds x=\"570.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gw_client_response_split\" bpmnElement=\"gw_client_response_split\">\n        <dc:Bounds x=\"804.0\" y=\"181.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_receive_correction_request\" bpmnElement=\"receive_correction_request\">\n        <dc:Bounds x=\"1140.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_correct_documents\" bpmnElement=\"task_correct_documents\">\n        <dc:Bounds x=\"1330.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_send_corrected_docs\" bpmnElement=\"send_corrected_docs\">\n        <dc:Bounds x=\"1520.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_receive_contract\" bpmnElement=\"receive_contract\">\n        <dc:Bounds x=\"2470.0\" y=\"121.66666666666669\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_contract\" bpmnElement=\"end_contract\">\n        <dc:Bounds x=\"2711.0\" y=\"188.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_receive_refusal\" bpmnElement=\"receive_refusal\">\n        <dc:Bounds x=\"2280.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_refusal_client\" bpmnElement=\"end_refusal_client\">\n        <dc:Bounds x=\"2521.0\" y=\"234.33333333333334\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_start_internal\" bpmnElement=\"start_internal\">\n        <dc:Bounds x=\"241.0\" y=\"533.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_receive_application\" bpmnElement=\"receive_application\">\n        <dc:Bounds x=\"380.0\" y=\"512.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_check_documents\" bpmnElement=\"task_check_documents\">\n        <dc:Bounds x=\"570.0\" y=\"512.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gw_documents_check_split\" bpmnElement=\"gw_documents_check_split\">\n        <dc:Bounds x=\"804.0\" y=\"526.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_send_correction_request\" bpmnElement=\"send_correction_request\">\n        <dc:Bounds x=\"1140.0\" y=\"466.66666666666663\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_receive_corrected_docs\" bpmnElement=\"receive_corrected_docs\">\n        <dc:Bounds x=\"1520.0\" y=\"466.66666666666663\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gw_parallel_checks_split\" bpmnElement=\"gw_parallel_checks_split\">\n        <dc:Bounds x=\"1184.0\" y=\"572.3333333333334\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_legal_check\" bpmnElement=\"task_legal_check\">\n        <dc:Bounds x=\"1330.0\" y=\"727.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_security_check\" bpmnElement=\"task_security_check\">\n        <dc:Bounds x=\"1330.0\" y=\"882.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gw_parallel_checks_join\" bpmnElement=\"gw_parallel_checks_join\">\n        <dc:Bounds x=\"1564.0\" y=\"572.3333333333334\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_head_decision\" bpmnElement=\"task_head_decision\">\n        <dc:Bounds x=\"1710.0\" y=\"1037.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gw_head_decision_split\" bpmnElement=\"gw_head_decision_split\">\n        <dc:Bounds x=\"1944.0\" y=\"1051.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_form_contract\" bpmnElement=\"task_form_contract\">\n        <dc:Bounds x=\"2280.0\" y=\"1206.6666666666667\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_send_contract\" bpmnElement=\"send_contract\">\n        <dc:Bounds x=\"2470.0\" y=\"1206.6666666666667\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_internal_success\" bpmnElement=\"end_internal_success\">\n        <dc:Bounds x=\"2711.0\" y=\"1273.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_send_refusal\" bpmnElement=\"send_refusal\">\n        <dc:Bounds x=\"2280.0\" y=\"1298.3333333333333\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_internal_refusal\" bpmnElement=\"end_internal_refusal\">\n        <dc:Bounds x=\"2521.0\" y=\"1319.3333333333333\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_start_to_submit\" bpmnElement=\"f_client_start_to_submit\">\n        <di:waypoint x=\"279.0\" y=\"207.5\"/>\n        <di:waypoint x=\"380.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_submit_to_wait\" bpmnElement=\"f_client_submit_to_wait\">\n        <di:waypoint x=\"520.0\" y=\"207.5\"/>\n        <di:waypoint x=\"570.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_wait_to_gw_split\" bpmnElement=\"f_client_wait_to_gw_split\">\n        <di:waypoint x=\"710.0\" y=\"207.5\"/>\n        <di:waypoint x=\"804.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_gw_split_to_receive_correction\" bpmnElement=\"f_client_gw_split_to_receive_correction\">\n        <di:waypoint x=\"856.0\" y=\"207.5\"/>\n        <di:waypoint x=\"874.0\" y=\"207.5\"/>\n        <di:waypoint x=\"874.0\" y=\"94\"/>\n        <di:waypoint x=\"1122.0\" y=\"94\"/>\n        <di:waypoint x=\"1122.0\" y=\"207.5\"/>\n        <di:waypoint x=\"1140.0\" y=\"207.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"933.0\" y=\"75\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_receive_correction_to_correct\" bpmnElement=\"f_client_receive_correction_to_correct\">\n        <di:waypoint x=\"1280.0\" y=\"207.5\"/>\n        <di:waypoint x=\"1330.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_correct_to_send_corrected\" bpmnElement=\"f_client_correct_to_send_corrected\">\n        <di:waypoint x=\"1470.0\" y=\"207.5\"/>\n        <di:waypoint x=\"1520.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_send_corrected_to_wait\" bpmnElement=\"f_client_send_corrected_to_wait\">\n        <di:waypoint x=\"1590.0\" y=\"167.5\"/>\n        <di:waypoint x=\"1590.0\" y=\"104\"/>\n        <di:waypoint x=\"640.0\" y=\"104\"/>\n        <di:waypoint x=\"640.0\" y=\"167.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_gw_split_to_receive_contract\" bpmnElement=\"f_client_gw_split_to_receive_contract\">\n        <di:waypoint x=\"856.0\" y=\"207.5\"/>\n        <di:waypoint x=\"874.0\" y=\"207.5\"/>\n        <di:waypoint x=\"874.0\" y=\"84\"/>\n        <di:waypoint x=\"2452.0\" y=\"84\"/>\n        <di:waypoint x=\"2452.0\" y=\"161.66666666666669\"/>\n        <di:waypoint x=\"2470.0\" y=\"161.66666666666669\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1598.0\" y=\"75\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_receive_contract_to_end\" bpmnElement=\"f_client_receive_contract_to_end\">\n        <di:waypoint x=\"2610.0\" y=\"161.66666666666669\"/>\n        <di:waypoint x=\"2645.0\" y=\"161.66666666666669\"/>\n        <di:waypoint x=\"2645.0\" y=\"207.5\"/>\n        <di:waypoint x=\"2711.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_gw_split_to_receive_refusal\" bpmnElement=\"f_client_gw_split_to_receive_refusal\">\n        <di:waypoint x=\"856.0\" y=\"207.5\"/>\n        <di:waypoint x=\"874.0\" y=\"207.5\"/>\n        <di:waypoint x=\"874.0\" y=\"94\"/>\n        <di:waypoint x=\"2262.0\" y=\"94\"/>\n        <di:waypoint x=\"2262.0\" y=\"207.5\"/>\n        <di:waypoint x=\"2280.0\" y=\"207.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1503.0\" y=\"75\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_client_receive_refusal_to_end\" bpmnElement=\"f_client_receive_refusal_to_end\">\n        <di:waypoint x=\"2420.0\" y=\"207.5\"/>\n        <di:waypoint x=\"2455.0\" y=\"207.5\"/>\n        <di:waypoint x=\"2455.0\" y=\"253.33333333333334\"/>\n        <di:waypoint x=\"2521.0\" y=\"253.33333333333334\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_start_to_receive_app\" bpmnElement=\"f_internal_start_to_receive_app\">\n        <di:waypoint x=\"279.0\" y=\"552.5\"/>\n        <di:waypoint x=\"380.0\" y=\"552.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_receive_app_to_check_docs\" bpmnElement=\"f_internal_receive_app_to_check_docs\">\n        <di:waypoint x=\"520.0\" y=\"552.5\"/>\n        <di:waypoint x=\"570.0\" y=\"552.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_check_docs_to_gw_split\" bpmnElement=\"f_internal_check_docs_to_gw_split\">\n        <di:waypoint x=\"710.0\" y=\"552.5\"/>\n        <di:waypoint x=\"804.0\" y=\"552.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_gw_split_to_send_correction\" bpmnElement=\"f_internal_gw_split_to_send_correction\">\n        <di:waypoint x=\"856.0\" y=\"552.5\"/>\n        <di:waypoint x=\"874.0\" y=\"552.5\"/>\n        <di:waypoint x=\"874.0\" y=\"439\"/>\n        <di:waypoint x=\"1122.0\" y=\"439\"/>\n        <di:waypoint x=\"1122.0\" y=\"506.66666666666663\"/>\n        <di:waypoint x=\"1140.0\" y=\"506.66666666666663\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"933.0\" y=\"420\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_send_correction_to_receive_corrected\" bpmnElement=\"f_internal_send_correction_to_receive_corrected\">\n        <di:waypoint x=\"1280.0\" y=\"506.66666666666663\"/>\n        <di:waypoint x=\"1298.0\" y=\"506.66666666666663\"/>\n        <di:waypoint x=\"1298.0\" y=\"449\"/>\n        <di:waypoint x=\"1502.0\" y=\"449\"/>\n        <di:waypoint x=\"1502.0\" y=\"506.66666666666663\"/>\n        <di:waypoint x=\"1520.0\" y=\"506.66666666666663\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_receive_corrected_to_check_docs\" bpmnElement=\"f_internal_receive_corrected_to_check_docs\">\n        <di:waypoint x=\"1590.0\" y=\"466.66666666666663\"/>\n        <di:waypoint x=\"1590.0\" y=\"459\"/>\n        <di:waypoint x=\"640.0\" y=\"459\"/>\n        <di:waypoint x=\"640.0\" y=\"512.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_gw_split_to_parallel_split\" bpmnElement=\"f_internal_gw_split_to_parallel_split\">\n        <di:waypoint x=\"856.0\" y=\"552.5\"/>\n        <di:waypoint x=\"874.0\" y=\"552.5\"/>\n        <di:waypoint x=\"874.0\" y=\"439\"/>\n        <di:waypoint x=\"1166.0\" y=\"439\"/>\n        <di:waypoint x=\"1166.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1184.0\" y=\"598.3333333333334\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"955.0\" y=\"420\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_parallel_split_to_legal\" bpmnElement=\"f_internal_parallel_split_to_legal\">\n        <di:waypoint x=\"1236.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1271.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1271.0\" y=\"767.5\"/>\n        <di:waypoint x=\"1330.0\" y=\"767.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_parallel_split_to_security\" bpmnElement=\"f_internal_parallel_split_to_security\">\n        <di:waypoint x=\"1236.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1271.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1271.0\" y=\"922.5\"/>\n        <di:waypoint x=\"1330.0\" y=\"922.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_legal_to_parallel_join\" bpmnElement=\"f_internal_legal_to_parallel_join\">\n        <di:waypoint x=\"1470.0\" y=\"767.5\"/>\n        <di:waypoint x=\"1505.0\" y=\"767.5\"/>\n        <di:waypoint x=\"1505.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1564.0\" y=\"598.3333333333334\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_security_to_parallel_join\" bpmnElement=\"f_internal_security_to_parallel_join\">\n        <di:waypoint x=\"1470.0\" y=\"922.5\"/>\n        <di:waypoint x=\"1505.0\" y=\"922.5\"/>\n        <di:waypoint x=\"1505.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1564.0\" y=\"598.3333333333334\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_parallel_join_to_head_decision\" bpmnElement=\"f_internal_parallel_join_to_head_decision\">\n        <di:waypoint x=\"1616.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1651.0\" y=\"598.3333333333334\"/>\n        <di:waypoint x=\"1651.0\" y=\"1077.5\"/>\n        <di:waypoint x=\"1710.0\" y=\"1077.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_head_decision_to_gw_split\" bpmnElement=\"f_internal_head_decision_to_gw_split\">\n        <di:waypoint x=\"1850.0\" y=\"1077.5\"/>\n        <di:waypoint x=\"1944.0\" y=\"1077.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_gw_split_to_form_contract\" bpmnElement=\"f_internal_gw_split_to_form_contract\">\n        <di:waypoint x=\"1996.0\" y=\"1077.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"1077.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"1246.6666666666667\"/>\n        <di:waypoint x=\"2280.0\" y=\"1246.6666666666667\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"2090.5\" y=\"1216.6666666666667\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_form_contract_to_send_contract\" bpmnElement=\"f_internal_form_contract_to_send_contract\">\n        <di:waypoint x=\"2420.0\" y=\"1246.6666666666667\"/>\n        <di:waypoint x=\"2470.0\" y=\"1246.6666666666667\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_send_contract_to_end_success\" bpmnElement=\"f_internal_send_contract_to_end_success\">\n        <di:waypoint x=\"2610.0\" y=\"1246.6666666666667\"/>\n        <di:waypoint x=\"2645.0\" y=\"1246.6666666666667\"/>\n        <di:waypoint x=\"2645.0\" y=\"1292.5\"/>\n        <di:waypoint x=\"2711.0\" y=\"1292.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_gw_split_to_send_refusal\" bpmnElement=\"f_internal_gw_split_to_send_refusal\">\n        <di:waypoint x=\"1996.0\" y=\"1077.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"1077.5\"/>\n        <di:waypoint x=\"2031.0\" y=\"1338.3333333333333\"/>\n        <di:waypoint x=\"2280.0\" y=\"1338.3333333333333\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"2090.5\" y=\"1308.3333333333333\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f_internal_send_refusal_to_end_refusal\" bpmnElement=\"f_internal_send_refusal_to_end_refusal\">\n        <di:waypoint x=\"2420.0\" y=\"1338.3333333333333\"/>\n        <di:waypoint x=\"2521.0\" y=\"1338.3333333333333\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf_submit_application_to_receive_application\" bpmnElement=\"mf_submit_application_to_receive_application\">\n        <di:waypoint x=\"450.0\" y=\"247.5\"/>\n        <di:waypoint x=\"450.0\" y=\"512.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"458.0\" y=\"352\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf_send_correction_request_to_receive_correction_request\" bpmnElement=\"mf_send_correction_request_to_receive_correction_request\">\n        <di:waypoint x=\"1210.0\" y=\"466.66666666666663\"/>\n        <di:waypoint x=\"1210.0\" y=\"247.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1218.0\" y=\"372\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf_send_corrected_docs_to_receive_corrected_docs\" bpmnElement=\"mf_send_corrected_docs_to_receive_corrected_docs\">\n        <di:waypoint x=\"1590.0\" y=\"247.5\"/>\n        <di:waypoint x=\"1590.0\" y=\"466.66666666666663\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1598.0\" y=\"352\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf_send_contract_to_receive_contract\" bpmnElement=\"mf_send_contract_to_receive_contract\">\n        <di:waypoint x=\"2540.0\" y=\"1206.6666666666667\"/>\n        <di:waypoint x=\"2540.0\" y=\"201.66666666666669\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"2548.0\" y=\"372\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf_send_refusal_to_receive_refusal\" bpmnElement=\"mf_send_refusal_to_receive_refusal\">\n        <di:waypoint x=\"2350.0\" y=\"1298.3333333333333\"/>\n        <di:waypoint x=\"2350.0\" y=\"247.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"2358.0\" y=\"372\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+  "attempts": 3,
+  "semantic_warnings": [],
+  "metadata": {
+    "provider_used": "vertex_gemini",
+    "model_used": "gemini-2.5-flash",
+    "fallback_used": true,
+    "attempts": 4
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": []
+}

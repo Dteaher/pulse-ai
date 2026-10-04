@@ -153,13 +153,13 @@ def test_safe_info_and_primary_override():
     assert 'private-endpoint' not in response.text
 
 
-def test_settings_use_dotenv_not_process_environment(monkeypatch, tmp_path):
+def test_hosting_environment_takes_precedence_over_dotenv(monkeypatch, tmp_path):
     path = tmp_path / '.env'
     path.write_text('LLM_PROVIDER=mock\nLLM_MODEL=file-model', encoding='utf-8')
     monkeypatch.setenv('LLM_PROVIDER', 'yandex')
     monkeypatch.setenv('LLM_MODEL', 'environment-model')
     settings = Settings(_env_file=path)
-    assert (settings.llm_provider, settings.llm_model) == ('mock', 'file-model')
+    assert (settings.llm_provider, settings.llm_model) == ('yandex', 'environment-model')
 
 
 def test_business_modules_do_not_import_concrete_providers():

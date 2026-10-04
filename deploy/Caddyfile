@@ -1,0 +1,19 @@
+{$SITE_ADDRESS:localhost} {
+    encode zstd gzip
+    handle /api/* {
+        reverse_proxy backend:8000 {
+            transport http {
+                response_header_timeout 500s
+            }
+        }
+    }
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        file_server
+    }
+    header {
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+}

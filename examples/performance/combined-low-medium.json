@@ -1,0 +1,96 @@
+{
+  "phase": "combined-low",
+  "case": "medium",
+  "input_sha256": "55e6ca33c5e09747dfd9465f7bf254c31def8b79a7f3211b7c1019704e2fae1e",
+  "request_total_ms": 51269.6,
+  "status": 200,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "timings": {
+    "llm_parse_ms": 0,
+    "normalization_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "xsd_validation_ms": 0,
+    "post_validation_ms": 0,
+    "combined_preparation_ms": 51265.61,
+    "ambiguity_analysis_ms": 0,
+    "total_ms": 0
+  },
+  "performance": {
+    "request_total_ms": 51266.99,
+    "ambiguity_analysis_ms": 0,
+    "clarify_generation_ms": 0,
+    "llm_primary_ms": 51240.1,
+    "llm_corrective_ms": 0,
+    "llm_fallback_ms": 0,
+    "normalization_ms": 0,
+    "process_validation_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "reference_validation_ms": 0,
+    "xsd_validation_ms": 0,
+    "di_validation_ms": 0,
+    "doctor_ms": 0,
+    "modify_ms": 0,
+    "serialization_ms": 0.31,
+    "calls": [
+      {
+        "provider": "multiai",
+        "model": "gpt-6.1-sol",
+        "operation": "preparation",
+        "reasoning_effort": "low",
+        "system_prompt_chars": 4373,
+        "user_payload_chars": 633,
+        "prompt_size_chars": 5006,
+        "schema_chars": 6726,
+        "max_tokens": 8000,
+        "corrective": false,
+        "json_corrective": false,
+        "fallback": false,
+        "input_tokens": 2370,
+        "output_tokens": 648,
+        "http_status": 200,
+        "reasoning_tokens": null,
+        "duration_ms": 51240.1
+      }
+    ],
+    "attempt_count": 1,
+    "corrective_retry_count": 0,
+    "validation_error_count": 0,
+    "fallback_used": false,
+    "input_tokens": 2370,
+    "output_tokens": 648,
+    "usage_complete": true,
+    "cache_hit": false,
+    "deduplicated": false
+  },
+  "calls": [
+    {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "prompt_sha256": "44b0a44153e1117b1991bae23192a8a827452a8dd23c5cab3822b9571bf55b42",
+      "system_prompt_chars": 4373,
+      "user_payload_chars": 633,
+      "request_chars": 12001,
+      "max_tokens": 8000,
+      "schema": "ProcessPreparation",
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 648,
+        "prompt_tokens": 2370,
+        "total_tokens": 3018
+      },
+      "finish_reason": "stop",
+      "duration_ms": 50802.69
+    }
+  ],
+  "questions": 3,
+  "bpmn": false,
+  "graph_attempts": 0,
+  "process_definition_size": 4
+}

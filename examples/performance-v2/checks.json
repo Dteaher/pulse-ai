@@ -1,0 +1,29 @@
+{
+  "backend_passed": 417,
+  "browser_passed": 63,
+  "production_build_passed": true,
+  "new_browser_test_types_passed": true,
+  "secret_scan_hits": 0,
+  "golden_graphs": 12,
+  "property_examples": 100,
+  "new_backend_tests": 55,
+  "new_browser_tests": 5,
+  "patch_corrective_enabled": false,
+  "combined_parse_enabled": false,
+  "deterministic_modify_enabled": true,
+  "primary": {
+    "provider": "multiai",
+    "model": "gpt-6.1-sol"
+  },
+  "fallback": {
+    "provider": "vertex-gemini",
+    "model": "gemini-2.5-flash"
+  },
+  "complex_first_request_acceleration_proven": false,
+  "patch_control_acceleration_proven": true,
+  "visuals": [
+    "patch-edge.png",
+    "rename-edge.png"
+  ],
+  "browser_screenshots_isolated": true
+}

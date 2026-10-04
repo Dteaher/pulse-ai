@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import Modeler from 'bpmn-js/lib/Modeler';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
+import type Modeler from 'bpmn-js/lib/Modeler';
 import {
   PanelRightClose,
   PanelRightOpen,
@@ -28,14 +28,16 @@ import {
 } from 'lucide-react';
 import BrandMark from './components/BrandMark';
 import Finding from './components/Finding';
-import Editor, { type EditorHandle } from './components/Editor';
+import type { EditorHandle } from './components/Editor';
 import { api } from './services/api';
+import { recordBpmnImport } from './services/performance';
 import ChangeList from './components/ChangeList';
 import ChangePreview from './components/ChangePreview';
 import { useProcessState } from './services/useProcessState';
 import type { Process, Result, Audit, Snapshot, LLMMetadata, Ambiguity } from './types';
 
 type Panel = 'copilot' | 'audit' | 'history';
+const Editor = lazy(() => import('./components/Editor'));
 function modelLabel(model: string) {
   return model.startsWith('gpt://')
     ? model.slice(6).split('/').slice(1).join('/')
@@ -47,9 +49,12 @@ interface Example {
 }
 
 async function checkImport(xml: string) {
+  const started = performance.now();
   const container = document.createElement('div');
-  const modeler = new Modeler({ container });
+  let modeler: Modeler | undefined;
   try {
+    const { default: BPMNModeler } = await import('bpmn-js/lib/Modeler');
+    modeler = new BPMNModeler({ container });
     const { warnings } = await modeler.importXML(xml);
     if (warnings.length)
       throw new Error(
@@ -61,7 +66,8 @@ async function checkImport(xml: string) {
       'Не удалось импортировать BPMN. Проверьте XML и поддерживаемые элементы схемы.',
     );
   } finally {
-    modeler.destroy();
+    recordBpmnImport(started, 'check');
+    modeler?.destroy();
   }
 }
 
@@ -114,6 +120,10 @@ export default function App() {
   const [examplesOpen, setExamplesOpen] = useState(false);
   const [proposal, setProposal] = useState<Result | null>(null);
   const [showTools, setShowTools] = useState(false);
+  const [editorReady, setEditorReady] = useState(false);
+  useEffect(() => {
+    if (!xml) setEditorReady(false);
+  }, [xml]);
   const [panelCollapsed, setPanelCollapsed] = useState(false);
   useEffect(() => {
     if (pending || editPreview || error) setPanelCollapsed(false);
@@ -467,7 +477,7 @@ export default function App() {
   const node = process?.nodes.find((n) => n.id === selected);
   const ready = !!xml;
   const aiReady = ready && !!process && !pending && !busy && !editPreview;
-  const blocking = !!busy;
+  const blocking = !!busy || (ready && !editorReady);
   const pendingCritical = !!pending?.ambiguities.some((a) => a.severity === 'critical');
   const displayedAssumptions = [
     ...new Map([
@@ -632,11 +642,13 @@ export default function App() {
         >
           {ready ? (
             <>
+              <Suspense fallback={<div className="bpmn-canvas" role="status" aria-busy="true">Загрузка редактора BPMN…</div>}>
               <Editor
                 ref={editor}
                 xml={xml}
                 showTools={showTools}
                 onSelect={setSelected}
+                onReady={setEditorReady}
                 onError={setError}
                 onChange={() => {
                   setDirty(true);
@@ -645,6 +657,7 @@ export default function App() {
                   setSelected(null);
                 }}
               />
+              </Suspense>
               <div className="canvas-heading">
                 <span className="status-dot" />
                 BPMN 2.0<span className="muted">Редактируемая модель</span>

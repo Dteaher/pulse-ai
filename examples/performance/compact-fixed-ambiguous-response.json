@@ -1,0 +1,18 @@
+{
+  "detail": "Провайдер вернул HTTP 400. Проверьте модель, endpoint и поддержку Structured Outputs.",
+  "human_message": "Провайдер вернул HTTP 400. Проверьте модель, endpoint и поддержку Structured Outputs.",
+  "diagnostics": [
+    {
+      "code": "LLM_HTTP_400",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "INTEROPERABILITY_ERROR",
+      "category": "llm_transport",
+      "suggested_fix": "Проверьте доступность модели и повторите запрос.",
+      "message": "Провайдер вернул HTTP 400. Проверьте модель, endpoint и поддержку Structured Outputs.",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "2c22ac93ab7349cdb27c6375398f003f"
+}

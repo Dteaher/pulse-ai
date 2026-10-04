@@ -11,4 +11,6 @@ class MultiAIProvider(OpenAICompatibleProvider):
         self.reasoning_effort = reasoning_effort
 
     def request_options(self):
-        return {'reasoning_effort': self.reasoning_effort} if self.reasoning_effort else {}
+        operation = 'corrective' if getattr(self, '_corrective', False) else getattr(self, '_operation', '')
+        effort = getattr(self, 'reasoning_by_operation', {}).get(operation) or self.reasoning_effort
+        return {'reasoning_effort': effort} if effort else {}

@@ -11,6 +11,7 @@ from time import perf_counter
 from lxml import etree as E
 from .models import Issue
 from .bpmn import NS, REVERSE, parse_xml, validate_xml
+from .telemetry import add_stage
 
 logger = logging.getLogger('pulse.validation')
 FLOW_NODES = set(REVERSE)
@@ -40,6 +41,7 @@ def validate_xsd(xml: str) -> list[Issue]:
 
 
 def validate_document(xml: str, *, complete_di=False, check_xsd=True) -> list[Issue]:
+    reference_started = perf_counter()
     issues = validate_xsd(xml) if check_xsd else []
     if issues:
         return issues
@@ -210,6 +212,8 @@ def validate_document(xml: str, *, complete_di=False, check_xsd=True) -> list[Is
         if local(source) == 'startEvent' or local(target) == 'endEvent' or (local(source) in EVENTS and source.find('bpmn:messageEventDefinition', NS) is None) or local(source) == 'intermediateCatchEvent' or (local(target) == 'intermediateThrowEvent'):
             add('INVALID_MESSAGE_ENDPOINT', 'Message Flow имеет недопустимое отправляющее/получающее событие.', message, '§9.4.1; §10.5')
 
+    add_stage('reference_validation_ms', reference_started)
+    di_started = perf_counter()
     rendered = set()
     planes = root.findall('.//bpmndi:BPMNPlane', NS)
     for plane in planes:
@@ -242,6 +246,7 @@ def validate_document(xml: str, *, complete_di=False, check_xsd=True) -> list[Is
         expected = {el.get('id') for el in elements if E.QName(el).namespace == NS['bpmn'] and local(el) in FLOW_NODES | {'lane', 'participant', 'sequenceFlow', 'messageFlow'}}
         for key in expected - rendered:
             add('MISSING_DI_ELEMENT', 'Профиль полного экспорта PULSE требует Shape/Edge для каждого элемента.', index[key], '§12.1 (частичные diagrams допустимы)', 'LAYOUT')
+    add_stage('di_validation_ms', di_started)
     for issue in issues:
         logger.debug('bpmn_document code=%s element=%s severity=%s source=%s spec=%s', issue.code, issue.node_id, issue.severity, issue.source, issue.spec_section)
     return issues

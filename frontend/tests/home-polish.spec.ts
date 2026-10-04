@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import fs from 'node:fs';
 
 test('home polish: laptop layouts, examples, keyboard generation and entire brand link', async ({

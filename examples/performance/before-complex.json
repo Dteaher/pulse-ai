@@ -1,0 +1,84 @@
+{
+  "phase": "before",
+  "case": "complex",
+  "input_sha256": "d9c957cb849af732448b886e83d3e2ce400739378f8759b7488a9fded2792ed2",
+  "request_total_ms": 325677.25,
+  "status": 200,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 3
+  },
+  "timings": {
+    "ambiguity_analysis_ms": 18978.21,
+    "llm_parse_ms": 306625.63,
+    "normalization_ms": 1.2799999999999998,
+    "semantic_validation_ms": 3.54,
+    "bpmn_build_ms": 38.43,
+    "xsd_validation_ms": 0.92,
+    "post_validation_ms": 6.32,
+    "total_ms": 325654.7
+  },
+  "performance": null,
+  "calls": [
+    {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "prompt_sha256": "46df8a5de1a664bce8e7929383a2f03bfb012696d2c245b4f84f6352915bd580",
+      "system_prompt_chars": 2187,
+      "user_payload_chars": 964,
+      "request_chars": 5645,
+      "max_tokens": 8000,
+      "schema": "AmbiguityAnalysis",
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 135,
+        "prompt_tokens": 1180,
+        "total_tokens": 1315
+      },
+      "finish_reason": "stop",
+      "duration_ms": 18437.78
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "prompt_sha256": "b7c210e8e8b18201a7fee65e928b0ce5f2f89628ed31e852edd59f2c1ea04d98",
+      "system_prompt_chars": 13395,
+      "user_payload_chars": 2082,
+      "request_chars": 21633,
+      "max_tokens": 8000,
+      "schema": "ProcessDefinition",
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 4472,
+        "prompt_tokens": 4638,
+        "total_tokens": 9110
+      },
+      "finish_reason": "stop",
+      "duration_ms": 160110.56
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "prompt_sha256": "f3c40a81de1429c39d836970937281c16dd873c3045dd1c1227e22075734fa88",
+      "system_prompt_chars": 13395,
+      "user_payload_chars": 19641,
+      "request_chars": 41573,
+      "max_tokens": 8000,
+      "schema": "ProcessDefinition",
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 4421,
+        "prompt_tokens": 8963,
+        "total_tokens": 13384
+      },
+      "finish_reason": "stop",
+      "duration_ms": 145623.03
+    }
+  ],
+  "questions": 0,
+  "bpmn": true,
+  "graph_attempts": 2,
+  "process_definition_size": 18867
+}

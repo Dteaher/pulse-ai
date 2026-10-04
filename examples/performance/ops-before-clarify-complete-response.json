@@ -1,0 +1,311 @@
+{
+  "process": {
+    "id": "process_1",
+    "name": "Обработка заявки",
+    "description": "Оператор принимает заявку. Юрист и инженер проверяют заявку, но порядок их проверок не определён. После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано. После успешных проверок оператор выдаёт договор и завершает работу.",
+    "participants": [
+      {
+        "id": "operator",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "organization_pool"
+      },
+      {
+        "id": "lawyer",
+        "name": "Юрист",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "organization_pool"
+      },
+      {
+        "id": "engineer",
+        "name": "Инженер",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "organization_pool"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "start_event_1",
+        "type": "start_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Начало процесса",
+        "participant_id": "operator",
+        "source_text": "",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "task_accept_application",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Принять заявку",
+        "participant_id": "operator",
+        "source_text": "Оператор принимает заявку.",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "gateway_parallel_split_1",
+        "type": "parallel_gateway",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Разделение проверок",
+        "participant_id": "operator",
+        "source_text": "",
+        "confidence": "medium",
+        "inferred": true
+      },
+      {
+        "id": "task_check_lawyer",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить заявку (Юрист)",
+        "participant_id": "lawyer",
+        "source_text": "Юрист проверяет заявку",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "task_check_engineer",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить заявку (Инженер)",
+        "participant_id": "engineer",
+        "source_text": "инженер проверяют заявку",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "gateway_parallel_join_1",
+        "type": "parallel_gateway",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Объединение проверок",
+        "participant_id": "operator",
+        "source_text": "",
+        "confidence": "medium",
+        "inferred": true
+      },
+      {
+        "id": "gateway_check_result",
+        "type": "exclusive_gateway",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Результат проверки",
+        "participant_id": "operator",
+        "source_text": "",
+        "confidence": "medium",
+        "inferred": true
+      },
+      {
+        "id": "task_process_defects",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Доработать заявку",
+        "participant_id": "operator",
+        "source_text": "заявка дорабатывается",
+        "confidence": "medium",
+        "inferred": true
+      },
+      {
+        "id": "task_recheck_application",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Повторно проверить заявку",
+        "participant_id": "operator",
+        "source_text": "повторную проверку",
+        "confidence": "medium",
+        "inferred": true
+      },
+      {
+        "id": "task_issue_contract",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Выдать договор",
+        "participant_id": "operator",
+        "source_text": "оператор выдаёт договор",
+        "confidence": "medium",
+        "inferred": false
+      },
+      {
+        "id": "end_event_success",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Работа завершена",
+        "participant_id": "operator",
+        "source_text": "завершает работу",
+        "confidence": "medium",
+        "inferred": false
+      }
+    ],
+    "flows": [
+      {
+        "id": "flow_start_to_accept",
+        "source": "start_event_1",
+        "target": "task_accept_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_accept_to_split",
+        "source": "task_accept_application",
+        "target": "gateway_parallel_split_1",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_split_to_lawyer_check",
+        "source": "gateway_parallel_split_1",
+        "target": "task_check_lawyer",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_split_to_engineer_check",
+        "source": "gateway_parallel_split_1",
+        "target": "task_check_engineer",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_lawyer_check_to_join",
+        "source": "task_check_lawyer",
+        "target": "gateway_parallel_join_1",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_engineer_check_to_join",
+        "source": "task_check_engineer",
+        "target": "gateway_parallel_join_1",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_join_to_gateway_check_result",
+        "source": "gateway_parallel_join_1",
+        "target": "gateway_check_result",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_check_result_to_process_defects",
+        "source": "gateway_check_result",
+        "target": "task_process_defects",
+        "name": "Есть замечания",
+        "condition": "Замечания обнаружены",
+        "is_default": false
+      },
+      {
+        "id": "flow_process_defects_to_recheck",
+        "source": "task_process_defects",
+        "target": "task_recheck_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_recheck_to_check_result",
+        "source": "task_recheck_application",
+        "target": "gateway_check_result",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_check_result_to_issue_contract",
+        "source": "gateway_check_result",
+        "target": "task_issue_contract",
+        "name": "Замечаний нет",
+        "condition": "Замечаний нет",
+        "is_default": true
+      },
+      {
+        "id": "flow_issue_contract_to_end",
+        "source": "task_issue_contract",
+        "target": "end_event_success",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "organization_pool",
+        "name": "Организация",
+        "kind": "internal"
+      }
+    ],
+    "message_flows": [],
+    "ambiguities": [],
+    "assumptions": [
+      {
+        "id": "A1_assumption_1",
+        "text": "Юрист и инженер проверяют заявку параллельно.",
+        "source": "user_accepted",
+        "confidence": 0.5
+      },
+      {
+        "id": "A1_assumption_2",
+        "text": "Оператор принимает заявку после обеих проверок юриста и инженера.",
+        "source": "user_accepted",
+        "confidence": 0.5
+      },
+      {
+        "id": "A3_assumption_1",
+        "text": "Оператор дорабатывает заявку после замечаний юриста или инженера.",
+        "source": "user_accepted",
+        "confidence": 0.5
+      },
+      {
+        "id": "A3_assumption_2",
+        "text": "Оператор выполняет повторную проверку заявки после доработки.",
+        "source": "user_accepted",
+        "confidence": 0.5
+      }
+    ]
+  },
+  "ambiguities": [],
+  "xml": "<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"Definitions\" targetNamespace=\"https://pulse.local/bpmn\" exporter=\"PULSE\" exporterVersion=\"0.2\">\n  <bpmn:process id=\"Process_organization_pool\" name=\"Организация\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"LaneSet\">\n      <bpmn:lane id=\"operator\" name=\"Оператор\">\n        <bpmn:flowNodeRef>start_event_1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_accept_application</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_parallel_split_1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_parallel_join_1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_check_result</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_process_defects</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_recheck_application</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_issue_contract</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>end_event_success</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"lawyer\" name=\"Юрист\">\n        <bpmn:flowNodeRef>task_check_lawyer</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"engineer\" name=\"Инженер\">\n        <bpmn:flowNodeRef>task_check_engineer</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"start_event_1\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>flow_start_to_accept</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:userTask id=\"task_accept_application\" name=\"Принять заявку\">\n      <bpmn:documentation>Оператор принимает заявку.</bpmn:documentation>\n      <bpmn:incoming>flow_start_to_accept</bpmn:incoming>\n      <bpmn:outgoing>flow_accept_to_split</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"gateway_parallel_split_1\" name=\"Разделение проверок\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>flow_accept_to_split</bpmn:incoming>\n      <bpmn:outgoing>flow_split_to_lawyer_check</bpmn:outgoing>\n      <bpmn:outgoing>flow_split_to_engineer_check</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"task_check_lawyer\" name=\"Проверить заявку (Юрист)\">\n      <bpmn:documentation>Юрист проверяет заявку</bpmn:documentation>\n      <bpmn:incoming>flow_split_to_lawyer_check</bpmn:incoming>\n      <bpmn:outgoing>flow_lawyer_check_to_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_check_engineer\" name=\"Проверить заявку (Инженер)\">\n      <bpmn:documentation>инженер проверяют заявку</bpmn:documentation>\n      <bpmn:incoming>flow_split_to_engineer_check</bpmn:incoming>\n      <bpmn:outgoing>flow_engineer_check_to_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"gateway_parallel_join_1\" name=\"Объединение проверок\" gatewayDirection=\"Converging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>flow_lawyer_check_to_join</bpmn:incoming>\n      <bpmn:incoming>flow_engineer_check_to_join</bpmn:incoming>\n      <bpmn:outgoing>flow_join_to_gateway_check_result</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:exclusiveGateway id=\"gateway_check_result\" name=\"Результат проверки\" gatewayDirection=\"Mixed\" default=\"flow_check_result_to_issue_contract\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>flow_join_to_gateway_check_result</bpmn:incoming>\n      <bpmn:incoming>flow_recheck_to_check_result</bpmn:incoming>\n      <bpmn:outgoing>flow_check_result_to_process_defects</bpmn:outgoing>\n      <bpmn:outgoing>flow_check_result_to_issue_contract</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:userTask id=\"task_process_defects\" name=\"Доработать заявку\">\n      <bpmn:documentation>заявка дорабатывается</bpmn:documentation>\n      <bpmn:incoming>flow_check_result_to_process_defects</bpmn:incoming>\n      <bpmn:outgoing>flow_process_defects_to_recheck</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_recheck_application\" name=\"Повторно проверить заявку\">\n      <bpmn:documentation>повторную проверку</bpmn:documentation>\n      <bpmn:incoming>flow_process_defects_to_recheck</bpmn:incoming>\n      <bpmn:outgoing>flow_recheck_to_check_result</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_issue_contract\" name=\"Выдать договор\">\n      <bpmn:documentation>оператор выдаёт договор</bpmn:documentation>\n      <bpmn:incoming>flow_check_result_to_issue_contract</bpmn:incoming>\n      <bpmn:outgoing>flow_issue_contract_to_end</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:endEvent id=\"end_event_success\" name=\"Работа завершена\">\n      <bpmn:documentation>завершает работу</bpmn:documentation>\n      <bpmn:incoming>flow_issue_contract_to_end</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"flow_start_to_accept\" sourceRef=\"start_event_1\" targetRef=\"task_accept_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_accept_to_split\" sourceRef=\"task_accept_application\" targetRef=\"gateway_parallel_split_1\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_split_to_lawyer_check\" sourceRef=\"gateway_parallel_split_1\" targetRef=\"task_check_lawyer\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_split_to_engineer_check\" sourceRef=\"gateway_parallel_split_1\" targetRef=\"task_check_engineer\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_lawyer_check_to_join\" sourceRef=\"task_check_lawyer\" targetRef=\"gateway_parallel_join_1\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_engineer_check_to_join\" sourceRef=\"task_check_engineer\" targetRef=\"gateway_parallel_join_1\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_join_to_gateway_check_result\" sourceRef=\"gateway_parallel_join_1\" targetRef=\"gateway_check_result\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_check_result_to_process_defects\" sourceRef=\"gateway_check_result\" targetRef=\"task_process_defects\" name=\"Есть замечания\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tExpression\">\n        <bpmn:documentation>Замечания обнаружены</bpmn:documentation>\n      </bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"flow_process_defects_to_recheck\" sourceRef=\"task_process_defects\" targetRef=\"task_recheck_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_recheck_to_check_result\" sourceRef=\"task_recheck_application\" targetRef=\"gateway_check_result\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_check_result_to_issue_contract\" sourceRef=\"gateway_check_result\" targetRef=\"task_issue_contract\" name=\"Замечаний нет\"/>\n    <bpmn:sequenceFlow id=\"flow_issue_contract_to_end\" sourceRef=\"task_issue_contract\" targetRef=\"end_event_success\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:collaboration id=\"process_1\" name=\"Обработка заявки\">\n    <bpmn:documentation>Оператор принимает заявку. Юрист и инженер проверяют заявку, но порядок их проверок не определён. После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано. После успешных проверок оператор выдаёт договор и завершает работу.</bpmn:documentation>\n    <bpmn:documentation>PULSE_ASSUMPTIONS:[{\"id\": \"A1_assumption_1\", \"text\": \"Юрист и инженер проверяют заявку параллельно.\", \"source\": \"user_accepted\", \"confidence\": 0.5}, {\"id\": \"A1_assumption_2\", \"text\": \"Оператор принимает заявку после обеих проверок юриста и инженера.\", \"source\": \"user_accepted\", \"confidence\": 0.5}, {\"id\": \"A3_assumption_1\", \"text\": \"Оператор дорабатывает заявку после замечаний юриста или инженера.\", \"source\": \"user_accepted\", \"confidence\": 0.5}, {\"id\": \"A3_assumption_2\", \"text\": \"Оператор выполняет повторную проверку заявки после доработки.\", \"source\": \"user_accepted\", \"confidence\": 0.5}]</bpmn:documentation>\n    <bpmn:participant id=\"organization_pool\" name=\"Организация\" processRef=\"Process_organization_pool\">\n      <bpmn:documentation>PULSE:{\"kind\": \"internal\", \"roles\": [{\"id\": \"operator\", \"name\": \"Оператор\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"organization_pool\"}, {\"id\": \"lawyer\", \"name\": \"Юрист\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"organization_pool\"}, {\"id\": \"engineer\", \"name\": \"Инженер\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"organization_pool\"}]}</bpmn:documentation>\n    </bpmn:participant>\n  </bpmn:collaboration>\n  <bpmndi:BPMNDiagram id=\"Diagram\">\n    <bpmndi:BPMNPlane id=\"Plane\" bpmnElement=\"process_1\">\n      <bpmndi:BPMNShape id=\"Shape_organization_pool\" bpmnElement=\"organization_pool\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"70\" width=\"1660\" height=\"780\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_operator\" bpmnElement=\"operator\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"70\" width=\"1630\" height=\"340\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_lawyer\" bpmnElement=\"lawyer\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"410\" width=\"1630\" height=\"220\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_engineer\" bpmnElement=\"engineer\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"630\" width=\"1630\" height=\"220\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_start_event_1\" bpmnElement=\"start_event_1\">\n        <dc:Bounds x=\"241.0\" y=\"253.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_accept_application\" bpmnElement=\"task_accept_application\">\n        <dc:Bounds x=\"380.0\" y=\"232.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_parallel_split_1\" bpmnElement=\"gateway_parallel_split_1\">\n        <dc:Bounds x=\"614.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_check_lawyer\" bpmnElement=\"task_check_lawyer\">\n        <dc:Bounds x=\"760.0\" y=\"512.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_check_engineer\" bpmnElement=\"task_check_engineer\">\n        <dc:Bounds x=\"760.0\" y=\"732.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_parallel_join_1\" bpmnElement=\"gateway_parallel_join_1\">\n        <dc:Bounds x=\"994.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_check_result\" bpmnElement=\"gateway_check_result\">\n        <dc:Bounds x=\"1184.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_process_defects\" bpmnElement=\"task_process_defects\">\n        <dc:Bounds x=\"1330.0\" y=\"186.66666666666669\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_recheck_application\" bpmnElement=\"task_recheck_application\">\n        <dc:Bounds x=\"1520.0\" y=\"186.66666666666669\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_issue_contract\" bpmnElement=\"task_issue_contract\">\n        <dc:Bounds x=\"1330.0\" y=\"278.33333333333337\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_event_success\" bpmnElement=\"end_event_success\">\n        <dc:Bounds x=\"1571.0\" y=\"299.33333333333337\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"Edge_flow_start_to_accept\" bpmnElement=\"flow_start_to_accept\">\n        <di:waypoint x=\"279.0\" y=\"272.5\"/>\n        <di:waypoint x=\"380.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_accept_to_split\" bpmnElement=\"flow_accept_to_split\">\n        <di:waypoint x=\"520.0\" y=\"272.5\"/>\n        <di:waypoint x=\"614.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_split_to_lawyer_check\" bpmnElement=\"flow_split_to_lawyer_check\">\n        <di:waypoint x=\"666.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"552.5\"/>\n        <di:waypoint x=\"760.0\" y=\"552.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_split_to_engineer_check\" bpmnElement=\"flow_split_to_engineer_check\">\n        <di:waypoint x=\"666.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"772.5\"/>\n        <di:waypoint x=\"760.0\" y=\"772.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_lawyer_check_to_join\" bpmnElement=\"flow_lawyer_check_to_join\">\n        <di:waypoint x=\"900.0\" y=\"552.5\"/>\n        <di:waypoint x=\"935.0\" y=\"552.5\"/>\n        <di:waypoint x=\"935.0\" y=\"272.5\"/>\n        <di:waypoint x=\"994.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_engineer_check_to_join\" bpmnElement=\"flow_engineer_check_to_join\">\n        <di:waypoint x=\"900.0\" y=\"772.5\"/>\n        <di:waypoint x=\"935.0\" y=\"772.5\"/>\n        <di:waypoint x=\"935.0\" y=\"272.5\"/>\n        <di:waypoint x=\"994.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_join_to_gateway_check_result\" bpmnElement=\"flow_join_to_gateway_check_result\">\n        <di:waypoint x=\"1046.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1184.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_check_result_to_process_defects\" bpmnElement=\"flow_check_result_to_process_defects\">\n        <di:waypoint x=\"1236.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"1330.0\" y=\"226.66666666666669\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1679.0\" y=\"232.5\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_process_defects_to_recheck\" bpmnElement=\"flow_process_defects_to_recheck\">\n        <di:waypoint x=\"1470.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"1520.0\" y=\"226.66666666666669\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_recheck_to_check_result\" bpmnElement=\"flow_recheck_to_check_result\">\n        <di:waypoint x=\"1590.0\" y=\"186.66666666666669\"/>\n        <di:waypoint x=\"1590.0\" y=\"96\"/>\n        <di:waypoint x=\"1210.0\" y=\"96\"/>\n        <di:waypoint x=\"1210.0\" y=\"246.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_check_result_to_issue_contract\" bpmnElement=\"flow_check_result_to_issue_contract\">\n        <di:waypoint x=\"1236.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"318.33333333333337\"/>\n        <di:waypoint x=\"1330.0\" y=\"318.33333333333337\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"809.0\" y=\"232.5\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_issue_contract_to_end\" bpmnElement=\"flow_issue_contract_to_end\">\n        <di:waypoint x=\"1470.0\" y=\"318.33333333333337\"/>\n        <di:waypoint x=\"1571.0\" y=\"318.33333333333337\"/>\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+  "attempts": 1,
+  "semantic_warnings": [],
+  "diagnostics": [],
+  "timings": {
+    "ambiguity_analysis_ms": 12885.04,
+    "llm_parse_ms": 6102.96,
+    "normalization_ms": 0.25,
+    "semantic_validation_ms": 1.48,
+    "bpmn_build_ms": 17.21,
+    "xsd_validation_ms": 0.4,
+    "post_validation_ms": 2.22,
+    "total_ms": 19009.65
+  },
+  "metadata": {
+    "provider_used": "vertex_gemini",
+    "model_used": "gemini-2.5-flash",
+    "fallback_used": true,
+    "attempts": 3
+  },
+  "clarification_round": 2,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": [],
+  "changes": []
+}

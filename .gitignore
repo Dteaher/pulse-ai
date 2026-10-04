@@ -8,4 +8,5 @@ dist/
 test-results/
 playwright-report/
 .runtime/
+.llm-debug/
 *.tsbuildinfo

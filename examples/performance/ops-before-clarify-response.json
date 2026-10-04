@@ -1,0 +1,106 @@
+{
+  "process": null,
+  "preflight": {
+    "original_text": "Оператор принимает заявку. Юрист и инженер проверяют заявку, но порядок их проверок не определён. После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано. После успешных проверок оператор выдаёт договор и завершает работу.",
+    "analysis": {
+      "ambiguities": [
+        {
+          "id": "A3",
+          "question": "Кто дорабатывает заявку после замечаний юриста или инженера?",
+          "type": "unclear_participant",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Оператор",
+            "Заявитель",
+            "Ответственный сотрудник"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Без исполнителя доработки невозможно определить, кто выполняет обязательный шаг перед повторной проверкой.",
+          "source_excerpt": "После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано.",
+          "related_participants": [
+            "Юрист",
+            "Инженер",
+            "Оператор"
+          ]
+        }
+      ],
+      "assumptions": [],
+      "superseded_assumption_ids": []
+    },
+    "answers": {
+      "A1": "{\"question\": \"Проверки юриста и инженера выполняются параллельно или последовательно? Если последовательно, кто проверяет первым?\", \"answer\": \"Оператор выполняет повторную проверку документов. Юрист и инженер проверяют параллельно; после обеих проверок оператор принимает заявку.\"}",
+      "A2": "{\"question\": \"Кто выполняет повторную проверку после доработки заявки?\", \"answer\": \"Оператор выполняет повторную проверку документов. Юрист и инженер проверяют параллельно; после обеих проверок оператор принимает заявку.\"}"
+    }
+  },
+  "ambiguities": [
+    {
+      "id": "A3",
+      "question": "Кто дорабатывает заявку после замечаний юриста или инженера?",
+      "type": "unclear_participant",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Оператор",
+        "Заявитель",
+        "Ответственный сотрудник"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Без исполнителя доработки невозможно определить, кто выполняет обязательный шаг перед повторной проверкой.",
+      "source_excerpt": "После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано.",
+      "related_participants": [
+        "Юрист",
+        "Инженер",
+        "Оператор"
+      ]
+    }
+  ],
+  "xml": null,
+  "attempts": 0,
+  "status": "clarification_required",
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "timings": {
+    "llm_parse_ms": 0,
+    "normalization_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "xsd_validation_ms": 0,
+    "post_validation_ms": 0,
+    "ambiguity_analysis_ms": 28232.77,
+    "total_ms": 28232.77
+  },
+  "clarification_round": 1,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": [],
+  "changes": [],
+  "human_message": "Перед построением схемы нужно уточнить бизнес-информацию.",
+  "diagnostics": [
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Кто дорабатывает заявку после замечаний юриста или инженера?",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ]
+}

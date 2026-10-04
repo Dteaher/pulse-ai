@@ -1,0 +1,165 @@
+{
+  "process": null,
+  "preflight": {
+    "original_text": "Клиент подаёт заявку на подключение объекта.\nОператор получает заявку и проверяет документы.\nЕсли документов не хватает или они заполнены неправильно,\nоператор возвращает заявку клиенту на доработку.\nКлиент исправляет документы и повторно отправляет их оператору.\n\nЕсли документы корректны,\nюридический отдел и служба безопасности одновременно проверяют заявку.\nПосле завершения обеих проверок руководитель принимает решение.\n\nЕсли заявка отклонена,\nоператор отправляет клиенту уведомление об отказе,\nпосле чего процесс завершается.\n\nЕсли заявка одобрена,\nменеджер формирует договор и отправляет его клиенту.\n\nКлиент проверяет договор.\nЕсли клиент не согласен,\nон возвращает договор менеджеру на доработку.\nМенеджер изменяет договор и повторно отправляет клиенту.\n\nЕсли клиент согласен,\nон подписывает договор и отправляет менеджеру.\nМенеджер регистрирует договор,\nпосле чего процесс завершается.",
+    "analysis": {
+      "ambiguities": [
+        {
+          "id": "A1",
+          "question": "Кто принимает решение, если заявка отклонена юридическим отделом или службой безопасности?",
+          "type": "unclear_condition",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Руководитель",
+            "Юридический отдел",
+            "Служба безопасности",
+            "Оператор"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Неясно, кто именно принимает решение об отклонении заявки после проверок, если руководитель только принимает решение по их результатам, а не об отклонении напрямую.",
+          "source_excerpt": "Юридический отдел и служба безопасности одновременно проверяют заявку. После завершения обеих проверок руководитель принимает решение.",
+          "related_participants": [
+            "Руководитель",
+            "Юридический отдел",
+            "Служба безопасности"
+          ]
+        },
+        {
+          "id": "A2",
+          "question": "Какой результат возврата договора менеджером клиенту на доработку?",
+          "type": "unclear_end",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Клиент снова проверяет договор",
+            "Клиент может не согласиться снова",
+            "Процесс завершается отказом"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Неясно, что происходит после того, как менеджер изменяет и повторно отправляет договор клиенту.",
+          "source_excerpt": "Менеджер изменяет договор и повторно отправляет клиенту.",
+          "related_participants": [
+            "Менеджер",
+            "Клиент"
+          ]
+        }
+      ],
+      "assumptions": [],
+      "superseded_assumption_ids": []
+    },
+    "answers": {}
+  },
+  "ambiguities": [
+    {
+      "id": "A1",
+      "question": "Кто принимает решение, если заявка отклонена юридическим отделом или службой безопасности?",
+      "type": "unclear_condition",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Руководитель",
+        "Юридический отдел",
+        "Служба безопасности",
+        "Оператор"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Неясно, кто именно принимает решение об отклонении заявки после проверок, если руководитель только принимает решение по их результатам, а не об отклонении напрямую.",
+      "source_excerpt": "Юридический отдел и служба безопасности одновременно проверяют заявку. После завершения обеих проверок руководитель принимает решение.",
+      "related_participants": [
+        "Руководитель",
+        "Юридический отдел",
+        "Служба безопасности"
+      ]
+    },
+    {
+      "id": "A2",
+      "question": "Какой результат возврата договора менеджером клиенту на доработку?",
+      "type": "unclear_end",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Клиент снова проверяет договор",
+        "Клиент может не согласиться снова",
+        "Процесс завершается отказом"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Неясно, что происходит после того, как менеджер изменяет и повторно отправляет договор клиенту.",
+      "source_excerpt": "Менеджер изменяет договор и повторно отправляет клиенту.",
+      "related_participants": [
+        "Менеджер",
+        "Клиент"
+      ]
+    }
+  ],
+  "xml": null,
+  "attempts": 0,
+  "status": "clarification_required",
+  "metadata": {
+    "provider_used": "vertex_gemini",
+    "model_used": "gemini-2.5-flash",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "timings": {
+    "llm_parse_ms": 0,
+    "normalization_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "xsd_validation_ms": 0,
+    "post_validation_ms": 0,
+    "ambiguity_analysis_ms": 37127.24,
+    "total_ms": 37127.24
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": [],
+  "changes": [],
+  "human_message": "Перед построением схемы нужно уточнить бизнес-информацию.",
+  "diagnostics": [
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Кто принимает решение, если заявка отклонена юридическим отделом или службой безопасности?",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Какой результат возврата договора менеджером клиенту на доработку?",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ]
+}

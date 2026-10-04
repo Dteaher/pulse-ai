@@ -1,0 +1,100 @@
+{
+  "phase": "after-safe",
+  "case": "medium",
+  "input_sha256": "55e6ca33c5e09747dfd9465f7bf254c31def8b79a7f3211b7c1019704e2fae1e",
+  "request_total_ms": 35885.84,
+  "status": 200,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "timings": {
+    "llm_parse_ms": 0,
+    "normalization_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "xsd_validation_ms": 0,
+    "post_validation_ms": 0,
+    "ambiguity_analysis_ms": 35868.96,
+    "total_ms": 35868.96
+  },
+  "performance": {
+    "request_total_ms": 35883.57,
+    "ambiguity_analysis_ms": 35868.96,
+    "combined_preparation_ms": 0,
+    "clarify_generation_ms": 0,
+    "llm_primary_ms": 35868.19,
+    "llm_corrective_ms": 0,
+    "llm_fallback_ms": 0,
+    "normalization_ms": 0,
+    "process_validation_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "reference_validation_ms": 0,
+    "xsd_validation_ms": 0,
+    "di_validation_ms": 0,
+    "doctor_ms": 0,
+    "modify_ms": 0,
+    "serialization_ms": 0.42,
+    "calls": [
+      {
+        "provider": "multiai",
+        "model": "gpt-6.1-sol",
+        "operation": "ambiguity",
+        "reasoning_effort": "low",
+        "system_prompt_chars": 2187,
+        "user_payload_chars": 633,
+        "prompt_size_chars": 2820,
+        "schema_chars": 2207,
+        "max_tokens": 1500,
+        "corrective": false,
+        "json_corrective": false,
+        "fallback": false,
+        "input_tokens": 1068,
+        "output_tokens": 508,
+        "http_status": 200,
+        "response_model": "gpt-6.1-sol",
+        "reasoning_tokens": null,
+        "http_attempts": 1,
+        "duration_ms": 35868.19
+      }
+    ],
+    "attempt_count": 1,
+    "corrective_retry_count": 0,
+    "validation_error_count": 0,
+    "validation_codes": [],
+    "process_definition_size": null,
+    "fallback_used": false,
+    "input_tokens": 1068,
+    "output_tokens": 508,
+    "usage_complete": true,
+    "cache_hit": false,
+    "deduplicated": false
+  },
+  "calls": [
+    {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "prompt_sha256": "30ad6c0a99603061e6cde3f2094ca1ebe0bf559c10bd07eb96f55fb68e2876d2",
+      "system_prompt_chars": 2187,
+      "user_payload_chars": 633,
+      "request_chars": 5289,
+      "max_tokens": 1500,
+      "schema": "AmbiguityAnalysis",
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 508,
+        "prompt_tokens": 1068,
+        "total_tokens": 1576
+      },
+      "finish_reason": "stop",
+      "duration_ms": 35867.71
+    }
+  ],
+  "questions": 1,
+  "bpmn": false,
+  "graph_attempts": 0,
+  "process_definition_size": 4
+}

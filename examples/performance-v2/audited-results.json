@@ -1,0 +1,290 @@
+{
+  "oracle_sha256": "ab1710b900ecbbe02eed8351d662fd6e7da91eb4a5749e8e770e7492183df248",
+  "cohort": "same three texts; no cache; no fallback; equal 180s call timeout; one measurement per case, not a stability/performance percentile",
+  "quality_policy": "Explicit tasks need source_text; receive tasks may instead have a concrete incoming Message Flow, as in the frozen six-role reference.",
+  "cases": {
+    "multiai-separate-simple": {
+      "elapsed_ms": 68565.2,
+      "status": 200,
+      "quality": {
+        "graph_errors": [],
+        "pools": 1,
+        "roles": 1,
+        "tasks": 4,
+        "messages": 0,
+        "conditions": 2,
+        "business_loop_groups": 0,
+        "invariants": {
+          "one_role": true,
+          "register_check_accept_reject": true,
+          "xor": true,
+          "two_conditions": true
+        },
+        "passed": true
+      },
+      "first_pass_validator_success": true,
+      "first_pass_quality_passed": true,
+      "input_tokens": 5191,
+      "output_tokens": 985,
+      "usage_complete": true
+    },
+    "multiai-separate-complex": {
+      "elapsed_ms": 187571.13,
+      "status": 502,
+      "quality": {
+        "passed": false,
+        "reason": "No validated complex BPMN: timeout or unnecessary critical questions"
+      },
+      "first_pass_validator_success": null,
+      "first_pass_quality_passed": null,
+      "input_tokens": 1180,
+      "output_tokens": 51,
+      "usage_complete": false
+    },
+    "multiai-separate-ambiguous": {
+      "elapsed_ms": 21963.49,
+      "status": 200,
+      "quality": {
+        "passed": true,
+        "invariants": {
+          "order_question": true,
+          "recheck_actor_question": true
+        }
+      },
+      "first_pass_validator_success": null,
+      "first_pass_quality_passed": null,
+      "input_tokens": 1009,
+      "output_tokens": 270,
+      "usage_complete": true
+    },
+    "multiai-combined-simple": {
+      "elapsed_ms": 37688.66,
+      "status": 200,
+      "quality": {
+        "graph_errors": [],
+        "pools": 1,
+        "roles": 1,
+        "tasks": 4,
+        "messages": 0,
+        "conditions": 2,
+        "business_loop_groups": 0,
+        "invariants": {
+          "one_role": true,
+          "register_check_accept_reject": true,
+          "xor": true,
+          "two_conditions": true
+        },
+        "passed": true
+      },
+      "first_pass_validator_success": true,
+      "first_pass_quality_passed": true,
+      "input_tokens": 5121,
+      "output_tokens": 919,
+      "usage_complete": true
+    },
+    "multiai-combined-complex": {
+      "elapsed_ms": 180010.94,
+      "status": 502,
+      "quality": {
+        "passed": false,
+        "reason": "No validated complex BPMN: timeout or unnecessary critical questions"
+      },
+      "first_pass_validator_success": null,
+      "first_pass_quality_passed": null,
+      "input_tokens": 5308,
+      "output_tokens": 490,
+      "usage_complete": false
+    },
+    "multiai-combined-ambiguous": {
+      "elapsed_ms": 48409.23,
+      "status": 200,
+      "quality": {
+        "passed": true,
+        "invariants": {
+          "order_question": true,
+          "recheck_actor_question": true
+        }
+      },
+      "first_pass_validator_success": null,
+      "first_pass_quality_passed": null,
+      "input_tokens": 5137,
+      "output_tokens": 542,
+      "usage_complete": true
+    },
+    "vertex_gemini-separate-simple": {
+      "elapsed_ms": 8185.14,
+      "status": 200,
+      "quality": {
+        "graph_errors": [],
+        "pools": 1,
+        "roles": 1,
+        "tasks": 4,
+        "messages": 0,
+        "conditions": 2,
+        "business_loop_groups": 0,
+        "invariants": {
+          "one_role": true,
+          "register_check_accept_reject": true,
+          "xor": true,
+          "two_conditions": true
+        },
+        "passed": true
+      },
+      "first_pass_validator_success": true,
+      "first_pass_quality_passed": true,
+      "input_tokens": 4344,
+      "output_tokens": 1583,
+      "usage_complete": true
+    },
+    "vertex_gemini-separate-complex": {
+      "elapsed_ms": 37140.21,
+      "status": 200,
+      "quality": {
+        "passed": false,
+        "reason": "No validated complex BPMN: timeout or unnecessary critical questions"
+      },
+      "first_pass_validator_success": null,
+      "first_pass_quality_passed": null,
+      "input_tokens": 905,
+      "output_tokens": 437,
+      "usage_complete": true
+    },
+    "vertex_gemini-separate-ambiguous": {
+      "elapsed_ms": 3505.39,
+      "status": 200,
+      "quality": {
+        "passed": true,
+        "invariants": {
+          "order_question": true,
+          "recheck_actor_question": true
+        }
+      },
+      "first_pass_validator_success": null,
+      "first_pass_quality_passed": null,
+      "input_tokens": 736,
+      "output_tokens": 393,
+      "usage_complete": true
+    },
+    "vertex_gemini-combined-simple": {
+      "elapsed_ms": 6000.85,
+      "status": 200,
+      "quality": {
+        "graph_errors": [],
+        "pools": 1,
+        "roles": 1,
+        "tasks": 4,
+        "messages": 0,
+        "conditions": 2,
+        "business_loop_groups": 0,
+        "invariants": {
+          "one_role": true,
+          "register_check_accept_reject": true,
+          "xor": true,
+          "two_conditions": true
+        },
+        "passed": true
+      },
+      "first_pass_validator_success": true,
+      "first_pass_quality_passed": true,
+      "input_tokens": 4414,
+      "output_tokens": 864,
+      "usage_complete": true
+    },
+    "vertex_gemini-combined-complex": {
+      "elapsed_ms": 43910.58,
+      "status": 502,
+      "quality": {
+        "passed": false,
+        "reason": "No validated complex BPMN: timeout or unnecessary critical questions"
+      },
+      "first_pass_validator_success": false,
+      "first_pass_quality_passed": false,
+      "input_tokens": 17277,
+      "output_tokens": 11130,
+      "usage_complete": true
+    },
+    "vertex_gemini-combined-ambiguous": {
+      "elapsed_ms": 4390.04,
+      "status": 200,
+      "quality": {
+        "passed": true,
+        "invariants": {
+          "order_question": true,
+          "recheck_actor_question": true
+        }
+      },
+      "first_pass_validator_success": null,
+      "first_pass_quality_passed": null,
+      "input_tokens": 4429,
+      "output_tokens": 450,
+      "usage_complete": true
+    }
+  },
+  "groups": {
+    "multiai-separate": {
+      "request_count": 3,
+      "patch_attempt_count": 0,
+      "full_corrective_rate": 0.0,
+      "patch_corrective_rate": 0.0,
+      "patch_success_rate": null,
+      "patch_rejected_quality_rate": null,
+      "average_patch_output_tokens": null,
+      "full_corrective_output_tokens": 0,
+      "model_quality_pass_rate": 0.6666666666666666,
+      "quality_sample_count": 3,
+      "first_pass_graph_request_success_rate": 0.5,
+      "graph_request_sample_count": 2
+    },
+    "multiai-combined": {
+      "request_count": 3,
+      "patch_attempt_count": 0,
+      "full_corrective_rate": 0.0,
+      "patch_corrective_rate": 0.0,
+      "patch_success_rate": null,
+      "patch_rejected_quality_rate": null,
+      "average_patch_output_tokens": null,
+      "full_corrective_output_tokens": 0,
+      "model_quality_pass_rate": 0.6666666666666666,
+      "quality_sample_count": 3,
+      "first_pass_graph_request_success_rate": 0.5,
+      "graph_request_sample_count": 2,
+      "combined_call_quality_pass_rate": 0.6666666666666666
+    },
+    "vertex_gemini-separate": {
+      "request_count": 3,
+      "patch_attempt_count": 0,
+      "full_corrective_rate": 0.0,
+      "patch_corrective_rate": 0.0,
+      "patch_success_rate": null,
+      "patch_rejected_quality_rate": null,
+      "average_patch_output_tokens": null,
+      "full_corrective_output_tokens": 0,
+      "model_quality_pass_rate": 0.6666666666666666,
+      "quality_sample_count": 3,
+      "first_pass_graph_request_success_rate": 0.5,
+      "graph_request_sample_count": 2
+    },
+    "vertex_gemini-combined": {
+      "request_count": 3,
+      "patch_attempt_count": 0,
+      "full_corrective_rate": 0.3333333333333333,
+      "patch_corrective_rate": 0.0,
+      "patch_success_rate": null,
+      "patch_rejected_quality_rate": null,
+      "average_patch_output_tokens": null,
+      "full_corrective_output_tokens": 6452,
+      "model_quality_pass_rate": 0.6666666666666666,
+      "quality_sample_count": 3,
+      "first_pass_graph_request_success_rate": 0.5,
+      "graph_request_sample_count": 2,
+      "combined_call_quality_pass_rate": 0.6666666666666666
+    }
+  },
+  "revised_patch_controls": {
+    "successes": 2,
+    "attempts": 2,
+    "patch_success_rate": 1.0,
+    "patch_rejected_quality_rate": 0,
+    "meaning": "Two injected duplicate-flow controls, not live extraction corrective coverage. Initial MultiAI schema failure remains saved separately."
+  }
+}

@@ -2,6 +2,8 @@
 from collections import defaultdict, deque
 from pathlib import Path
 import json
+from time import perf_counter
+from .telemetry import add_stage
 from lxml import etree as E
 from .models import ProcessDefinition, Participant, Node, Flow, Assumption
 from .validator import validate_process
@@ -269,9 +271,13 @@ def parse_xml(xml: str):
 _SCHEMA = None
 def validate_xml(xml: str):
     global _SCHEMA
-    if _SCHEMA is None:
-        _SCHEMA = E.XMLSchema(E.parse(str(Path(__file__).parent / 'schemas' / 'BPMN20.xsd'), E.XMLParser(resolve_entities=False, no_network=True)))
-    _SCHEMA.assertValid(parse_xml(xml))
+    started = perf_counter()
+    try:
+        if _SCHEMA is None:
+            _SCHEMA = E.XMLSchema(E.parse(str(Path(__file__).parent / 'schemas' / 'BPMN20.xsd'), E.XMLParser(resolve_entities=False, no_network=True)))
+        _SCHEMA.assertValid(parse_xml(xml))
+    finally:
+        add_stage('xsd_validation_ms', started)
 
 
 def import_process(xml: str, previous: ProcessDefinition | None = None):

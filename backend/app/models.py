@@ -166,6 +166,91 @@ class ModificationResult(StrictModel):
     process: ProcessDefinition
 
 
+class ProcessPreparation(StrictModel):
+    """Strict gate: questions and a completed process are mutually exclusive."""
+    status: Literal['ready', 'clarification_required']
+    analysis: AmbiguityAnalysis
+    process: ProcessDefinition | None
+
+    @model_validator(mode='after')
+    def gate(self):
+        critical = any(q.severity == 'critical' for q in self.analysis.ambiguities)
+        if self.status == 'clarification_required':
+            if not critical or self.process is not None:
+                raise ValueError('Критические вопросы требуют process=null.')
+        elif critical or self.process is None or any(q.severity == 'critical' for q in self.process.ambiguities):
+            raise ValueError('Готовый процесс не должен содержать критические вопросы.')
+        return self
+
+
+class ProcessPatch(StrictModel):
+    """Provider-neutral edits; canonical ProcessDefinition never changes format."""
+    nodes: list[Node] = Field(default_factory=list, max_length=150)
+    flows: list[Flow] = Field(default_factory=list, max_length=300)
+    participants: list[Participant] = Field(default_factory=list, max_length=30)
+    pools: list[Pool] = Field(default_factory=list, max_length=30)
+    message_flows: list[MessageFlow] = Field(default_factory=list, max_length=100)
+    assumptions: list[Assumption] = Field(default_factory=list, max_length=30)
+    remove_node_ids: list[str] = Field(default_factory=list, max_length=150)
+    remove_flow_ids: list[str] = Field(default_factory=list, max_length=300)
+    remove_participant_ids: list[str] = Field(default_factory=list, max_length=30)
+    remove_pool_ids: list[str] = Field(default_factory=list, max_length=30)
+    remove_message_flow_ids: list[str] = Field(default_factory=list, max_length=100)
+    remove_assumption_ids: list[str] = Field(default_factory=list, max_length=30)
+    ambiguities: list[Ambiguity] = Field(default_factory=list, max_length=3)
+    name: str | None = Field(default=None, min_length=1, max_length=300)
+
+    def apply(self, process: ProcessDefinition, *, allow_business_removal=True) -> ProcessDefinition:
+        data = process.model_dump()
+        groups = ('nodes', 'flows', 'participants', 'pools', 'message_flows', 'assumptions')
+        remove_fields = ('remove_node_ids', 'remove_flow_ids', 'remove_participant_ids', 'remove_pool_ids', 'remove_message_flow_ids', 'remove_assumption_ids')
+        if not allow_business_removal:
+            protected = {n.id for n in process.nodes if n.type.endswith('task') and (n.source_text or not n.inferred)}
+            if protected & set(self.remove_node_ids):
+                raise ValueError('Corrective не может удалять подтверждённые бизнес-действия.')
+        if any(q.severity == 'critical' for q in self.ambiguities):
+            if self.name is not None or any(getattr(self, key) for key in groups + remove_fields):
+                raise ValueError('При критичном вопросе изменение графа запрещено.')
+            data['ambiguities'] = [q.model_dump() for q in self.ambiguities]
+            return ProcessDefinition.model_validate(data)
+        for group, remove_field in zip(groups, remove_fields):
+            existing = {item['id']: item for item in data[group]}
+            removals = getattr(self, remove_field)
+            updates = getattr(self, group)
+            if len(set(removals)) != len(removals) or not set(removals) <= set(existing):
+                raise ValueError('Удаление требует существующих уникальных ID.')
+            if len({item.id for item in updates}) != len(updates) or set(removals) & {item.id for item in updates}:
+                raise ValueError('Противоречивые изменения одного ID.')
+            for key in removals:
+                del existing[key]
+            existing.update({item.id: item.model_dump() for item in updates})
+            data[group] = list(existing.values())
+        data['ambiguities'] = [q.model_dump() for q in self.ambiguities]
+        if self.name is not None:
+            data['name'] = self.name
+        return ProcessDefinition.model_validate(data)
+
+
+class ModificationPreparation(StrictModel):
+    status: Literal['ready', 'clarification_required']
+    analysis: AmbiguityAnalysis
+    patch: ProcessPatch | None
+
+    @model_validator(mode='after')
+    def gate(self):
+        critical = any(q.severity == 'critical' for q in self.analysis.ambiguities)
+        if self.status == 'clarification_required':
+            if not critical or self.patch is not None:
+                raise ValueError('Критические вопросы требуют patch=null.')
+        elif critical or self.patch is None:
+            raise ValueError('Готовое изменение требует patch без критических вопросов.')
+        return self
+
+    def apply(self, process):
+        return ProcessPreparation(status=self.status, analysis=self.analysis,
+            process=self.patch.apply(process) if self.patch is not None else None)
+
+
 class Change(StrictModel):
     type: Literal['node_added', 'node_removed', 'node_changed', 'flow_added', 'flow_removed', 'flow_changed', 'gateway_added', 'participant_changed', 'condition_changed', 'sequence_changed', 'other']
     element_ids: list[str]

@@ -1,0 +1,38 @@
+{
+  "method": "o200k_base estimates of serialized canonical JSON; not exact MultiAI/Vertex tokenizer or billed output. Top-level components include field overhead; evidence/labels overlap nodes/flows and are not additive.",
+  "canonical_estimated_tokens": 4273,
+  "components_estimated_tokens": {
+    "id": 6,
+    "name": 8,
+    "description": 232,
+    "participants": 159,
+    "nodes": 2298,
+    "flows": 1323,
+    "pools": 36,
+    "message_flows": 210,
+    "ambiguities": 5,
+    "assumptions": 6
+  },
+  "evidence_marginal_estimated_tokens": 454,
+  "evidence_standalone_estimated_tokens": 343,
+  "duplicate_nonempty_evidence": {
+    "после чего процесс завершается": 2,
+    "Клиент проверяет договор.": 2,
+    "он возвращает договор менеджеру на доработку.": 2,
+    "и отправляет менеджеру.": 2,
+    "После действий проверки документов и принятия решения по заявке покажи явные data-based Exclusive Gateway: перенеси уже существующие взаимоисключающие условия исходящих потоков на выходы этих шлюзов.": 2,
+    "после чего процесс завершается.": 2
+  },
+  "duplicate_label_count": 4,
+  "duplicated_labels_estimated_tokens": 26,
+  "wire_estimated_tokens": 4243,
+  "wire_reference_entries": 2,
+  "estimated_token_saving": 30,
+  "exact_canonical_roundtrip": true,
+  "wire_production_enabled": false,
+  "actor_names_already_deduplicated": true,
+  "actor_representation": "participant_id in nodes; participant names defined once",
+  "original_text_repetition": "description is stored once; source_text carries local evidence",
+  "historical_request_output_tokens": 9028,
+  "historical_explanation": "9028 is the sum of analysis, first extraction and full corrective output, not one ProcessDefinition"
+}

@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, TYPE_CHECKING
 from ...models import ProcessDefinition, ClarificationResult, ModificationResult, AuditResult, LLMMetadata
 
 
 from .exceptions import ProviderError
+if TYPE_CHECKING:
+    from ...repair import RepairPatch
 
 
 @dataclass(frozen=True)
@@ -18,6 +20,17 @@ class LLMProvider(ABC):
     model: str = ''
     business_audit_available: bool = True
     attempt_count: int = 0
+    supports_preparation: bool = False
+    patch_corrective_enabled: bool = False
+    supports_structural_repair: bool = False
+    business_coverage_enabled: bool = False
+
+    async def check_business_coverage(self, process, source_text, answers=None):
+        raise ProviderError('Провайдер не поддерживает проверку полноты процесса.', reason='invalid_response')
+
+    async def repair_process(self, context: dict) -> 'RepairPatch | None':
+        """Optional bounded structural repair; unsupported providers use full corrective."""
+        return None
 
     @abstractmethod
     async def analyze_ambiguities(self, text: str, context: dict | None = None):
@@ -33,6 +46,13 @@ class LLMProvider(ABC):
 
     def new_request(self):
         return self
+
+    async def close(self):
+        """Release owned transport resources on application shutdown."""
+
+    async def prepare_process(self, text: str, context: dict | None = None):
+        """Optional typed combined gate; unsupported adapters retain two stages."""
+        return None
 
     def use_validation_fallback(self) -> bool:
         """Optional failover only after the pipeline exhausts corrective retries."""

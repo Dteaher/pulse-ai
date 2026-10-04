@@ -1,0 +1,10 @@
+[
+  {
+    "name": "pulse.frontend_bpmn_import.check",
+    "duration_ms": 181.20000000298023
+  },
+  {
+    "name": "pulse.frontend_bpmn_import.render",
+    "duration_ms": 26.599999994039536
+  }
+]

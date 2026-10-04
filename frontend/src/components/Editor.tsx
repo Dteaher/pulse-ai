@@ -1,5 +1,6 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import Modeler from 'bpmn-js/lib/Modeler';
+import { recordBpmnImport } from '../services/performance';
 import translation from './translate';
 import 'bpmn-js/dist/assets/diagram-js.css';
 import 'bpmn-js/dist/assets/bpmn-js.css';
@@ -19,16 +20,17 @@ interface Props {
   onSelect(id: string | null): void;
   onChange(): void;
   onError(message: string): void;
+  onReady(ready: boolean): void;
 }
 
 export default forwardRef<EditorHandle, Props>(function Editor(
-  { xml, showTools, onSelect, onChange, onError },
+  { xml, showTools, onSelect, onChange, onError, onReady },
   ref,
 ) {
   const host = useRef<HTMLDivElement>(null);
   const instance = useRef<Modeler | null>(null);
-  const callbacks = useRef({ onSelect, onChange, onError });
-  callbacks.current = { onSelect, onChange, onError };
+  const callbacks = useRef({ onSelect, onChange, onError, onReady });
+  callbacks.current = { onSelect, onChange, onError, onReady };
   const importing = useRef(false);
   useEffect(() => {
     const modeler = new Modeler({ container: host.current!, additionalModules: [translation] });
@@ -48,11 +50,14 @@ export default forwardRef<EditorHandle, Props>(function Editor(
     const modeler = instance.current!;
     let cancelled = false;
     importing.current = true;
+    callbacks.current.onReady(false);
+    const started = performance.now();
     modeler
       .importXML(xml)
       .then(({ warnings }) => {
         if (cancelled) return;
         fitCanvas(modeler);
+        callbacks.current.onReady(true);
         if (warnings.length)
           callbacks.current.onError(
             'Импорт выполнен с предупреждениями: ' + warnings.map((w) => w.message).join('; '),
@@ -63,6 +68,7 @@ export default forwardRef<EditorHandle, Props>(function Editor(
           callbacks.current.onError('Не удалось открыть BPMN. Проверьте формат файла.');
       })
       .finally(() => {
+        recordBpmnImport(started, 'render');
         if (!cancelled) importing.current = false;
       });
     return () => {

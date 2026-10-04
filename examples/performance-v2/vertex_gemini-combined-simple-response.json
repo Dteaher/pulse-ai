@@ -1,0 +1,199 @@
+{
+  "process": {
+    "id": "process_1",
+    "name": "Регистрация заявки и проверка документов",
+    "description": "",
+    "participants": [
+      {
+        "id": "operator_role",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_1"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "start_event_1",
+        "type": "start_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Начало процесса",
+        "participant_id": "operator_role",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_register_application",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Зарегистрировать заявку",
+        "participant_id": "operator_role",
+        "source_text": "Оператор регистрирует заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_check_documents",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить комплектность документов",
+        "participant_id": "operator_role",
+        "source_text": "и проверяет комплектность документов.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gateway_check_result",
+        "type": "exclusive_gateway",
+        "event_definition": "none",
+        "decision_basis": "data",
+        "name": "Комплект документов",
+        "participant_id": "operator_role",
+        "source_text": "Если комплект полный, оператор принимает заявку и завершает процесс. Если комплект неполный, оператор отклоняет заявку и завершает процесс.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_accept_application",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Принять заявку",
+        "participant_id": "operator_role",
+        "source_text": "оператор принимает заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "end_event_accepted",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Заявка принята",
+        "participant_id": "operator_role",
+        "source_text": "и завершает процесс.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_reject_application",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Отклонить заявку",
+        "participant_id": "operator_role",
+        "source_text": "оператор отклоняет заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "end_event_rejected",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Заявка отклонена",
+        "participant_id": "operator_role",
+        "source_text": "и завершает процесс.",
+        "confidence": "high",
+        "inferred": false
+      }
+    ],
+    "flows": [
+      {
+        "id": "flow_1",
+        "source": "start_event_1",
+        "target": "task_register_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_2",
+        "source": "task_register_application",
+        "target": "task_check_documents",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_3",
+        "source": "task_check_documents",
+        "target": "gateway_check_result",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_4",
+        "source": "gateway_check_result",
+        "target": "task_accept_application",
+        "name": "Полный",
+        "condition": "комплект полный",
+        "is_default": false
+      },
+      {
+        "id": "flow_5",
+        "source": "task_accept_application",
+        "target": "end_event_accepted",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_6",
+        "source": "gateway_check_result",
+        "target": "task_reject_application",
+        "name": "Неполный",
+        "condition": "комплект неполный",
+        "is_default": false
+      },
+      {
+        "id": "flow_7",
+        "source": "task_reject_application",
+        "target": "end_event_rejected",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "pool_1",
+        "name": "Оператор",
+        "kind": "internal"
+      }
+    ],
+    "message_flows": [],
+    "ambiguities": [],
+    "assumptions": []
+  },
+  "ambiguities": [],
+  "xml": "<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"Definitions\" targetNamespace=\"https://pulse.local/bpmn\" exporter=\"PULSE\" exporterVersion=\"0.2\">\n  <bpmn:process id=\"Process_pool_1\" name=\"Оператор\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"LaneSet\">\n      <bpmn:lane id=\"operator_role\" name=\"Оператор\">\n        <bpmn:flowNodeRef>start_event_1</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_register_application</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_check_documents</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_check_result</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_accept_application</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>end_event_accepted</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_reject_application</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>end_event_rejected</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"start_event_1\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>flow_1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:userTask id=\"task_register_application\" name=\"Зарегистрировать заявку\">\n      <bpmn:documentation>Оператор регистрирует заявку</bpmn:documentation>\n      <bpmn:incoming>flow_1</bpmn:incoming>\n      <bpmn:outgoing>flow_2</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_check_documents\" name=\"Проверить комплектность документов\">\n      <bpmn:documentation>и проверяет комплектность документов.</bpmn:documentation>\n      <bpmn:incoming>flow_2</bpmn:incoming>\n      <bpmn:outgoing>flow_3</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:exclusiveGateway id=\"gateway_check_result\" name=\"Комплект документов\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation>PULSE_NODE:{\"source_text\": \"Если комплект полный, оператор принимает заявку и завершает процесс. Если комплект неполный, оператор отклоняет заявку и завершает процесс.\", \"decision_basis\": \"data\"}</bpmn:documentation>\n      <bpmn:incoming>flow_3</bpmn:incoming>\n      <bpmn:outgoing>flow_4</bpmn:outgoing>\n      <bpmn:outgoing>flow_6</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:userTask id=\"task_accept_application\" name=\"Принять заявку\">\n      <bpmn:documentation>оператор принимает заявку</bpmn:documentation>\n      <bpmn:incoming>flow_4</bpmn:incoming>\n      <bpmn:outgoing>flow_5</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:endEvent id=\"end_event_accepted\" name=\"Заявка принята\">\n      <bpmn:documentation>и завершает процесс.</bpmn:documentation>\n      <bpmn:incoming>flow_5</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:userTask id=\"task_reject_application\" name=\"Отклонить заявку\">\n      <bpmn:documentation>оператор отклоняет заявку</bpmn:documentation>\n      <bpmn:incoming>flow_6</bpmn:incoming>\n      <bpmn:outgoing>flow_7</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:endEvent id=\"end_event_rejected\" name=\"Заявка отклонена\">\n      <bpmn:documentation>и завершает процесс.</bpmn:documentation>\n      <bpmn:incoming>flow_7</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"flow_1\" sourceRef=\"start_event_1\" targetRef=\"task_register_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_2\" sourceRef=\"task_register_application\" targetRef=\"task_check_documents\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_3\" sourceRef=\"task_check_documents\" targetRef=\"gateway_check_result\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_4\" sourceRef=\"gateway_check_result\" targetRef=\"task_accept_application\" name=\"Полный\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tExpression\">\n        <bpmn:documentation>комплект полный</bpmn:documentation>\n      </bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"flow_5\" sourceRef=\"task_accept_application\" targetRef=\"end_event_accepted\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_6\" sourceRef=\"gateway_check_result\" targetRef=\"task_reject_application\" name=\"Неполный\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tExpression\">\n        <bpmn:documentation>комплект неполный</bpmn:documentation>\n      </bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"flow_7\" sourceRef=\"task_reject_application\" targetRef=\"end_event_rejected\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:collaboration id=\"process_1\" name=\"Регистрация заявки и проверка документов\">\n    <bpmn:documentation></bpmn:documentation>\n    <bpmn:participant id=\"pool_1\" name=\"Оператор\" processRef=\"Process_pool_1\">\n      <bpmn:documentation>PULSE:{\"kind\": \"internal\", \"roles\": [{\"id\": \"operator_role\", \"name\": \"Оператор\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_1\"}]}</bpmn:documentation>\n    </bpmn:participant>\n  </bpmn:collaboration>\n  <bpmndi:BPMNDiagram id=\"Diagram\">\n    <bpmndi:BPMNPlane id=\"Plane\" bpmnElement=\"process_1\">\n      <bpmndi:BPMNShape id=\"Shape_pool_1\" bpmnElement=\"pool_1\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"70\" width=\"1280\" height=\"340\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_operator_role\" bpmnElement=\"operator_role\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"70\" width=\"1250\" height=\"340\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_start_event_1\" bpmnElement=\"start_event_1\">\n        <dc:Bounds x=\"241.0\" y=\"253.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_register_application\" bpmnElement=\"task_register_application\">\n        <dc:Bounds x=\"380.0\" y=\"232.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_check_documents\" bpmnElement=\"task_check_documents\">\n        <dc:Bounds x=\"570.0\" y=\"232.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_check_result\" bpmnElement=\"gateway_check_result\">\n        <dc:Bounds x=\"804.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_accept_application\" bpmnElement=\"task_accept_application\">\n        <dc:Bounds x=\"950.0\" y=\"186.66666666666669\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_event_accepted\" bpmnElement=\"end_event_accepted\">\n        <dc:Bounds x=\"1191.0\" y=\"207.66666666666669\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_reject_application\" bpmnElement=\"task_reject_application\">\n        <dc:Bounds x=\"950.0\" y=\"278.33333333333337\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_event_rejected\" bpmnElement=\"end_event_rejected\">\n        <dc:Bounds x=\"1191.0\" y=\"299.33333333333337\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"Edge_flow_1\" bpmnElement=\"flow_1\">\n        <di:waypoint x=\"279.0\" y=\"272.5\"/>\n        <di:waypoint x=\"380.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_2\" bpmnElement=\"flow_2\">\n        <di:waypoint x=\"520.0\" y=\"272.5\"/>\n        <di:waypoint x=\"570.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_3\" bpmnElement=\"flow_3\">\n        <di:waypoint x=\"710.0\" y=\"272.5\"/>\n        <di:waypoint x=\"804.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_4\" bpmnElement=\"flow_4\">\n        <di:waypoint x=\"856.0\" y=\"272.5\"/>\n        <di:waypoint x=\"891.0\" y=\"272.5\"/>\n        <di:waypoint x=\"891.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"950.0\" y=\"226.66666666666669\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1299.0\" y=\"232.5\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_5\" bpmnElement=\"flow_5\">\n        <di:waypoint x=\"1090.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"1191.0\" y=\"226.66666666666669\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_6\" bpmnElement=\"flow_6\">\n        <di:waypoint x=\"856.0\" y=\"272.5\"/>\n        <di:waypoint x=\"891.0\" y=\"272.5\"/>\n        <di:waypoint x=\"891.0\" y=\"318.33333333333337\"/>\n        <di:waypoint x=\"950.0\" y=\"318.33333333333337\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"864.0\" y=\"75\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_7\" bpmnElement=\"flow_7\">\n        <di:waypoint x=\"1090.0\" y=\"318.33333333333337\"/>\n        <di:waypoint x=\"1191.0\" y=\"318.33333333333337\"/>\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+  "attempts": 1,
+  "semantic_warnings": [],
+  "diagnostics": [],
+  "timings": {
+    "ambiguity_analysis_ms": 0,
+    "llm_parse_ms": 0.0,
+    "normalization_ms": 0.15,
+    "semantic_validation_ms": 0.23,
+    "bpmn_build_ms": 2.56,
+    "xsd_validation_ms": 0.22,
+    "post_validation_ms": 1.27,
+    "total_ms": 5987.06,
+    "combined_preparation_ms": 5982.59
+  },
+  "metadata": {
+    "provider_used": "vertex_gemini",
+    "model_used": "gemini-2.5-flash",
+    "fallback_used": false,
+    "attempts": 0
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": []
+}

@@ -1,0 +1,13 @@
+{
+  "backend_tests_passed": 362,
+  "browser_tests_passed": 58,
+  "build": "passed",
+  "secret_scan": "passed",
+  "live_smoke_http_status": 200,
+  "live_smoke_provider": "multiai",
+  "live_smoke_model": "gpt-6.1-sol",
+  "live_smoke_xml_errors": [],
+  "primary_latency_goal_met": false,
+  "combined_enabled": false,
+  "patch_enabled": false
+}

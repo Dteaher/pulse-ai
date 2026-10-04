@@ -1,0 +1,16 @@
+{
+  "status": 200,
+  "request_total_ms": 21.78,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 0
+  },
+  "cache": {
+    "hit": true,
+    "deduplicated": false
+  },
+  "same_xml": true,
+  "same_process": true
+}

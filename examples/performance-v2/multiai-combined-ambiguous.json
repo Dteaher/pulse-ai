@@ -1,0 +1,89 @@
+{
+  "provider": "multiai",
+  "mode": "combined",
+  "case": "ambiguous",
+  "input_sha256": "27df5eb381480780c6aa0770470a767f9f7cdaa892ce31aba9d9311fac8aec6f",
+  "status": 200,
+  "elapsed_ms": 48409.23,
+  "performance": {
+    "request_total_ms": 48399.98,
+    "ambiguity_analysis_ms": 0,
+    "combined_preparation_ms": 48341.51,
+    "clarify_generation_ms": 0,
+    "llm_primary_ms": 48338.71,
+    "llm_corrective_ms": 0,
+    "llm_fallback_ms": 0,
+    "normalization_ms": 0,
+    "process_validation_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "reference_validation_ms": 0,
+    "xsd_validation_ms": 0,
+    "di_validation_ms": 0,
+    "doctor_ms": 0,
+    "modify_ms": 0,
+    "serialization_ms": 0.62,
+    "calls": [
+      {
+        "provider": "multiai",
+        "model": "gpt-6.1-sol",
+        "operation": "preparation_v2",
+        "reasoning_effort": "low",
+        "system_prompt_chars": 16458,
+        "user_payload_chars": 295,
+        "prompt_size_chars": 16753,
+        "schema_chars": 7018,
+        "max_tokens": 8000,
+        "corrective": false,
+        "json_corrective": false,
+        "fallback": false,
+        "input_tokens": 5137,
+        "output_tokens": 542,
+        "http_status": 200,
+        "response_model": "gpt-6.1-sol",
+        "reasoning_tokens": null,
+        "http_attempts": 1,
+        "duration_ms": 48338.71
+      }
+    ],
+    "attempt_count": 1,
+    "corrective_retry_count": 0,
+    "validation_error_count": 0,
+    "validation_codes": [],
+    "full_corrective_count": 0,
+    "patch_corrective_count": 0,
+    "patch_success_count": 0,
+    "patch_rejected_quality_count": 0,
+    "patch_failure_count": 0,
+    "patch_output_tokens": 0,
+    "full_corrective_output_tokens": 0,
+    "process_definition_size": null,
+    "fallback_used": false,
+    "input_tokens": 5137,
+    "output_tokens": 542,
+    "usage_complete": true,
+    "cache_hit": false,
+    "deduplicated": false
+  },
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 0
+  },
+  "bpmn": false,
+  "questions": 3,
+  "cache_used": false,
+  "fallback_enabled": false,
+  "quality": {
+    "passed": true,
+    "invariants": {
+      "missing_parallelism_and_recheck": true
+    },
+    "question_types": [
+      "unclear_parallelism",
+      "unclear_participant",
+      "unclear_participant"
+    ]
+  }
+}

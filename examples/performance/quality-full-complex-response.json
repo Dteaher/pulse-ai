@@ -1,0 +1,393 @@
+{
+  "detail": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "human_message": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "diagnostics": [
+    {
+      "code": "BROKEN_REFERENCE",
+      "flow_id": "f4",
+      "severity": "error",
+      "source": "BPMN_SPEC",
+      "spec_section": "15.3.2",
+      "type": "SPEC_ERROR",
+      "category": "reference",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Связь f4 ссылается на отсутствующий узел.",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "BROKEN_REFERENCE",
+      "flow_id": "f43",
+      "severity": "error",
+      "source": "BPMN_SPEC",
+      "spec_section": "15.3.2",
+      "type": "SPEC_ERROR",
+      "category": "reference",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Связь f43 ссылается на отсутствующий узел.",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "parallel_split_fork",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Начать параллельные проверки» нет входящей связи.",
+      "node_ids": [
+        "parallel_split_fork"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "start_org",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «Получена заявка» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "start_org"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "receive_application",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «Получить заявку» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "receive_application"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "check_documents",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «Проверить документы» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "check_documents"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "documents_gateway",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «Документы корректны?» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "documents_gateway"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "return_application",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «Вернуть заявку клиенту на доработку» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "return_application"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "wait_corrected_application",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «Получить исправленные документы» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "wait_corrected_application"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "legal_check",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Проверить заявку» недостижим от старта своего процесса.",
+      "node_ids": [
+        "legal_check"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "security_check",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Проверить заявку» недостижим от старта своего процесса.",
+      "node_ids": [
+        "security_check"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "make_decision",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Принять решение» недостижим от старта своего процесса.",
+      "node_ids": [
+        "make_decision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "decision_gateway",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Решение по заявке» недостижим от старта своего процесса.",
+      "node_ids": [
+        "decision_gateway"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "send_rejection",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Отправить клиенту уведомление об отказе» недостижим от старта своего процесса.",
+      "node_ids": [
+        "send_rejection"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "end_rejected",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Процесс завершён после отказа» недостижим от старта своего процесса.",
+      "node_ids": [
+        "end_rejected"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "form_contract",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Сформировать договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "form_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "send_contract",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Отправить договор клиенту» недостижим от старта своего процесса.",
+      "node_ids": [
+        "send_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "contract_wait_gateway",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Ожидать ответ клиента» недостижим от старта своего процесса.",
+      "node_ids": [
+        "contract_wait_gateway"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "receive_returned_contract",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Получить договор на доработку» недостижим от старта своего процесса.",
+      "node_ids": [
+        "receive_returned_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "revise_contract",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Изменить договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "revise_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "receive_signed_contract",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Получить подписанный договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "receive_signed_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "register_contract",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Зарегистрировать договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "register_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "end_completed",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Процесс завершён» недостижим от старта своего процесса.",
+      "node_ids": [
+        "end_completed"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Merge_return_application",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «Объединить пути» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Merge_return_application"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "parallel_split_fork",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Начать параллельные проверки» недостижим от старта своего процесса.",
+      "node_ids": [
+        "parallel_split_fork"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "parallel_split_join",
+      "process_id": "organization_pool",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Завершить параллельные проверки» недостижим от старта своего процесса.",
+      "node_ids": [
+        "parallel_split_join"
+      ],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "5f91eab5a73b4566aa21704fb74ba34a"
+}

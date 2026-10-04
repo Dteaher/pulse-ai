@@ -1,0 +1,637 @@
+{
+  "detail": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "human_message": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "diagnostics": [
+    {
+      "code": "DEAD_END",
+      "node_id": "Task_Client_SubmitApplication",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет исходящей связи.",
+      "node_ids": [
+        "Task_Client_SubmitApplication"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "DEAD_END",
+      "node_id": "Task_Operator_ReturnForRevision",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет исходящей связи.",
+      "node_ids": [
+        "Task_Operator_ReturnForRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Event_Client_ReceiveRevisionRequest",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет входящей связи.",
+      "node_ids": [
+        "Event_Client_ReceiveRevisionRequest"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "DEAD_END",
+      "node_id": "Task_Client_ResubmitDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет исходящей связи.",
+      "node_ids": [
+        "Task_Client_ResubmitDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Event_Operator_ReceiveResubmittedDocuments",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет входящей связи.",
+      "node_ids": [
+        "Event_Operator_ReceiveResubmittedDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Event_Client_ReceiveRejectionNotification",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет входящей связи.",
+      "node_ids": [
+        "Event_Client_ReceiveRejectionNotification"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "DEAD_END",
+      "node_id": "Task_Manager_SendContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет исходящей связи.",
+      "node_ids": [
+        "Task_Manager_SendContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Event_Client_ReceiveContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет входящей связи.",
+      "node_ids": [
+        "Event_Client_ReceiveContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "DEAD_END",
+      "node_id": "Task_Client_ReturnContractForRevision",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет исходящей связи.",
+      "node_ids": [
+        "Task_Client_ReturnContractForRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Event_Manager_ReceiveContractRevision",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет входящей связи.",
+      "node_ids": [
+        "Event_Manager_ReceiveContractRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Event_Manager_ReceiveSignedContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет входящей связи.",
+      "node_ids": [
+        "Event_Manager_ReceiveSignedContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Event_Internal_End_Approved",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «» нет входящей связи.",
+      "node_ids": [
+        "Event_Internal_End_Approved"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Event_Client_Start",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Event_Client_Start"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Client_SubmitApplication",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Client_SubmitApplication"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Client_ReceiveRevisionRequest",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Client_ReceiveRevisionRequest"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Event_Client_ReceiveRevisionRequest",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Event_Client_ReceiveRevisionRequest"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Client_CorrectDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Client_CorrectDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Client_CorrectDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Client_CorrectDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Client_ResubmitDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Client_ResubmitDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Client_ResubmitDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Client_ResubmitDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Client_ReceiveRejectionNotification",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Client_ReceiveRejectionNotification"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Client_EndRejection",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Client_EndRejection"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Client_ReceiveContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Client_ReceiveContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Client_ReviewContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Client_ReviewContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Gateway_Client_ContractAgreement",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Клиент согласен с договором?» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Gateway_Client_ContractAgreement"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Client_ReturnContractForRevision",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Client_ReturnContractForRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Client_ReturnContractForRevision",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Client_ReturnContractForRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Client_SignContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Client_SignContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Client_SendSignedContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Client_SendSignedContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Client_EndApproved",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Client_EndApproved"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Operator_ReturnForRevision",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Operator_ReturnForRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Operator_ReceiveResubmittedDocuments",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Operator_ReceiveResubmittedDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Manager_FormContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Manager_FormContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Manager_SendContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Manager_SendContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Manager_ReceiveContractRevision",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Manager_ReceiveContractRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Event_Manager_ReceiveContractRevision",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Event_Manager_ReceiveContractRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Manager_ReviseContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Manager_ReviseContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "NO_PATH_TO_END",
+      "node_id": "Task_Manager_ReviseContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Из «» нет пути к завершению своего процесса.",
+      "node_ids": [
+        "Task_Manager_ReviseContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Manager_ReceiveSignedContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Manager_ReceiveSignedContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_Manager_RegisterContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_Manager_RegisterContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Manager_EndApproval",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Manager_EndApproval"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Event_Internal_End_Approved",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Event_Internal_End_Approved"
+      ],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "218d95e958e14a33932e177a44457ca9"
+}

@@ -51,7 +51,32 @@ def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
     settings = settings or Settings()
     name = (settings.primary_llm_provider or settings.llm_provider).strip().replace('-', '_')
     primary = _create(settings, name)
+    def policy(provider):
+        provider.business_coverage_enabled = settings.llm_business_coverage_enabled
+        provider.debug_raw_response = settings.llm_debug_raw_response and settings.app_env in ('development', 'dev', 'benchmark')
+        provider.output_retry_enabled = settings.llm_output_retry_enabled
+        provider.parse_retry_max_tokens = settings.llm_parse_retry_max_tokens
+        provider.performance_enabled = settings.llm_performance_enabled
+        provider.combined_enabled = settings.llm_combined_enabled
+        provider.patch_enabled = settings.llm_patch_enabled
+        provider.patch_corrective_enabled = settings.llm_patch_corrective_enabled
+        provider.combined_parse_enabled = settings.llm_combined_parse_enabled
+        provider.repair_max_tokens = settings.llm_repair_max_tokens
+        if settings.llm_performance_enabled:
+            provider.operation_budgets = {'extraction': settings.llm_parse_max_tokens,
+                'preparation': settings.llm_parse_max_tokens, 'ambiguity': settings.llm_clarify_max_tokens,
+                'clarification': settings.llm_parse_max_tokens, 'modification': settings.llm_modify_max_tokens,
+                'audit': settings.llm_doctor_max_tokens, 'business_coverage': settings.llm_doctor_max_tokens, 'corrective': settings.llm_corrective_max_tokens}
+            provider.reasoning_by_operation = {'extraction': settings.llm_parse_reasoning_effort,
+                'preparation': settings.llm_parse_reasoning_effort, 'ambiguity': settings.llm_clarify_reasoning_effort,
+                'clarification': settings.llm_clarify_reasoning_effort, 'modification': settings.llm_modify_reasoning_effort,
+                'audit': settings.llm_doctor_reasoning_effort, 'corrective': settings.llm_corrective_reasoning_effort}
+        return provider
+    policy(primary)
+    primary.omit_token_limit = settings.primary_llm_omit_token_limit
+    budget = settings.llm_request_budget if settings.llm_performance_enabled else None
     if not settings.llm_fallback_enabled or not settings.fallback_llm_provider.strip():
-        return LLMRouter(primary, cooldowns=cooldowns)
+        return LLMRouter(primary, cooldowns=cooldowns, budget=budget, fallback_reserve=settings.llm_fallback_reserve)
     fallback = _create(settings, settings.fallback_llm_provider.strip().replace('-', '_'), fallback=True)
-    return LLMRouter(primary, fallback, cooldowns)
+    policy(fallback)
+    return LLMRouter(primary, fallback, cooldowns, budget=budget, fallback_reserve=settings.llm_fallback_reserve)

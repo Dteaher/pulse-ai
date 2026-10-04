@@ -1,0 +1,752 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.2">
+  <bpmn:process id="Process_pool_client" name="Клиент" isExecutable="false">
+    <bpmn:startEvent id="c_start" name="Начать подачу заявки">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>f_c_start_submit</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sendTask id="c_submit" name="Подать заявку">
+      <bpmn:documentation>Клиент подаёт заявку на подключение объекта.</bpmn:documentation>
+      <bpmn:incoming>f_c_start_submit</bpmn:incoming>
+      <bpmn:outgoing>f_c_submit_wait</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:eventBasedGateway id="c_wait" name="Ожидать уведомление или договор" gatewayDirection="Diverging">
+      <bpmn:documentation>PULSE_NODE:{"source_text": "", "decision_basis": "event"}</bpmn:documentation>
+      <bpmn:incoming>f_c_submit_wait</bpmn:incoming>
+      <bpmn:outgoing>f_c_wait_reject</bpmn:outgoing>
+      <bpmn:outgoing>f_c_wait_contract</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="c_recv_reject" name="Получить уведомление об отказе">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>f_c_wait_reject</bpmn:incoming>
+      <bpmn:outgoing>f_c_reject_end</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_c_recv_reject"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="c_recv_contract" name="Получить договор">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>f_c_wait_contract</bpmn:incoming>
+      <bpmn:outgoing>f_c_contract_check</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_c_recv_contract"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:endEvent id="c_end_reject" name="Завершить процесс после отказа">
+      <bpmn:documentation>после чего процесс завершается.</bpmn:documentation>
+      <bpmn:incoming>f_c_reject_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="c_check_contract" name="Проверить договор">
+      <bpmn:documentation>Клиент проверяет договор.</bpmn:documentation>
+      <bpmn:incoming>f_c_contract_check</bpmn:incoming>
+      <bpmn:incoming>f_c_revision_to_check</bpmn:incoming>
+      <bpmn:outgoing>f_c_check_decide</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="c_decide_contract" name="Принять решение по договору">
+      <bpmn:documentation>Если клиент не согласен</bpmn:documentation>
+      <bpmn:incoming>f_c_check_decide</bpmn:incoming>
+      <bpmn:outgoing>f_c_decide_gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="c_contract_gateway" name="Решение клиента по договору" gatewayDirection="Diverging">
+      <bpmn:documentation>PULSE_NODE:{"source_text": "", "decision_basis": "data"}</bpmn:documentation>
+      <bpmn:incoming>f_c_decide_gateway</bpmn:incoming>
+      <bpmn:outgoing>f_c_no_send</bpmn:outgoing>
+      <bpmn:outgoing>f_c_yes_sign</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sendTask id="c_send_revision" name="Вернуть договор на доработку">
+      <bpmn:documentation>он возвращает договор менеджеру на доработку.</bpmn:documentation>
+      <bpmn:incoming>f_c_no_send</bpmn:incoming>
+      <bpmn:outgoing>f_c_revision_wait</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:intermediateCatchEvent id="c_wait_revision" name="Ожидать доработанный договор">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>f_c_revision_wait</bpmn:incoming>
+      <bpmn:outgoing>f_c_wait_revision_recv</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_c_wait_revision"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="c_recv_contract_revision" name="Получить доработанный договор">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>f_c_wait_revision_recv</bpmn:incoming>
+      <bpmn:outgoing>f_c_revision_to_check</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_c_recv_contract_revision"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="c_sign" name="Подписать договор">
+      <bpmn:documentation>он подписывает договор</bpmn:documentation>
+      <bpmn:incoming>f_c_yes_sign</bpmn:incoming>
+      <bpmn:outgoing>f_c_sign_send</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="c_send_signed" name="Отправить подписанный договор">
+      <bpmn:documentation>и отправляет менеджеру.</bpmn:documentation>
+      <bpmn:incoming>f_c_sign_send</bpmn:incoming>
+      <bpmn:outgoing>f_c_signed_end</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="c_end_signed" name="Завершить процесс">
+      <bpmn:documentation>после чего процесс завершается.</bpmn:documentation>
+      <bpmn:incoming>f_c_signed_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="f_c_start_submit" sourceRef="c_start" targetRef="c_submit" name=""/>
+    <bpmn:sequenceFlow id="f_c_submit_wait" sourceRef="c_submit" targetRef="c_wait" name=""/>
+    <bpmn:sequenceFlow id="f_c_wait_reject" sourceRef="c_wait" targetRef="c_recv_reject" name=""/>
+    <bpmn:sequenceFlow id="f_c_wait_contract" sourceRef="c_wait" targetRef="c_recv_contract" name=""/>
+    <bpmn:sequenceFlow id="f_c_reject_end" sourceRef="c_recv_reject" targetRef="c_end_reject" name=""/>
+    <bpmn:sequenceFlow id="f_c_contract_check" sourceRef="c_recv_contract" targetRef="c_check_contract" name=""/>
+    <bpmn:sequenceFlow id="f_c_check_decide" sourceRef="c_check_contract" targetRef="c_decide_contract" name=""/>
+    <bpmn:sequenceFlow id="f_c_no_send" sourceRef="c_contract_gateway" targetRef="c_send_revision" name="">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Не согласен</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="f_c_yes_sign" sourceRef="c_contract_gateway" targetRef="c_sign" name="">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Согласен</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="f_c_revision_wait" sourceRef="c_send_revision" targetRef="c_wait_revision" name=""/>
+    <bpmn:sequenceFlow id="f_c_wait_revision_recv" sourceRef="c_wait_revision" targetRef="c_recv_contract_revision" name=""/>
+    <bpmn:sequenceFlow id="f_c_revision_to_check" sourceRef="c_recv_contract_revision" targetRef="c_check_contract" name=""/>
+    <bpmn:sequenceFlow id="f_c_sign_send" sourceRef="c_sign" targetRef="c_send_signed" name=""/>
+    <bpmn:sequenceFlow id="f_c_signed_end" sourceRef="c_send_signed" targetRef="c_end_signed" name=""/>
+    <bpmn:sequenceFlow id="f_c_decide_gateway" sourceRef="c_decide_contract" targetRef="c_contract_gateway" name=""/>
+  </bpmn:process>
+  <bpmn:process id="Process_pool_internal" name="Организация" isExecutable="false">
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="p_operator" name="Оператор">
+        <bpmn:flowNodeRef>o_start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_decide_docs</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_return</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_receive_resubmission</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_parallel_split</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_parallel_join</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_notify_reject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_end_reject</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="p_legal" name="Юридический отдел">
+        <bpmn:flowNodeRef>o_legal</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="p_security" name="Служба безопасности">
+        <bpmn:flowNodeRef>o_security</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="p_manager" name="Руководитель/менеджер">
+        <bpmn:flowNodeRef>o_manager_decision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_decision_gateway</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_form_contract</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_send_contract</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_manager_wait</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_receive_revision</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_receive_signed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_change_contract</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_register</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>o_end_signed</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="o_start" name="Получить заявку">
+      <bpmn:documentation>Оператор получает заявку</bpmn:documentation>
+      <bpmn:outgoing>o_start_check</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_o_start"/>
+    </bpmn:startEvent>
+    <bpmn:userTask id="o_check" name="Проверить документы">
+      <bpmn:documentation>проверяет документы.</bpmn:documentation>
+      <bpmn:incoming>o_start_check</bpmn:incoming>
+      <bpmn:incoming>o_receive_recheck</bpmn:incoming>
+      <bpmn:outgoing>o_check_decide</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="o_decide_docs" name="Проверить корректность документов" gatewayDirection="Diverging">
+      <bpmn:documentation>PULSE_NODE:{"source_text": "", "decision_basis": "data"}</bpmn:documentation>
+      <bpmn:incoming>o_check_decide</bpmn:incoming>
+      <bpmn:outgoing>o_bad_return</bpmn:outgoing>
+      <bpmn:outgoing>o_good_parallel</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sendTask id="o_return" name="Вернуть заявку на доработку">
+      <bpmn:documentation>оператор возвращает заявку клиенту на доработку.</bpmn:documentation>
+      <bpmn:incoming>o_bad_return</bpmn:incoming>
+      <bpmn:outgoing>o_return_wait</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:intermediateCatchEvent id="o_receive_resubmission" name="Получить исправленные документы">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>o_return_wait</bpmn:incoming>
+      <bpmn:outgoing>o_receive_recheck</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_o_receive_resubmission"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:parallelGateway id="o_parallel_split" name="Запустить одновременные проверки" gatewayDirection="Diverging">
+      <bpmn:documentation>юридический отдел и служба безопасности одновременно проверяют заявку.</bpmn:documentation>
+      <bpmn:incoming>o_good_parallel</bpmn:incoming>
+      <bpmn:outgoing>o_split_legal</bpmn:outgoing>
+      <bpmn:outgoing>o_split_security</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:userTask id="o_legal" name="Проверить заявку">
+      <bpmn:documentation>юридический отдел ... проверяют заявку.</bpmn:documentation>
+      <bpmn:incoming>o_split_legal</bpmn:incoming>
+      <bpmn:outgoing>o_legal_join</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="o_security" name="Проверить заявку">
+      <bpmn:documentation>служба безопасности ... проверяют заявку.</bpmn:documentation>
+      <bpmn:incoming>o_split_security</bpmn:incoming>
+      <bpmn:outgoing>o_security_join</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:parallelGateway id="o_parallel_join" name="Завершить одновременные проверки" gatewayDirection="Converging">
+      <bpmn:documentation>После завершения обеих проверок</bpmn:documentation>
+      <bpmn:incoming>o_legal_join</bpmn:incoming>
+      <bpmn:incoming>o_security_join</bpmn:incoming>
+      <bpmn:outgoing>o_join_decision</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:userTask id="o_manager_decision" name="Принять решение по заявке">
+      <bpmn:documentation>руководитель принимает решение.</bpmn:documentation>
+      <bpmn:incoming>o_join_decision</bpmn:incoming>
+      <bpmn:outgoing>o_manager_gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="o_decision_gateway" name="Решение по заявке" gatewayDirection="Diverging">
+      <bpmn:documentation>PULSE_NODE:{"source_text": "", "decision_basis": "data"}</bpmn:documentation>
+      <bpmn:incoming>o_manager_gateway</bpmn:incoming>
+      <bpmn:outgoing>o_reject_notify</bpmn:outgoing>
+      <bpmn:outgoing>o_approve_form</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sendTask id="o_notify_reject" name="Отправить уведомление об отказе">
+      <bpmn:documentation>оператор отправляет клиенту уведомление об отказе,</bpmn:documentation>
+      <bpmn:incoming>o_reject_notify</bpmn:incoming>
+      <bpmn:outgoing>o_notify_end</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="o_end_reject" name="Завершить процесс после отказа">
+      <bpmn:documentation>после чего процесс завершается.</bpmn:documentation>
+      <bpmn:incoming>o_notify_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="o_form_contract" name="Сформировать договор">
+      <bpmn:documentation>менеджер формирует договор</bpmn:documentation>
+      <bpmn:incoming>o_approve_form</bpmn:incoming>
+      <bpmn:outgoing>o_form_send</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="o_send_contract" name="Отправить договор клиенту">
+      <bpmn:documentation>и отправляет его клиенту.</bpmn:documentation>
+      <bpmn:incoming>o_form_send</bpmn:incoming>
+      <bpmn:incoming>o_change_resend</bpmn:incoming>
+      <bpmn:outgoing>o_send_wait</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:eventBasedGateway id="o_manager_wait" name="Ожидать возврат или подписанный договор" gatewayDirection="Diverging">
+      <bpmn:documentation>PULSE_NODE:{"source_text": "", "decision_basis": "event"}</bpmn:documentation>
+      <bpmn:incoming>o_send_wait</bpmn:incoming>
+      <bpmn:outgoing>o_wait_revision</bpmn:outgoing>
+      <bpmn:outgoing>o_wait_signed</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    <bpmn:intermediateCatchEvent id="o_receive_revision" name="Получить договор на доработку">
+      <bpmn:documentation>он возвращает договор менеджеру на доработку.</bpmn:documentation>
+      <bpmn:incoming>o_wait_revision</bpmn:incoming>
+      <bpmn:outgoing>o_revision_change</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_o_receive_revision"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:intermediateCatchEvent id="o_receive_signed" name="Получить подписанный договор">
+      <bpmn:documentation>отправляет менеджеру.</bpmn:documentation>
+      <bpmn:incoming>o_wait_signed</bpmn:incoming>
+      <bpmn:outgoing>o_signed_register</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_o_receive_signed"/>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="o_change_contract" name="Изменить договор">
+      <bpmn:documentation>Менеджер изменяет договор</bpmn:documentation>
+      <bpmn:incoming>o_revision_change</bpmn:incoming>
+      <bpmn:outgoing>o_change_resend</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="o_register" name="Зарегистрировать договор">
+      <bpmn:documentation>Менеджер регистрирует договор,</bpmn:documentation>
+      <bpmn:incoming>o_signed_register</bpmn:incoming>
+      <bpmn:outgoing>o_register_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="o_end_signed" name="Завершить процесс">
+      <bpmn:documentation>после чего процесс завершается.</bpmn:documentation>
+      <bpmn:incoming>o_register_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="o_start_check" sourceRef="o_start" targetRef="o_check" name=""/>
+    <bpmn:sequenceFlow id="o_check_decide" sourceRef="o_check" targetRef="o_decide_docs" name=""/>
+    <bpmn:sequenceFlow id="o_bad_return" sourceRef="o_decide_docs" targetRef="o_return" name="">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Документы не хватает или они заполнены неправильно</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="o_good_parallel" sourceRef="o_decide_docs" targetRef="o_parallel_split" name="">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Документы корректны</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="o_return_wait" sourceRef="o_return" targetRef="o_receive_resubmission" name=""/>
+    <bpmn:sequenceFlow id="o_receive_recheck" sourceRef="o_receive_resubmission" targetRef="o_check" name=""/>
+    <bpmn:sequenceFlow id="o_split_legal" sourceRef="o_parallel_split" targetRef="o_legal" name=""/>
+    <bpmn:sequenceFlow id="o_split_security" sourceRef="o_parallel_split" targetRef="o_security" name=""/>
+    <bpmn:sequenceFlow id="o_legal_join" sourceRef="o_legal" targetRef="o_parallel_join" name=""/>
+    <bpmn:sequenceFlow id="o_security_join" sourceRef="o_security" targetRef="o_parallel_join" name=""/>
+    <bpmn:sequenceFlow id="o_join_decision" sourceRef="o_parallel_join" targetRef="o_manager_decision" name=""/>
+    <bpmn:sequenceFlow id="o_reject_notify" sourceRef="o_decision_gateway" targetRef="o_notify_reject" name="">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Заявка отклонена</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="o_approve_form" sourceRef="o_decision_gateway" targetRef="o_form_contract" name="">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Заявка одобрена</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="o_notify_end" sourceRef="o_notify_reject" targetRef="o_end_reject" name=""/>
+    <bpmn:sequenceFlow id="o_form_send" sourceRef="o_form_contract" targetRef="o_send_contract" name=""/>
+    <bpmn:sequenceFlow id="o_send_wait" sourceRef="o_send_contract" targetRef="o_manager_wait" name=""/>
+    <bpmn:sequenceFlow id="o_wait_revision" sourceRef="o_manager_wait" targetRef="o_receive_revision" name=""/>
+    <bpmn:sequenceFlow id="o_wait_signed" sourceRef="o_manager_wait" targetRef="o_receive_signed" name=""/>
+    <bpmn:sequenceFlow id="o_revision_change" sourceRef="o_receive_revision" targetRef="o_change_contract" name=""/>
+    <bpmn:sequenceFlow id="o_change_resend" sourceRef="o_change_contract" targetRef="o_send_contract" name=""/>
+    <bpmn:sequenceFlow id="o_signed_register" sourceRef="o_receive_signed" targetRef="o_register" name=""/>
+    <bpmn:sequenceFlow id="o_register_end" sourceRef="o_register" targetRef="o_end_signed" name=""/>
+    <bpmn:sequenceFlow id="o_manager_gateway" sourceRef="o_manager_decision" targetRef="o_decision_gateway" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="process_connection_application" name="Подключение объекта">
+    <bpmn:documentation>Клиент подаёт заявку на подключение объекта.
+Оператор получает заявку и проверяет документы.
+Если документов не хватает или они заполнены неправильно,
+оператор возвращает заявку клиенту на доработку.
+Клиент исправляет документы и повторно отправляет их оператору.
+
+Если документы корректны,
+юридический отдел и служба безопасности одновременно проверяют заявку.
+После завершения обеих проверок руководитель принимает решение.
+
+Если заявка отклонена,
+оператор отправляет клиенту уведомление об отказе,
+после чего процесс завершается.
+
+Если заявка одобрена,
+менеджер формирует договор и отправляет его клиенту.
+
+Клиент проверяет договор.
+Если клиент не согласен,
+он возвращает договор менеджеру на доработку.
+Менеджер изменяет договор и повторно отправляет клиенту.
+
+Если клиент согласен,
+он подписывает договор и отправляет менеджеру.
+Менеджер регистрирует договор,
+после чего процесс завершается.</bpmn:documentation>
+    <bpmn:participant id="pool_client" name="Клиент" processRef="Process_pool_client">
+      <bpmn:documentation>PULSE:{"kind": "external", "roles": [{"id": "p_client", "name": "Клиент", "type": "external", "kind": "external", "pool_id": "pool_client"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:participant id="pool_internal" name="Организация" processRef="Process_pool_internal">
+      <bpmn:documentation>PULSE:{"kind": "internal", "roles": [{"id": "p_operator", "name": "Оператор", "type": "role", "kind": "internal", "pool_id": "pool_internal"}, {"id": "p_legal", "name": "Юридический отдел", "type": "department", "kind": "internal", "pool_id": "pool_internal"}, {"id": "p_security", "name": "Служба безопасности", "type": "department", "kind": "internal", "pool_id": "pool_internal"}, {"id": "p_manager", "name": "Руководитель/менеджер", "type": "role", "kind": "internal", "pool_id": "pool_internal"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:messageFlow id="m_submit_application" sourceRef="c_submit" targetRef="o_start" name="Заявка"/>
+    <bpmn:messageFlow id="m_return_application" sourceRef="o_return" targetRef="c_wait_revision" name="Заявка на доработку"/>
+    <bpmn:messageFlow id="m_resubmit_application" sourceRef="c_send_revision" targetRef="o_receive_resubmission" name="Исправленные документы"/>
+    <bpmn:messageFlow id="m_rejection_notice" sourceRef="o_notify_reject" targetRef="c_recv_reject" name="Уведомление об отказе"/>
+    <bpmn:messageFlow id="m_contract" sourceRef="o_send_contract" targetRef="c_recv_contract" name="Договор"/>
+    <bpmn:messageFlow id="m_contract_revision" sourceRef="c_send_revision" targetRef="o_receive_revision" name="Договор на доработку"/>
+    <bpmn:messageFlow id="m_signed_contract" sourceRef="c_send_signed" targetRef="o_receive_signed" name="Подписанный договор"/>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="process_connection_application">
+      <bpmndi:BPMNShape id="Shape_pool_client" bpmnElement="pool_client" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="3560" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_pool_internal" bpmnElement="pool_internal" isHorizontal="true">
+        <dc:Bounds x="60" y="510" width="3560" height="1120"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_p_operator" bpmnElement="p_operator" isHorizontal="true">
+        <dc:Bounds x="90" y="510" width="3530" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_p_legal" bpmnElement="p_legal" isHorizontal="true">
+        <dc:Bounds x="90" y="850" width="3530" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_p_security" bpmnElement="p_security" isHorizontal="true">
+        <dc:Bounds x="90" y="1070" width="3530" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_p_manager" bpmnElement="p_manager" isHorizontal="true">
+        <dc:Bounds x="90" y="1290" width="3530" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_start" bpmnElement="c_start">
+        <dc:Bounds x="241.0" y="253.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_submit" bpmnElement="c_submit">
+        <dc:Bounds x="380.0" y="232.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_wait" bpmnElement="c_wait">
+        <dc:Bounds x="614.0" y="246.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_recv_reject" bpmnElement="c_recv_reject">
+        <dc:Bounds x="1951.0" y="253.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_recv_contract" bpmnElement="c_recv_contract">
+        <dc:Bounds x="2141.0" y="207.66666666666669" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_end_reject" bpmnElement="c_end_reject">
+        <dc:Bounds x="2141.0" y="299.33333333333337" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_check_contract" bpmnElement="c_check_contract">
+        <dc:Bounds x="2280.0" y="232.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_decide_contract" bpmnElement="c_decide_contract">
+        <dc:Bounds x="2470.0" y="232.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_contract_gateway" bpmnElement="c_contract_gateway">
+        <dc:Bounds x="2704.0" y="246.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_send_revision" bpmnElement="c_send_revision">
+        <dc:Bounds x="2850.0" y="186.66666666666669" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_wait_revision" bpmnElement="c_wait_revision">
+        <dc:Bounds x="3091.0" y="207.66666666666669" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_recv_contract_revision" bpmnElement="c_recv_contract_revision">
+        <dc:Bounds x="3281.0" y="207.66666666666669" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_sign" bpmnElement="c_sign">
+        <dc:Bounds x="2850.0" y="278.33333333333337" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_send_signed" bpmnElement="c_send_signed">
+        <dc:Bounds x="3040.0" y="278.33333333333337" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_c_end_signed" bpmnElement="c_end_signed">
+        <dc:Bounds x="3281.0" y="299.33333333333337" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_start" bpmnElement="o_start">
+        <dc:Bounds x="431.0" y="693.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_check" bpmnElement="o_check">
+        <dc:Bounds x="570.0" y="672.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_decide_docs" bpmnElement="o_decide_docs">
+        <dc:Bounds x="804.0" y="686.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_return" bpmnElement="o_return">
+        <dc:Bounds x="950.0" y="626.6666666666667" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_receive_resubmission" bpmnElement="o_receive_resubmission">
+        <dc:Bounds x="2901.0" y="693.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_parallel_split" bpmnElement="o_parallel_split">
+        <dc:Bounds x="994.0" y="732.3333333333334" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_legal" bpmnElement="o_legal">
+        <dc:Bounds x="1140.0" y="952.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_security" bpmnElement="o_security">
+        <dc:Bounds x="1140.0" y="1172.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_parallel_join" bpmnElement="o_parallel_join">
+        <dc:Bounds x="1374.0" y="686.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_manager_decision" bpmnElement="o_manager_decision">
+        <dc:Bounds x="1520.0" y="1452.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_decision_gateway" bpmnElement="o_decision_gateway">
+        <dc:Bounds x="1754.0" y="1466.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_notify_reject" bpmnElement="o_notify_reject">
+        <dc:Bounds x="1900.0" y="672.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_end_reject" bpmnElement="o_end_reject">
+        <dc:Bounds x="2141.0" y="693.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_form_contract" bpmnElement="o_form_contract">
+        <dc:Bounds x="1900.0" y="1452.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_send_contract" bpmnElement="o_send_contract">
+        <dc:Bounds x="2090.0" y="1452.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_manager_wait" bpmnElement="o_manager_wait">
+        <dc:Bounds x="2324.0" y="1466.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_receive_revision" bpmnElement="o_receive_revision">
+        <dc:Bounds x="2901.0" y="1473.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_receive_signed" bpmnElement="o_receive_signed">
+        <dc:Bounds x="3091.0" y="1427.6666666666667" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_change_contract" bpmnElement="o_change_contract">
+        <dc:Bounds x="3040.0" y="1498.3333333333333" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_register" bpmnElement="o_register">
+        <dc:Bounds x="3230.0" y="1452.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_o_end_signed" bpmnElement="o_end_signed">
+        <dc:Bounds x="3471.0" y="1473.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_f_c_start_submit" bpmnElement="f_c_start_submit">
+        <di:waypoint x="279.0" y="272.5"/>
+        <di:waypoint x="380.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_submit_wait" bpmnElement="f_c_submit_wait">
+        <di:waypoint x="520.0" y="272.5"/>
+        <di:waypoint x="614.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_wait_reject" bpmnElement="f_c_wait_reject">
+        <di:waypoint x="666.0" y="272.5"/>
+        <di:waypoint x="684.0" y="272.5"/>
+        <di:waypoint x="684.0" y="96"/>
+        <di:waypoint x="1933.0" y="96"/>
+        <di:waypoint x="1933.0" y="272.5"/>
+        <di:waypoint x="1951.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_wait_contract" bpmnElement="f_c_wait_contract">
+        <di:waypoint x="666.0" y="272.5"/>
+        <di:waypoint x="684.0" y="272.5"/>
+        <di:waypoint x="684.0" y="108"/>
+        <di:waypoint x="2123.0" y="108"/>
+        <di:waypoint x="2123.0" y="226.66666666666669"/>
+        <di:waypoint x="2141.0" y="226.66666666666669"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_reject_end" bpmnElement="f_c_reject_end">
+        <di:waypoint x="1989.0" y="272.5"/>
+        <di:waypoint x="2024.0" y="272.5"/>
+        <di:waypoint x="2024.0" y="318.33333333333337"/>
+        <di:waypoint x="2141.0" y="318.33333333333337"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_contract_check" bpmnElement="f_c_contract_check">
+        <di:waypoint x="2179.0" y="226.66666666666669"/>
+        <di:waypoint x="2214.0" y="226.66666666666669"/>
+        <di:waypoint x="2214.0" y="272.5"/>
+        <di:waypoint x="2280.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_check_decide" bpmnElement="f_c_check_decide">
+        <di:waypoint x="2420.0" y="272.5"/>
+        <di:waypoint x="2470.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_no_send" bpmnElement="f_c_no_send">
+        <di:waypoint x="2756.0" y="272.5"/>
+        <di:waypoint x="2791.0" y="272.5"/>
+        <di:waypoint x="2791.0" y="226.66666666666669"/>
+        <di:waypoint x="2850.0" y="226.66666666666669"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_yes_sign" bpmnElement="f_c_yes_sign">
+        <di:waypoint x="2756.0" y="272.5"/>
+        <di:waypoint x="2791.0" y="272.5"/>
+        <di:waypoint x="2791.0" y="318.33333333333337"/>
+        <di:waypoint x="2850.0" y="318.33333333333337"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_revision_wait" bpmnElement="f_c_revision_wait">
+        <di:waypoint x="2990.0" y="226.66666666666669"/>
+        <di:waypoint x="3091.0" y="226.66666666666669"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_wait_revision_recv" bpmnElement="f_c_wait_revision_recv">
+        <di:waypoint x="3129.0" y="226.66666666666669"/>
+        <di:waypoint x="3281.0" y="226.66666666666669"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_revision_to_check" bpmnElement="f_c_revision_to_check">
+        <di:waypoint x="3300.0" y="207.66666666666669"/>
+        <di:waypoint x="3300.0" y="120"/>
+        <di:waypoint x="2350.0" y="120"/>
+        <di:waypoint x="2350.0" y="232.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_sign_send" bpmnElement="f_c_sign_send">
+        <di:waypoint x="2990.0" y="318.33333333333337"/>
+        <di:waypoint x="3040.0" y="318.33333333333337"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_signed_end" bpmnElement="f_c_signed_end">
+        <di:waypoint x="3180.0" y="318.33333333333337"/>
+        <di:waypoint x="3281.0" y="318.33333333333337"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_start_check" bpmnElement="o_start_check">
+        <di:waypoint x="469.0" y="712.5"/>
+        <di:waypoint x="570.0" y="712.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_check_decide" bpmnElement="o_check_decide">
+        <di:waypoint x="710.0" y="712.5"/>
+        <di:waypoint x="804.0" y="712.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_bad_return" bpmnElement="o_bad_return">
+        <di:waypoint x="856.0" y="712.5"/>
+        <di:waypoint x="891.0" y="712.5"/>
+        <di:waypoint x="891.0" y="666.6666666666667"/>
+        <di:waypoint x="950.0" y="666.6666666666667"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_good_parallel" bpmnElement="o_good_parallel">
+        <di:waypoint x="856.0" y="712.5"/>
+        <di:waypoint x="891.0" y="712.5"/>
+        <di:waypoint x="891.0" y="758.3333333333334"/>
+        <di:waypoint x="994.0" y="758.3333333333334"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_return_wait" bpmnElement="o_return_wait">
+        <di:waypoint x="1090.0" y="666.6666666666667"/>
+        <di:waypoint x="1108.0" y="666.6666666666667"/>
+        <di:waypoint x="1108.0" y="536"/>
+        <di:waypoint x="2883.0" y="536"/>
+        <di:waypoint x="2883.0" y="712.5"/>
+        <di:waypoint x="2901.0" y="712.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_receive_recheck" bpmnElement="o_receive_recheck">
+        <di:waypoint x="2920.0" y="693.5"/>
+        <di:waypoint x="2920.0" y="548"/>
+        <di:waypoint x="640.0" y="548"/>
+        <di:waypoint x="640.0" y="672.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_split_legal" bpmnElement="o_split_legal">
+        <di:waypoint x="1046.0" y="758.3333333333334"/>
+        <di:waypoint x="1081.0" y="758.3333333333334"/>
+        <di:waypoint x="1081.0" y="992.5"/>
+        <di:waypoint x="1140.0" y="992.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_split_security" bpmnElement="o_split_security">
+        <di:waypoint x="1046.0" y="758.3333333333334"/>
+        <di:waypoint x="1081.0" y="758.3333333333334"/>
+        <di:waypoint x="1081.0" y="1212.5"/>
+        <di:waypoint x="1140.0" y="1212.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_legal_join" bpmnElement="o_legal_join">
+        <di:waypoint x="1280.0" y="992.5"/>
+        <di:waypoint x="1315.0" y="992.5"/>
+        <di:waypoint x="1315.0" y="712.5"/>
+        <di:waypoint x="1374.0" y="712.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_security_join" bpmnElement="o_security_join">
+        <di:waypoint x="1280.0" y="1212.5"/>
+        <di:waypoint x="1315.0" y="1212.5"/>
+        <di:waypoint x="1315.0" y="712.5"/>
+        <di:waypoint x="1374.0" y="712.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_join_decision" bpmnElement="o_join_decision">
+        <di:waypoint x="1426.0" y="712.5"/>
+        <di:waypoint x="1461.0" y="712.5"/>
+        <di:waypoint x="1461.0" y="1492.5"/>
+        <di:waypoint x="1520.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_reject_notify" bpmnElement="o_reject_notify">
+        <di:waypoint x="1806.0" y="1492.5"/>
+        <di:waypoint x="1841.0" y="1492.5"/>
+        <di:waypoint x="1841.0" y="712.5"/>
+        <di:waypoint x="1900.0" y="712.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_approve_form" bpmnElement="o_approve_form">
+        <di:waypoint x="1806.0" y="1492.5"/>
+        <di:waypoint x="1900.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_notify_end" bpmnElement="o_notify_end">
+        <di:waypoint x="2040.0" y="712.5"/>
+        <di:waypoint x="2141.0" y="712.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_form_send" bpmnElement="o_form_send">
+        <di:waypoint x="2040.0" y="1492.5"/>
+        <di:waypoint x="2090.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_send_wait" bpmnElement="o_send_wait">
+        <di:waypoint x="2230.0" y="1492.5"/>
+        <di:waypoint x="2324.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_wait_revision" bpmnElement="o_wait_revision">
+        <di:waypoint x="2376.0" y="1492.5"/>
+        <di:waypoint x="2394.0" y="1492.5"/>
+        <di:waypoint x="2394.0" y="1316"/>
+        <di:waypoint x="2883.0" y="1316"/>
+        <di:waypoint x="2883.0" y="1492.5"/>
+        <di:waypoint x="2901.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_wait_signed" bpmnElement="o_wait_signed">
+        <di:waypoint x="2376.0" y="1492.5"/>
+        <di:waypoint x="2394.0" y="1492.5"/>
+        <di:waypoint x="2394.0" y="1328"/>
+        <di:waypoint x="3073.0" y="1328"/>
+        <di:waypoint x="3073.0" y="1446.6666666666667"/>
+        <di:waypoint x="3091.0" y="1446.6666666666667"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_revision_change" bpmnElement="o_revision_change">
+        <di:waypoint x="2939.0" y="1492.5"/>
+        <di:waypoint x="2974.0" y="1492.5"/>
+        <di:waypoint x="2974.0" y="1538.3333333333333"/>
+        <di:waypoint x="3040.0" y="1538.3333333333333"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_change_resend" bpmnElement="o_change_resend">
+        <di:waypoint x="3110.0" y="1498.3333333333333"/>
+        <di:waypoint x="3110.0" y="1340"/>
+        <di:waypoint x="2160.0" y="1340"/>
+        <di:waypoint x="2160.0" y="1452.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_signed_register" bpmnElement="o_signed_register">
+        <di:waypoint x="3129.0" y="1446.6666666666667"/>
+        <di:waypoint x="3164.0" y="1446.6666666666667"/>
+        <di:waypoint x="3164.0" y="1492.5"/>
+        <di:waypoint x="3230.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_register_end" bpmnElement="o_register_end">
+        <di:waypoint x="3370.0" y="1492.5"/>
+        <di:waypoint x="3471.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f_c_decide_gateway" bpmnElement="f_c_decide_gateway">
+        <di:waypoint x="2610.0" y="272.5"/>
+        <di:waypoint x="2704.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_o_manager_gateway" bpmnElement="o_manager_gateway">
+        <di:waypoint x="1660.0" y="1492.5"/>
+        <di:waypoint x="1754.0" y="1492.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_m_submit_application" bpmnElement="m_submit_application">
+        <di:waypoint x="520.0" y="272.5"/>
+        <di:waypoint x="548" y="272.5"/>
+        <di:waypoint x="548" y="435"/>
+        <di:waypoint x="548" y="435"/>
+        <di:waypoint x="548" y="524"/>
+        <di:waypoint x="450.0" y="524"/>
+        <di:waypoint x="450.0" y="693.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="528.0" y="417" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_m_return_application" bpmnElement="m_return_application">
+        <di:waypoint x="1090.0" y="666.6666666666667"/>
+        <di:waypoint x="1118" y="666.6666666666667"/>
+        <di:waypoint x="1118" y="485"/>
+        <di:waypoint x="3208" y="485"/>
+        <di:waypoint x="3208" y="396"/>
+        <di:waypoint x="3110.0" y="396"/>
+        <di:waypoint x="3110.0" y="245.66666666666669"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1098.0" y="467" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_m_resubmit_application" bpmnElement="m_resubmit_application">
+        <di:waypoint x="2990.0" y="226.66666666666669"/>
+        <di:waypoint x="3018" y="226.66666666666669"/>
+        <di:waypoint x="3018" y="435"/>
+        <di:waypoint x="3018" y="435"/>
+        <di:waypoint x="3018" y="524"/>
+        <di:waypoint x="2920.0" y="524"/>
+        <di:waypoint x="2920.0" y="693.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2998.0" y="417" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_m_rejection_notice" bpmnElement="m_rejection_notice">
+        <di:waypoint x="2040.0" y="712.5"/>
+        <di:waypoint x="2068" y="712.5"/>
+        <di:waypoint x="2068" y="485"/>
+        <di:waypoint x="2068" y="485"/>
+        <di:waypoint x="2068" y="396"/>
+        <di:waypoint x="1970.0" y="396"/>
+        <di:waypoint x="1970.0" y="291.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2048.0" y="467" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_m_contract" bpmnElement="m_contract">
+        <di:waypoint x="2230.0" y="1492.5"/>
+        <di:waypoint x="2258" y="1492.5"/>
+        <di:waypoint x="2258" y="485"/>
+        <di:waypoint x="2258" y="485"/>
+        <di:waypoint x="2258" y="396"/>
+        <di:waypoint x="2160.0" y="396"/>
+        <di:waypoint x="2160.0" y="245.66666666666669"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2238.0" y="467" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_m_contract_revision" bpmnElement="m_contract_revision">
+        <di:waypoint x="2990.0" y="226.66666666666669"/>
+        <di:waypoint x="3018" y="226.66666666666669"/>
+        <di:waypoint x="3018" y="435"/>
+        <di:waypoint x="3018" y="435"/>
+        <di:waypoint x="3018" y="1304"/>
+        <di:waypoint x="2920.0" y="1304"/>
+        <di:waypoint x="2920.0" y="1473.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3143.0" y="417" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_m_signed_contract" bpmnElement="m_signed_contract">
+        <di:waypoint x="3180.0" y="318.33333333333337"/>
+        <di:waypoint x="3208" y="318.33333333333337"/>
+        <di:waypoint x="3208" y="435"/>
+        <di:waypoint x="3208" y="435"/>
+        <di:waypoint x="3208" y="1304"/>
+        <di:waypoint x="3110.0" y="1304"/>
+        <di:waypoint x="3110.0" y="1427.6666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3333.0" y="417" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

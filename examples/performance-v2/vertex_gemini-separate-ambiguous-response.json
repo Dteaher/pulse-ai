@@ -1,0 +1,159 @@
+{
+  "process": null,
+  "preflight": {
+    "original_text": "Оператор принимает заявку. Юрист и инженер проверяют заявку, но порядок их проверок не определён. После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано. После успешных проверок оператор выдаёт договор и завершает работу.",
+    "analysis": {
+      "ambiguities": [
+        {
+          "id": "ambiguity_1",
+          "question": "Кто выполняет повторную проверку заявки после доработки?",
+          "type": "unclear_participant",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Юрист и инженер",
+            "Только юрист",
+            "Только инженер",
+            "Оператор"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Неизвестен исполнитель критически важного шага в процессе.",
+          "source_excerpt": "после замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано",
+          "related_participants": []
+        },
+        {
+          "id": "ambiguity_2",
+          "question": "В каком порядке Юрист и Инженер проверяют заявку?",
+          "type": "unclear_sequence",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Сначала юрист, потом инженер",
+            "Сначала инженер, потом юрист",
+            "Параллельно",
+            "Порядок не важен"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Неопределенный порядок действий ключевых исполнителей.",
+          "source_excerpt": "Юрист и инженер проверяют заявку, но порядок их проверок не определён",
+          "related_participants": [
+            "Юрист",
+            "Инженер"
+          ]
+        }
+      ],
+      "assumptions": [],
+      "superseded_assumption_ids": []
+    },
+    "answers": {}
+  },
+  "ambiguities": [
+    {
+      "id": "ambiguity_1",
+      "question": "Кто выполняет повторную проверку заявки после доработки?",
+      "type": "unclear_participant",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Юрист и инженер",
+        "Только юрист",
+        "Только инженер",
+        "Оператор"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Неизвестен исполнитель критически важного шага в процессе.",
+      "source_excerpt": "после замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано",
+      "related_participants": []
+    },
+    {
+      "id": "ambiguity_2",
+      "question": "В каком порядке Юрист и Инженер проверяют заявку?",
+      "type": "unclear_sequence",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Сначала юрист, потом инженер",
+        "Сначала инженер, потом юрист",
+        "Параллельно",
+        "Порядок не важен"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Неопределенный порядок действий ключевых исполнителей.",
+      "source_excerpt": "Юрист и инженер проверяют заявку, но порядок их проверок не определён",
+      "related_participants": [
+        "Юрист",
+        "Инженер"
+      ]
+    }
+  ],
+  "xml": null,
+  "attempts": 0,
+  "status": "clarification_required",
+  "metadata": {
+    "provider_used": "vertex_gemini",
+    "model_used": "gemini-2.5-flash",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "timings": {
+    "llm_parse_ms": 0,
+    "normalization_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "xsd_validation_ms": 0,
+    "post_validation_ms": 0,
+    "ambiguity_analysis_ms": 3492.06,
+    "total_ms": 3492.06
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": [],
+  "changes": [],
+  "human_message": "Перед построением схемы нужно уточнить бизнес-информацию.",
+  "diagnostics": [
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Кто выполняет повторную проверку заявки после доработки?",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "В каком порядке Юрист и Инженер проверяют заявку?",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "detail": "Модель не ответила в пределах бюджета запроса.",
+  "human_message": "Модель не ответила в пределах бюджета запроса.",
+  "diagnostics": [
+    {
+      "code": "LLM_TIMEOUT",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "INTEROPERABILITY_ERROR",
+      "category": "llm_transport",
+      "suggested_fix": "Проверьте доступность модели и повторите запрос.",
+      "message": "Модель не ответила в пределах бюджета запроса.",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "c35a02052b3845248329b78b24bceed7"
+}

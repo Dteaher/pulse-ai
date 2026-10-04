@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import fs from 'node:fs';
 
 test('visual review: home, loading, workspace, Doctor, History, Modify, Clarify and error', async ({

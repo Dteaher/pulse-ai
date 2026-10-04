@@ -1,0 +1,241 @@
+{
+  "id": "Process_ClientApplication",
+  "name": "Обработка заявки клиента",
+  "description": "Клиент отправляет заявку. Менеджер проверяет документы. Потом её проверяют юрист и служба безопасности. После этого руководитель принимает решение.",
+  "participants": [
+    {
+      "id": "P_Client",
+      "name": "Клиент",
+      "type": "external"
+    },
+    {
+      "id": "P_Manager",
+      "name": "Менеджер",
+      "type": "role"
+    },
+    {
+      "id": "P_Lawyer",
+      "name": "Юрист",
+      "type": "role"
+    },
+    {
+      "id": "P_Security",
+      "name": "Служба_безопасности",
+      "type": "role"
+    },
+    {
+      "id": "P_Head",
+      "name": "Руководитель",
+      "type": "role"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "N_Start",
+      "type": "start_event",
+      "name": "Заявка клиента поступила",
+      "participant_id": "P_Manager",
+      "source_text": "Клиент отправляет заявку.",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "T_Manager_CheckDocuments",
+      "type": "task",
+      "name": "Проверить документы",
+      "participant_id": "P_Manager",
+      "source_text": "Менеджер проверяет документы.",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "G_Parallel_Split",
+      "type": "parallel_gateway",
+      "name": "Разделение на проверки",
+      "participant_id": "P_Manager",
+      "source_text": "Потом её проверяют юрист и служба безопасности.",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "T_Lawyer_CheckApplication",
+      "type": "task",
+      "name": "Проверить заявку (Юрист)",
+      "participant_id": "P_Lawyer",
+      "source_text": "Потом её проверяют юрист и служба безопасности.",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "T_Security_CheckApplication",
+      "type": "task",
+      "name": "Проверить заявку (Служба безопасности)",
+      "participant_id": "P_Security",
+      "source_text": "Потом её проверяют юрист и служба безопасности.",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "G_Parallel_Join",
+      "type": "parallel_gateway",
+      "name": "Объединение проверок",
+      "participant_id": "P_Manager",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "T_Head_MakeDecision",
+      "type": "task",
+      "name": "Принять решение",
+      "participant_id": "P_Head",
+      "source_text": "После этого руководитель принимает решение.",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "G_Exclusive_Decision",
+      "type": "exclusive_gateway",
+      "name": "Решение руководителя",
+      "participant_id": "P_Head",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "T_Manager_NotifyClient_Approved",
+      "type": "task",
+      "name": "Уведомить клиента об одобрении",
+      "participant_id": "P_Manager",
+      "source_text": "При одобрении менеджер уведомляет клиента об одобрении",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "T_Manager_NotifyClient_Rejected",
+      "type": "task",
+      "name": "Уведомить клиента об отказе",
+      "participant_id": "P_Manager",
+      "source_text": "При отказе менеджер уведомляет клиента об отказе",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "E_End_Approved",
+      "type": "end_event",
+      "name": "Заявка одобрена",
+      "participant_id": "P_Head",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "E_End_Rejected",
+      "type": "end_event",
+      "name": "Заявка отклонена",
+      "participant_id": "P_Head",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "F_Start_to_ManagerCheck",
+      "source": "N_Start",
+      "target": "T_Manager_CheckDocuments",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_ManagerCheck_to_ParallelSplit",
+      "source": "T_Manager_CheckDocuments",
+      "target": "G_Parallel_Split",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_ParallelSplit_to_LawyerCheck",
+      "source": "G_Parallel_Split",
+      "target": "T_Lawyer_CheckApplication",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_ParallelSplit_to_SecurityCheck",
+      "source": "G_Parallel_Split",
+      "target": "T_Security_CheckApplication",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_LawyerCheck_to_ParallelJoin",
+      "source": "T_Lawyer_CheckApplication",
+      "target": "G_Parallel_Join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_SecurityCheck_to_ParallelJoin",
+      "source": "T_Security_CheckApplication",
+      "target": "G_Parallel_Join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_ParallelJoin_to_HeadDecision",
+      "source": "G_Parallel_Join",
+      "target": "T_Head_MakeDecision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_HeadDecision_to_ExclusiveGateway",
+      "source": "T_Head_MakeDecision",
+      "target": "G_Exclusive_Decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_Decision_to_ApprovedEnd",
+      "source": "G_Exclusive_Decision",
+      "target": "T_Manager_NotifyClient_Approved",
+      "name": "Одобрено",
+      "condition": "Решение = Одобрено",
+      "is_default": false
+    },
+    {
+      "id": "F_Decision_to_RejectedEnd",
+      "source": "G_Exclusive_Decision",
+      "target": "T_Manager_NotifyClient_Rejected",
+      "name": "Отклонено",
+      "condition": "Решение = Отклонено",
+      "is_default": true
+    },
+    {
+      "id": "F_NotifyClientApproved_to_EndApproved",
+      "source": "T_Manager_NotifyClient_Approved",
+      "target": "E_End_Approved",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "F_NotifyClientRejected_to_EndRejected",
+      "source": "T_Manager_NotifyClient_Rejected",
+      "target": "E_End_Rejected",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "ambiguities": []
+}

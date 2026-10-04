@@ -1,0 +1,106 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.1">
+  <bpmn:process id="Process_Application" name="Обработка заявки" isExecutable="false">
+    <bpmn:documentation>Клиент отправляет заявку. Менеджер проверяет заявку. После проверки менеджер принимает решение и уведомляет клиента.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="Client" name="Клиент">
+        <bpmn:flowNodeRef>Start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Submit</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Manager" name="Менеджер">
+        <bpmn:flowNodeRef>Check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Decide</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Notify</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start" name="Заявка поступила">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>Flow_0</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Submit" name="Отправить заявку">
+      <bpmn:documentation>Клиент отправляет заявку</bpmn:documentation>
+      <bpmn:incoming>Flow_0</bpmn:incoming>
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Check" name="Проверить заявку">
+      <bpmn:documentation>Менеджер проверяет заявку</bpmn:documentation>
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Decide" name="Принять решение">
+      <bpmn:documentation>После проверки менеджер принимает решение и уведомляет клиента.</bpmn:documentation>
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Notify" name="Уведомить клиента">
+      <bpmn:documentation>После проверки менеджер принимает решение и уведомляет клиента.</bpmn:documentation>
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End" name="Клиент уведомлён">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0" sourceRef="Start" targetRef="Submit" name=""/>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="Submit" targetRef="Check" name=""/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Check" targetRef="Decide" name=""/>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Decide" targetRef="Notify" name=""/>
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Notify" targetRef="End" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="Collaboration">
+    <bpmn:participant id="Pool" name="Обработка заявки" processRef="Process_Application"/>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="Collaboration">
+      <bpmndi:BPMNShape id="Shape_Pool" bpmnElement="Pool" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="1280" height="310"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Client" bpmnElement="Client" isHorizontal="true">
+        <dc:Bounds x="90" y="70" width="1250" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Manager" bpmnElement="Manager" isHorizontal="true">
+        <dc:Bounds x="90" y="225" width="1250" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Start" bpmnElement="Start">
+        <dc:Bounds x="241.0" y="128.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit" bpmnElement="Submit">
+        <dc:Bounds x="380.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Check" bpmnElement="Check">
+        <dc:Bounds x="570.0" y="262.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Decide" bpmnElement="Decide">
+        <dc:Bounds x="760.0" y="262.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Notify" bpmnElement="Notify">
+        <dc:Bounds x="950.0" y="262.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_End" bpmnElement="End">
+        <dc:Bounds x="1191.0" y="283.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Flow_0" bpmnElement="Flow_0">
+        <di:waypoint x="279.0" y="147.5"/>
+        <di:waypoint x="380.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_1" bpmnElement="Flow_1">
+        <di:waypoint x="520.0" y="147.5"/>
+        <di:waypoint x="555.0" y="147.5"/>
+        <di:waypoint x="555.0" y="302.5"/>
+        <di:waypoint x="570.0" y="302.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_2" bpmnElement="Flow_2">
+        <di:waypoint x="710.0" y="302.5"/>
+        <di:waypoint x="760.0" y="302.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_3" bpmnElement="Flow_3">
+        <di:waypoint x="900.0" y="302.5"/>
+        <di:waypoint x="950.0" y="302.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_4" bpmnElement="Flow_4">
+        <di:waypoint x="1090.0" y="302.5"/>
+        <di:waypoint x="1191.0" y="302.5"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

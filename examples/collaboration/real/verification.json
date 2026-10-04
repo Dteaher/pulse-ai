@@ -1,0 +1,15 @@
+{
+  "real_model": true,
+  "generate": {
+    "provider_used": "vertex_gemini",
+    "model_used": "gemini-2.5-flash",
+    "fallback_used": true,
+    "attempts": 4
+  },
+  "pools": 2,
+  "messages": 5,
+  "bpmn_js_import": true,
+  "export_reimport_http": 200,
+  "browser_errors": [],
+  "layout_rebuilt_with_current_builder": true
+}

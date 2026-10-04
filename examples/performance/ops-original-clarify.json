@@ -1,0 +1,26 @@
+{
+  "source_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c",
+  "status": 200,
+  "request_total_ms": 34682.97,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "bpmn": false,
+  "calls": [
+    {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "prompt_size_chars": 3102,
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 411,
+        "prompt_tokens": 1150,
+        "total_tokens": 1561
+      },
+      "duration_ms": 34198.85
+    }
+  ]
+}

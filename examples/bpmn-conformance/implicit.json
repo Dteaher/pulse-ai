@@ -1,0 +1,51 @@
+{
+  "id": "P",
+  "name": "Проверка subset",
+  "description": "",
+  "participants": [
+    {
+      "id": "Role",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": null
+    }
+  ],
+  "nodes": [
+    {
+      "id": "N0",
+      "type": "task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Этап 0",
+      "participant_id": "Role",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "N1",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Этап 1",
+      "participant_id": "Role",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    }
+  ],
+  "flows": [
+    {
+      "id": "F0",
+      "source": "N0",
+      "target": "N1",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [],
+  "message_flows": [],
+  "ambiguities": []
+}

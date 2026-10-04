@@ -1,0 +1,1660 @@
+{
+  "schema": {
+    "size_chars": 5768,
+    "required_fields_count": 52,
+    "nesting_depth": 4,
+    "unions": 2,
+    "enums": [
+      [
+        "missing_branch",
+        "unclear_parallelism",
+        "unclear_sequence",
+        "unclear_participant",
+        "unclear_result",
+        "unclear_end",
+        "unclear_condition",
+        "other"
+      ],
+      [
+        "critical",
+        "warning"
+      ],
+      [
+        "model_inference",
+        "user_accepted"
+      ],
+      [
+        "start_event",
+        "end_event",
+        "task",
+        "user_task",
+        "service_task",
+        "script_task",
+        "send_task",
+        "receive_task",
+        "exclusive_gateway",
+        "parallel_gateway",
+        "inclusive_gateway",
+        "event_based_gateway",
+        "intermediate_event"
+      ],
+      [
+        "none",
+        "message"
+      ],
+      [
+        "unspecified",
+        "data",
+        "event"
+      ],
+      [
+        "high",
+        "medium",
+        "confirmation_required"
+      ],
+      [
+        "role",
+        "department",
+        "system",
+        "external"
+      ],
+      [
+        "internal",
+        "external"
+      ],
+      [
+        "internal",
+        "external"
+      ]
+    ],
+    "additional_properties": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "results": [
+    {
+      "model": "gpt-6.1-sol",
+      "mode": "json_schema",
+      "elapsed_ms": 60007.93,
+      "adapter_pass": false,
+      "error_type": "TimeoutError",
+      "phase": "initial",
+      "responses": []
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "mode": "json_schema",
+      "elapsed_ms": 29355.93,
+      "adapter_pass": false,
+      "error_type": "ValidationError",
+      "http_status": 200,
+      "phase": "initial",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 29351.72,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 1318,
+            "prompt_tokens": 6540,
+            "total_tokens": 7858
+          },
+          "response_format": "json_schema",
+          "strict": true,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "reasoning_content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": true,
+            "pydantic_pass": false,
+            "markdown_wrapper": false,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "lanes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.2.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.3.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.4.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.5.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              }
+            ],
+            "unwrap_parseable": false
+          }
+        }
+      ]
+    },
+    {
+      "model": "gemini-3.1-pro",
+      "mode": "json_schema",
+      "elapsed_ms": 25504.64,
+      "adapter_pass": false,
+      "error_type": "ValidationError",
+      "http_status": 200,
+      "phase": "initial",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 25500.38,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 3305,
+            "prompt_tokens": 3168,
+            "total_tokens": 6473
+          },
+          "response_format": "json_schema",
+          "strict": true,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "created": "int",
+            "id": "str",
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": false,
+            "pydantic_pass": false,
+            "markdown_wrapper": true,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "participants.0.roles",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "flows",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "pools.0.lanes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "pools.0.nodes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "pools.0.flows",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              }
+            ],
+            "reason": "Expecting value; line 1, column 1, position 0",
+            "raw_classification": "JSON_PARSE_FAIL",
+            "json_error_kind": "markdown fence",
+            "unwrap_parseable": true
+          }
+        }
+      ]
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "mode": "json_object",
+      "elapsed_ms": 32182.77,
+      "adapter_pass": false,
+      "error_type": "ValidationError",
+      "http_status": 200,
+      "phase": "transports",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 32175.94,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 1443,
+            "prompt_tokens": 6540,
+            "total_tokens": 7983
+          },
+          "response_format": "json_object",
+          "strict": null,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "reasoning_content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": true,
+            "pydantic_pass": false,
+            "markdown_wrapper": false,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "lanes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.2.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.3.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.4.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.5.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              }
+            ],
+            "unwrap_parseable": false
+          }
+        }
+      ]
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "mode": "schema_relaxed",
+      "elapsed_ms": 28900.04,
+      "adapter_pass": false,
+      "error_type": "ValidationError",
+      "http_status": 200,
+      "phase": "transports",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 28896.34,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 1299,
+            "prompt_tokens": 6540,
+            "total_tokens": 7839
+          },
+          "response_format": "json_schema",
+          "strict": false,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "reasoning_content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": true,
+            "pydantic_pass": false,
+            "markdown_wrapper": false,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "lanes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.1.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.1.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.2.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.2.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.3.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.3.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.4.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              }
+            ],
+            "unwrap_parseable": false
+          }
+        }
+      ]
+    },
+    {
+      "model": "gemini-3.1-pro",
+      "mode": "json_object",
+      "elapsed_ms": 24032.83,
+      "adapter_pass": false,
+      "error_type": "ValidationError",
+      "http_status": 200,
+      "phase": "transports",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 24030.21,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 3184,
+            "prompt_tokens": 3168,
+            "total_tokens": 6352
+          },
+          "response_format": "json_object",
+          "strict": null,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "created": "int",
+            "id": "str",
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": false,
+            "pydantic_pass": false,
+            "markdown_wrapper": true,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "participants",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.1.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.2.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.3.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.4.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.5.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              }
+            ],
+            "reason": "Expecting value; line 1, column 1, position 0",
+            "raw_classification": "JSON_PARSE_FAIL",
+            "json_error_kind": "markdown fence",
+            "unwrap_parseable": true
+          }
+        }
+      ]
+    },
+    {
+      "model": "gemini-3.1-pro",
+      "mode": "schema_relaxed",
+      "elapsed_ms": 20601.62,
+      "adapter_pass": false,
+      "error_type": "ValidationError",
+      "http_status": 200,
+      "phase": "transports",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 20597.84,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 2382,
+            "prompt_tokens": 3168,
+            "total_tokens": 5550
+          },
+          "response_format": "json_schema",
+          "strict": false,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "created": "int",
+            "id": "str",
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": false,
+            "pydantic_pass": false,
+            "markdown_wrapper": true,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "lanes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "participants",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.1.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.2.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.3.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.4.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.5.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.6.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.6.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.7.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.7.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              }
+            ],
+            "reason": "Expecting value; line 1, column 1, position 0",
+            "raw_classification": "JSON_PARSE_FAIL",
+            "json_error_kind": "markdown fence",
+            "unwrap_parseable": true
+          }
+        }
+      ]
+    },
+    {
+      "model": "gpt-6.1-sol",
+      "mode": "json_schema",
+      "elapsed_ms": 34138.14,
+      "adapter_pass": true,
+      "error_type": null,
+      "prompt_sha256": [
+        "18d56ca12a31a9ccbbf5d23388f10f06002e09515a5b4f694556b40e874d14bc"
+      ],
+      "corrective_enabled": true,
+      "cache_enabled": false,
+      "fallback_enabled": false,
+      "http_status": 200,
+      "phase": "after-fix",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 34130.26,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 847,
+            "prompt_tokens": 4158,
+            "total_tokens": 5005
+          },
+          "response_format": "json_schema",
+          "strict": true,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "created": "int",
+            "id": "str",
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": true,
+            "pydantic_pass": true,
+            "markdown_wrapper": false,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": null,
+            "validation_errors": [],
+            "unwrap_parseable": false
+          }
+        }
+      ]
+    },
+    {
+      "model": "claude-sonnet-5-5",
+      "mode": "json_schema",
+      "elapsed_ms": 60011.14,
+      "adapter_pass": false,
+      "error_type": "TimeoutError",
+      "prompt_sha256": [
+        "18d56ca12a31a9ccbbf5d23388f10f06002e09515a5b4f694556b40e874d14bc",
+        "5441d68d3f0c3317a4b7ecef2a7c35b03b0126ed3e08aff753b2e9b249c8097d"
+      ],
+      "corrective_enabled": true,
+      "cache_enabled": false,
+      "fallback_enabled": false,
+      "http_status": 200,
+      "phase": "after-fix",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 34342.87,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 1379,
+            "prompt_tokens": 6540,
+            "total_tokens": 7919
+          },
+          "response_format": "json_schema",
+          "strict": true,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "reasoning_content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": true,
+            "pydantic_pass": false,
+            "markdown_wrapper": false,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "lanes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.2.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.3.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.4.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              },
+              {
+                "location": "nodes.5.lane_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.pool_id",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.confidence",
+                "type": "literal_error",
+                "message": "Input should be 'high', 'medium' or 'confirmation_required'"
+              }
+            ],
+            "unwrap_parseable": false
+          }
+        }
+      ]
+    },
+    {
+      "model": "gemini-3.1-pro",
+      "mode": "json_schema",
+      "elapsed_ms": 44975.25,
+      "adapter_pass": false,
+      "error_type": "ProviderError",
+      "prompt_sha256": [
+        "18d56ca12a31a9ccbbf5d23388f10f06002e09515a5b4f694556b40e874d14bc",
+        "63c3c85be38d05ef4741446a2031f29e3b8bf4e2f61db8d2ba9e209715120f76"
+      ],
+      "corrective_enabled": true,
+      "cache_enabled": false,
+      "fallback_enabled": false,
+      "http_status": 200,
+      "phase": "after-fix",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 18431.05,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 2412,
+            "prompt_tokens": 3168,
+            "total_tokens": 5580
+          },
+          "response_format": "json_schema",
+          "strict": true,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "created": "int",
+            "id": "str",
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": false,
+            "pydantic_pass": false,
+            "markdown_wrapper": true,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "participants",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "flows",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "pools.0.lanes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "pools.0.nodes",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "pools.0.flows",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              }
+            ],
+            "reason": "Expecting value; line 1, column 1, position 0",
+            "raw_classification": "JSON_PARSE_FAIL",
+            "json_error_kind": "markdown fence",
+            "unwrap_parseable": true
+          }
+        },
+        {
+          "http_status": 200,
+          "duration_ms": 26534.44,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 3415,
+            "prompt_tokens": 3306,
+            "total_tokens": 6721
+          },
+          "response_format": "json_schema",
+          "strict": true,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "created": "int",
+            "id": "str",
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "prompt_tokens": "int",
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": false,
+            "pydantic_pass": false,
+            "markdown_wrapper": true,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "nodes.0.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.0.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.1.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.1.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.2.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.2.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.3.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.3.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.4.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.4.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.5.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.5.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.6.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.6.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.7.participant",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "nodes.7.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "flows.0.source_text",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "flows.1.source_text",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "flows.2.source_text",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              },
+              {
+                "location": "flows.3.source_text",
+                "type": "extra_forbidden",
+                "message": "Extra inputs are not permitted"
+              }
+            ],
+            "reason": "Expecting value; line 1, column 1, position 0",
+            "raw_classification": "JSON_PARSE_FAIL",
+            "json_error_kind": "markdown fence",
+            "unwrap_parseable": true
+          }
+        }
+      ]
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "mode": "json_schema",
+      "elapsed_ms": 24246.8,
+      "adapter_pass": false,
+      "error_type": "ValidationError",
+      "http_status": 200,
+      "phase": "flash-simple",
+      "responses": [
+        {
+          "http_status": 200,
+          "duration_ms": 24239.65,
+          "finish_reason": "stop",
+          "usage": {
+            "completion_tokens": 1407,
+            "completion_tokens_details": {
+              "audio_tokens": 0,
+              "image_tokens": 0,
+              "reasoning_tokens": 1230,
+              "text_tokens": 0
+            },
+            "input_tokens": 0,
+            "input_tokens_details": null,
+            "output_tokens": 0,
+            "prompt_tokens": 3169,
+            "prompt_tokens_details": {
+              "audio_tokens": 0,
+              "cached_tokens": 0,
+              "image_tokens": 0,
+              "text_tokens": 3169
+            },
+            "total_tokens": 4576
+          },
+          "response_format": "json_schema",
+          "strict": true,
+          "shape": {
+            "choices": {
+              "type": "list",
+              "length": 1,
+              "items": [
+                {
+                  "finish_reason": "str",
+                  "index": "int",
+                  "message": {
+                    "content": "str",
+                    "role": "str"
+                  }
+                }
+              ]
+            },
+            "created": "int",
+            "id": "str",
+            "model": "str",
+            "object": "str",
+            "usage": {
+              "completion_tokens": "int",
+              "completion_tokens_details": {
+                "audio_tokens": "int",
+                "image_tokens": "int",
+                "reasoning_tokens": "int",
+                "text_tokens": "int"
+              },
+              "input_tokens": "int",
+              "input_tokens_details": "NoneType",
+              "output_tokens": "int",
+              "prompt_tokens": "int",
+              "prompt_tokens_details": {
+                "audio_tokens": "int",
+                "cached_tokens": "int",
+                "image_tokens": "int",
+                "text_tokens": "int"
+              },
+              "total_tokens": "int"
+            }
+          },
+          "analysis": {
+            "valid_json": true,
+            "pydantic_pass": false,
+            "markdown_wrapper": false,
+            "text_prefix_suffix": false,
+            "truncated": false,
+            "classification": "SCHEMA_FAIL",
+            "validation_errors": [
+              {
+                "location": "participants.0.id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "participants.0.name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.type",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "nodes.0.participant_id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "flows.0.id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "flows.0.source",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "flows.0.target",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "pools.0.id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "pools.0.name",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "assumptions.0.id",
+                "type": "missing",
+                "message": "Field required"
+              },
+              {
+                "location": "assumptions.0.text",
+                "type": "missing",
+                "message": "Field required"
+              }
+            ],
+            "unwrap_parseable": false
+          }
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "backend_passed": 450,
+    "browser_passed": 63,
+    "build": "passed",
+    "real_gpt_bpmn_import": {
+      "imported": true,
+      "elements": 23,
+      "error_boxes": 0,
+      "page_errors": []
+    },
+    "real_gpt_pipeline": {
+      "bpmn": true,
+      "quality": {
+        "graph_errors": [],
+        "pools": 1,
+        "roles": 1,
+        "tasks": 4,
+        "messages": 0,
+        "conditions": 2,
+        "business_loop_groups": 0,
+        "invariants": {
+          "one_role": true,
+          "register_check_accept_reject": true,
+          "xor": true,
+          "two_conditions": true
+        },
+        "passed": true
+      }
+    }
+  }
+}

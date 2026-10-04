@@ -1,0 +1,667 @@
+{
+  "id": "Connection",
+  "name": "Заключение договора",
+  "description": "Клиент подаёт заявку на заключение договора. Оператор проверяет документы. Если документы заполнены неправильно, заявку возвращают клиенту на исправление. После исправления клиент повторно отправляет документы. Если всё корректно, юридический отдел и служба безопасности одновременно выполняют проверки. После завершения обеих проверок менеджер определяет стоимость договора. Если стоимость больше 500 000 рублей, договор должен согласовать руководитель. Если руководитель отклоняет договор, менеджер дорабатывает его и повторно отправляет на согласование. Если стоимость не превышает 500 000 рублей или руководитель согласовал договор, менеджер отправляет договор клиенту. Клиент получает договор, и процесс завершается.",
+  "participants": [
+    {
+      "id": "Client",
+      "name": "Клиент",
+      "type": "external",
+      "kind": "external",
+      "pool_id": "ClientPool"
+    },
+    {
+      "id": "Operator",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "CompanyPool"
+    },
+    {
+      "id": "Legal",
+      "name": "Юридический отдел",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "CompanyPool"
+    },
+    {
+      "id": "Security",
+      "name": "Служба безопасности",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "CompanyPool"
+    },
+    {
+      "id": "Head",
+      "name": "Руководитель",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "CompanyPool"
+    },
+    {
+      "id": "Manager",
+      "name": "Менеджер",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "CompanyPool"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ClientStart",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начало процесса",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Submit",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подать заявку",
+      "participant_id": "Client",
+      "source_text": "Клиент подаёт заявку на подключение объекта",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Reply",
+      "type": "event_based_gateway",
+      "event_definition": "none",
+      "decision_basis": "event",
+      "name": "Какой ответ получен?",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "ReceiveReturn",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить запрос на доработку",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Revise",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Доработать документы",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Resubmit",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить исправленные документы",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "ReceiveContract",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить договор",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "ClientYes",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Договор получен",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "CompanyStart",
+      "type": "start_event",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получена заявка",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Merge",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверка документов",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Check",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить документы",
+      "participant_id": "Operator",
+      "source_text": "Оператор проверяет документы",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Complete",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Документы полные?",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Return",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Вернуть заявку на доработку",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Correction",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить исправленные документы",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Fork",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Параллельные проверки",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "LegalCheck",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить заявку",
+      "participant_id": "Legal",
+      "source_text": "После получения корректных документов заявку проверяют юридический отдел и служба безопасности",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "SecurityCheck",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить заявку",
+      "participant_id": "Security",
+      "source_text": "После получения корректных документов заявку проверяют юридический отдел и служба безопасности",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Join",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверки завершены",
+      "participant_id": "Head",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Send",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить договор клиенту",
+      "participant_id": "Manager",
+      "source_text": "Если заявка одобрена, менеджер формирует договор и отправляет его клиенту",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "CompanyYes",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Договор отправлен",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": true
+    },
+    {
+      "id": "Price",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Определить стоимость договора",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Amount",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Стоимость больше 500 000 рублей?",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "ApprovalMerge",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Передача на согласование",
+      "participant_id": "Head",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Approve",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Согласовать договор",
+      "participant_id": "Head",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Approved",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Договор согласован?",
+      "participant_id": "Head",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Rework",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Доработать договор",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Resend",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить на повторное согласование",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "FinalMerge",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подготовка отправки договора",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "medium",
+      "inferred": false
+    },
+    {
+      "id": "Merge_Reply",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Объединить пути",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "Flow0",
+      "source": "ClientStart",
+      "target": "Submit",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow1",
+      "source": "Submit",
+      "target": "Merge_Reply",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow3",
+      "source": "Reply",
+      "target": "ReceiveReturn",
+      "name": "Нужна доработка",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow4",
+      "source": "ReceiveReturn",
+      "target": "Revise",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow5",
+      "source": "Revise",
+      "target": "Resubmit",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow6",
+      "source": "Resubmit",
+      "target": "Merge_Reply",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow7",
+      "source": "Reply",
+      "target": "ReceiveContract",
+      "name": "Договор",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow9",
+      "source": "ReceiveContract",
+      "target": "ClientYes",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow11",
+      "source": "CompanyStart",
+      "target": "Merge",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow12",
+      "source": "Correction",
+      "target": "Merge",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow13",
+      "source": "Merge",
+      "target": "Check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow14",
+      "source": "Check",
+      "target": "Complete",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow15",
+      "source": "Complete",
+      "target": "Return",
+      "name": "Документы неполные",
+      "condition": "Документы неполные",
+      "is_default": false
+    },
+    {
+      "id": "Flow16",
+      "source": "Return",
+      "target": "Correction",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow17",
+      "source": "Complete",
+      "target": "Fork",
+      "name": "Документы полные",
+      "condition": "Документы полные",
+      "is_default": false
+    },
+    {
+      "id": "Flow18",
+      "source": "Fork",
+      "target": "LegalCheck",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow19",
+      "source": "Fork",
+      "target": "SecurityCheck",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow20",
+      "source": "LegalCheck",
+      "target": "Join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow21",
+      "source": "SecurityCheck",
+      "target": "Join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow27",
+      "source": "Send",
+      "target": "CompanyYes",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow0",
+      "source": "Join",
+      "target": "Price",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow1",
+      "source": "Price",
+      "target": "Amount",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow2",
+      "source": "Amount",
+      "target": "ApprovalMerge",
+      "name": "Стоимость > 500000",
+      "condition": "Стоимость > 500000",
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow3",
+      "source": "Amount",
+      "target": "FinalMerge",
+      "name": "Стоимость <= 500000",
+      "condition": "Стоимость <= 500000",
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow4",
+      "source": "ApprovalMerge",
+      "target": "Approve",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow5",
+      "source": "Approve",
+      "target": "Approved",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow6",
+      "source": "Approved",
+      "target": "Rework",
+      "name": "Не согласовано",
+      "condition": "Не согласовано",
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow7",
+      "source": "Rework",
+      "target": "Resend",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow8",
+      "source": "Resend",
+      "target": "ApprovalMerge",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow9",
+      "source": "Approved",
+      "target": "FinalMerge",
+      "name": "Согласовано",
+      "condition": "Согласовано",
+      "is_default": false
+    },
+    {
+      "id": "ContractFlow10",
+      "source": "FinalMerge",
+      "target": "Send",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_Merge_Reply",
+      "source": "Merge_Reply",
+      "target": "Reply",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "ClientPool",
+      "name": "Клиент",
+      "kind": "external"
+    },
+    {
+      "id": "CompanyPool",
+      "name": "Энергоснабжающая компания",
+      "kind": "internal"
+    }
+  ],
+  "message_flows": [
+    {
+      "id": "Message0",
+      "source": "Submit",
+      "target": "CompanyStart",
+      "name": ""
+    },
+    {
+      "id": "Message1",
+      "source": "Return",
+      "target": "ReceiveReturn",
+      "name": ""
+    },
+    {
+      "id": "Message2",
+      "source": "Resubmit",
+      "target": "Correction",
+      "name": ""
+    },
+    {
+      "id": "Message3",
+      "source": "Send",
+      "target": "ReceiveContract",
+      "name": ""
+    }
+  ],
+  "ambiguities": []
+}

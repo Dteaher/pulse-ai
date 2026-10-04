@@ -1,0 +1,17 @@
+.git
+.env
+.env.*
+!.env.example
+.venv
+**/node_modules
+**/dist
+**/__pycache__
+**/.pytest_cache
+**/test-results
+**/playwright-report
+**/*.log
+.runtime
+.llm-debug
+.codex
+**/.env
+**/.env.*

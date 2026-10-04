@@ -1,0 +1,147 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.2">
+  <bpmn:process id="Process_internal_pool" name="Организация" isExecutable="false">
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="operator" name="Оператор">
+        <bpmn:flowNodeRef>start1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gateway1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="start1" name="Начало процесса">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>f1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="task1" name="Зарегистрировать заявку">
+      <bpmn:documentation>Оператор регистрирует заявку</bpmn:documentation>
+      <bpmn:incoming>f1</bpmn:incoming>
+      <bpmn:outgoing>f2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="task2" name="Проверить комплектность документов">
+      <bpmn:documentation>и проверяет комплектность документов</bpmn:documentation>
+      <bpmn:incoming>f2</bpmn:incoming>
+      <bpmn:outgoing>f3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="gateway1" name="Комплектность документов" gatewayDirection="Diverging">
+      <bpmn:documentation>PULSE_NODE:{"source_text": "Если комплект полный... Если комплект неполный", "decision_basis": "data"}</bpmn:documentation>
+      <bpmn:incoming>f3</bpmn:incoming>
+      <bpmn:outgoing>f4</bpmn:outgoing>
+      <bpmn:outgoing>f5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="task3" name="Принять заявку">
+      <bpmn:documentation>оператор принимает заявку</bpmn:documentation>
+      <bpmn:incoming>f4</bpmn:incoming>
+      <bpmn:outgoing>f6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="task4" name="Отклонить заявку">
+      <bpmn:documentation>оператор отклоняет заявку</bpmn:documentation>
+      <bpmn:incoming>f5</bpmn:incoming>
+      <bpmn:outgoing>f7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="end1" name="Процесс завершён после принятия заявки">
+      <bpmn:documentation>и завершает процесс</bpmn:documentation>
+      <bpmn:incoming>f6</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="end2" name="Процесс завершён после отклонения заявки">
+      <bpmn:documentation>и завершает процесс</bpmn:documentation>
+      <bpmn:incoming>f7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="f1" sourceRef="start1" targetRef="task1" name=""/>
+    <bpmn:sequenceFlow id="f2" sourceRef="task1" targetRef="task2" name=""/>
+    <bpmn:sequenceFlow id="f3" sourceRef="task2" targetRef="gateway1" name=""/>
+    <bpmn:sequenceFlow id="f4" sourceRef="gateway1" targetRef="task3" name="Комплект полный">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Комплект полный</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="f5" sourceRef="gateway1" targetRef="task4" name="Комплект неполный">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Комплект неполный</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="f6" sourceRef="task3" targetRef="end1" name=""/>
+    <bpmn:sequenceFlow id="f7" sourceRef="task4" targetRef="end2" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="process1" name="Регистрация и проверка заявки">
+    <bpmn:documentation>Оператор регистрирует заявку и проверяет комплектность документов. Если комплект полный, оператор принимает заявку и завершает процесс. Если комплект неполный, оператор отклоняет заявку и завершает процесс.</bpmn:documentation>
+    <bpmn:participant id="internal_pool" name="Организация" processRef="Process_internal_pool">
+      <bpmn:documentation>PULSE:{"kind": "internal", "roles": [{"id": "operator", "name": "Оператор", "type": "role", "kind": "internal", "pool_id": "internal_pool"}]}</bpmn:documentation>
+    </bpmn:participant>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="process1">
+      <bpmndi:BPMNShape id="Shape_internal_pool" bpmnElement="internal_pool" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="1280" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_operator" bpmnElement="operator" isHorizontal="true">
+        <dc:Bounds x="90" y="70" width="1250" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_start1" bpmnElement="start1">
+        <dc:Bounds x="241.0" y="253.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task1" bpmnElement="task1">
+        <dc:Bounds x="380.0" y="232.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task2" bpmnElement="task2">
+        <dc:Bounds x="570.0" y="232.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway1" bpmnElement="gateway1">
+        <dc:Bounds x="804.0" y="246.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task3" bpmnElement="task3">
+        <dc:Bounds x="950.0" y="186.66666666666669" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task4" bpmnElement="task4">
+        <dc:Bounds x="950.0" y="278.33333333333337" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end1" bpmnElement="end1">
+        <dc:Bounds x="1191.0" y="207.66666666666669" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end2" bpmnElement="end2">
+        <dc:Bounds x="1191.0" y="299.33333333333337" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_f1" bpmnElement="f1">
+        <di:waypoint x="279.0" y="272.5"/>
+        <di:waypoint x="380.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f2" bpmnElement="f2">
+        <di:waypoint x="520.0" y="272.5"/>
+        <di:waypoint x="570.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f3" bpmnElement="f3">
+        <di:waypoint x="710.0" y="272.5"/>
+        <di:waypoint x="804.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f4" bpmnElement="f4">
+        <di:waypoint x="856.0" y="272.5"/>
+        <di:waypoint x="891.0" y="272.5"/>
+        <di:waypoint x="891.0" y="226.66666666666669"/>
+        <di:waypoint x="950.0" y="226.66666666666669"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1299.0" y="232.5" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f5" bpmnElement="f5">
+        <di:waypoint x="856.0" y="272.5"/>
+        <di:waypoint x="891.0" y="272.5"/>
+        <di:waypoint x="891.0" y="318.33333333333337"/>
+        <di:waypoint x="950.0" y="318.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="864.0" y="75" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f6" bpmnElement="f6">
+        <di:waypoint x="1090.0" y="226.66666666666669"/>
+        <di:waypoint x="1191.0" y="226.66666666666669"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_f7" bpmnElement="f7">
+        <di:waypoint x="1090.0" y="318.33333333333337"/>
+        <di:waypoint x="1191.0" y="318.33333333333337"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

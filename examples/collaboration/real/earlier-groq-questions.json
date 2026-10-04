@@ -1,0 +1,591 @@
+{
+  "process": {
+    "id": "process_1",
+    "name": "Процесс подачи заявки на подключение",
+    "description": "Клиент подаёт заявку на подключение объекта. Оператор проверяет документы. Если документов не хватает, заявку возвращают клиенту на доработку. После получения корректных документов заявку проверяют юридический отдел и служба безопасности. Затем руководитель принимает решение. Если заявка одобрена, менеджер формирует договор и отправляет его клиенту. Если заявка отклонена, клиент получает уведомление об отказе.",
+    "participants": [
+      {
+        "id": "p_client",
+        "name": "Клиент",
+        "type": "external",
+        "kind": "external",
+        "pool_id": "client_pool"
+      },
+      {
+        "id": "p_operator",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "org_pool"
+      },
+      {
+        "id": "p_legal",
+        "name": "Юридический отдел",
+        "type": "department",
+        "kind": "internal",
+        "pool_id": "org_pool"
+      },
+      {
+        "id": "p_security",
+        "name": "Служба безопасности",
+        "type": "department",
+        "kind": "internal",
+        "pool_id": "org_pool"
+      },
+      {
+        "id": "p_leader",
+        "name": "Руководитель",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "org_pool"
+      },
+      {
+        "id": "p_manager",
+        "name": "Менеджер",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "org_pool"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "n_start_client",
+        "type": "start_event",
+        "name": "Начало процесса",
+        "participant_id": "p_client",
+        "source_text": "Клиент подаёт заявку на подключение объекта.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_submit_app",
+        "type": "user_task",
+        "name": "Подать заявку на подключение объекта",
+        "participant_id": "p_client",
+        "source_text": "Подать заявку на подключение объекта.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_send_app",
+        "type": "send_task",
+        "name": "Отправить заявку оператору",
+        "participant_id": "p_client",
+        "source_text": "Отправить заявку оператору.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_wait_response",
+        "type": "task",
+        "name": "Ожидать ответ от организации",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_response_gw",
+        "type": "exclusive_gateway",
+        "name": "Какой ответ получен",
+        "participant_id": "p_client",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_recv_correction",
+        "type": "receive_task",
+        "name": "Получить запрос доработки",
+        "participant_id": "p_client",
+        "source_text": "Получить запрос доработки",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_client_correction",
+        "type": "user_task",
+        "name": "Выполнить доработку и отправить исправленные документы",
+        "participant_id": "p_client",
+        "source_text": "Выполнить доработку и отправить исправленные документы.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_send_corrected",
+        "type": "send_task",
+        "name": "Отправить исправленные документы оператору",
+        "participant_id": "p_client",
+        "source_text": "Отправить исправленные документы оператору.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_recv_contract",
+        "type": "receive_task",
+        "name": "Получить договор",
+        "participant_id": "p_client",
+        "source_text": "Получить договор",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_end_contract",
+        "type": "end_event",
+        "name": "Договор получен",
+        "participant_id": "p_client",
+        "source_text": "Договор получен",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_recv_reject",
+        "type": "receive_task",
+        "name": "Получить отказ",
+        "participant_id": "p_client",
+        "source_text": "Получить отказ",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_end_reject",
+        "type": "end_event",
+        "name": "Отказ получен",
+        "participant_id": "p_client",
+        "source_text": "Отказ получен",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_start_org",
+        "type": "start_event",
+        "name": "Начало процесса (Организация)",
+        "participant_id": "p_operator",
+        "source_text": "Получена заявка от клиента.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_recv_app",
+        "type": "receive_task",
+        "name": "Получить заявку от клиента",
+        "participant_id": "p_operator",
+        "source_text": "Получить заявку от клиента.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_op_check",
+        "type": "user_task",
+        "name": "Оператор проверяет документы",
+        "participant_id": "p_operator",
+        "source_text": "Оператор проверяет документы.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_docs_gw",
+        "type": "exclusive_gateway",
+        "name": "Документы полные?",
+        "participant_id": "p_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_send_correction",
+        "type": "send_task",
+        "name": "Отправить запрос доработки клиенту",
+        "participant_id": "p_operator",
+        "source_text": "Отправить запрос доработки клиенту.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_recv_corrected",
+        "type": "receive_task",
+        "name": "Получить исправленные документы от клиента",
+        "participant_id": "p_operator",
+        "source_text": "Получить исправленные документы от клиента.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_legal_review",
+        "type": "user_task",
+        "name": "Юридический отдел проверяет заявку",
+        "participant_id": "p_legal",
+        "source_text": "Юридический отдел проверяет заявку.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_security_check",
+        "type": "user_task",
+        "name": "Служба безопасности проверяет заявку",
+        "participant_id": "p_security",
+        "source_text": "Служба безопасности проверяет заявку.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_leader_decision",
+        "type": "user_task",
+        "name": "Руководитель принимает решение",
+        "participant_id": "p_leader",
+        "source_text": "Руководитель принимает решение.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_approval_gw",
+        "type": "exclusive_gateway",
+        "name": "Результат решения",
+        "participant_id": "p_leader",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_send_contract",
+        "type": "send_task",
+        "name": "Менеджер формирует договор и отправляет клиенту",
+        "participant_id": "p_manager",
+        "source_text": "Менеджер формирует договор и отправляет клиенту.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_send_reject",
+        "type": "send_task",
+        "name": "Отправить уведомление об отказе клиенту",
+        "participant_id": "p_manager",
+        "source_text": "Отправить уведомление об отказе клиенту.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_end_contract_sent",
+        "type": "end_event",
+        "name": "Договор отправлен",
+        "participant_id": "p_manager",
+        "source_text": "Договор отправлен.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_end_reject_sent",
+        "type": "end_event",
+        "name": "Отказ отправлен",
+        "participant_id": "p_manager",
+        "source_text": "Отказ отправлен.",
+        "confidence": "high",
+        "inferred": false
+      }
+    ],
+    "flows": [
+      {
+        "id": "f1",
+        "source": "n_start_client",
+        "target": "n_submit_app",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f2",
+        "source": "n_submit_app",
+        "target": "n_send_app",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f3",
+        "source": "n_send_app",
+        "target": "n_wait_response",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f4",
+        "source": "n_wait_response",
+        "target": "n_response_gw",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f5",
+        "source": "n_response_gw",
+        "target": "n_recv_correction",
+        "name": "",
+        "condition": "Запрос доработки",
+        "is_default": false
+      },
+      {
+        "id": "f6",
+        "source": "n_response_gw",
+        "target": "n_recv_contract",
+        "name": "",
+        "condition": "Договор",
+        "is_default": false
+      },
+      {
+        "id": "f7",
+        "source": "n_response_gw",
+        "target": "n_recv_reject",
+        "name": "",
+        "condition": "Отказ",
+        "is_default": false
+      },
+      {
+        "id": "f8",
+        "source": "n_recv_correction",
+        "target": "n_client_correction",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f9",
+        "source": "n_client_correction",
+        "target": "n_send_corrected",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f10",
+        "source": "n_send_corrected",
+        "target": "n_wait_response",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f11",
+        "source": "n_recv_contract",
+        "target": "n_end_contract",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f12",
+        "source": "n_recv_reject",
+        "target": "n_end_reject",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f13",
+        "source": "n_start_org",
+        "target": "n_recv_app",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f14",
+        "source": "n_recv_app",
+        "target": "n_op_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f15",
+        "source": "n_op_check",
+        "target": "n_docs_gw",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f16",
+        "source": "n_docs_gw",
+        "target": "n_send_correction",
+        "name": "",
+        "condition": "Документы неполные",
+        "is_default": false
+      },
+      {
+        "id": "f17",
+        "source": "n_docs_gw",
+        "target": "n_legal_review",
+        "name": "",
+        "condition": "Документы полные",
+        "is_default": false
+      },
+      {
+        "id": "f18",
+        "source": "n_send_correction",
+        "target": "n_recv_corrected",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f19",
+        "source": "n_recv_corrected",
+        "target": "n_op_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f20",
+        "source": "n_legal_review",
+        "target": "n_security_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f21",
+        "source": "n_security_check",
+        "target": "n_leader_decision",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f22",
+        "source": "n_leader_decision",
+        "target": "n_approval_gw",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f23",
+        "source": "n_approval_gw",
+        "target": "n_send_contract",
+        "name": "",
+        "condition": "Одобрена",
+        "is_default": false
+      },
+      {
+        "id": "f24",
+        "source": "n_approval_gw",
+        "target": "n_send_reject",
+        "name": "",
+        "condition": "Отклонена",
+        "is_default": false
+      },
+      {
+        "id": "f25",
+        "source": "n_send_contract",
+        "target": "n_end_contract_sent",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f26",
+        "source": "n_send_reject",
+        "target": "n_end_reject_sent",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "client_pool",
+        "name": "Клиент",
+        "kind": "external"
+      },
+      {
+        "id": "org_pool",
+        "name": "Организация",
+        "kind": "internal"
+      }
+    ],
+    "message_flows": [
+      {
+        "id": "mf1",
+        "source": "n_send_app",
+        "target": "n_recv_app",
+        "name": "Заявка"
+      },
+      {
+        "id": "mf2",
+        "source": "n_send_correction",
+        "target": "n_recv_correction",
+        "name": "Запрос доработки"
+      },
+      {
+        "id": "mf3",
+        "source": "n_send_corrected",
+        "target": "n_recv_corrected",
+        "name": "Исправленные документы"
+      },
+      {
+        "id": "mf4",
+        "source": "n_send_contract",
+        "target": "n_recv_contract",
+        "name": "Договор"
+      },
+      {
+        "id": "mf5",
+        "source": "n_send_reject",
+        "target": "n_recv_reject",
+        "name": "Отказ"
+      }
+    ],
+    "ambiguities": [
+      {
+        "id": "amb1",
+        "question": "В каком порядке должны выполнять проверку юридический отдел и служба безопасности?",
+        "type": "unclear_sequence",
+        "related_node_ids": [
+          "n_legal_review",
+          "n_security_check"
+        ],
+        "severity": "critical",
+        "suggested_answers": [
+          "Сначала юридический отдел, затем служба безопасности",
+          "Сначала служба безопасности, затем юридический отдел",
+          "Проверка выполняется параллельно"
+        ],
+        "allow_custom_answer": true,
+        "assumption": ""
+      }
+    ]
+  },
+  "ambiguities": [
+    {
+      "id": "amb1",
+      "question": "В каком порядке должны выполнять проверку юридический отдел и служба безопасности?",
+      "type": "unclear_sequence",
+      "related_node_ids": [
+        "n_legal_review",
+        "n_security_check"
+      ],
+      "severity": "critical",
+      "suggested_answers": [
+        "Сначала юридический отдел, затем служба безопасности",
+        "Сначала служба безопасности, затем юридический отдел",
+        "Проверка выполняется параллельно"
+      ],
+      "allow_custom_answer": true,
+      "assumption": ""
+    }
+  ],
+  "xml": null,
+  "attempts": 1,
+  "semantic_warnings": [],
+  "metadata": {
+    "provider_used": "groq",
+    "model_used": "openai/gpt-oss-120b",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": []
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "Amb_Parallel_Checks",
+    "question": "Являются ли проверки юристом и службой безопасности параллельными или последовательными? Если последовательными, то в каком порядке?",
+    "type": "unclear_parallelism",
+    "related_node_ids": [
+      "T_Lawyer_CheckApplication",
+      "T_Security_CheckApplication"
+    ],
+    "severity": "critical",
+    "suggested_answers": [
+      "Параллельные",
+      "Последовательные (сначала юрист, потом СБ)",
+      "Последовательные (сначала СБ, потом юрист)"
+    ],
+    "allow_custom_answer": true
+  },
+  {
+    "id": "Amb_Missing_Rejection_Path",
+    "question": "Что происходит в случае отклонения заявки руководителем? Заявка просто отклоняется, возвращается на доработку или запускается другой процесс?",
+    "type": "missing_branch",
+    "related_node_ids": [
+      "T_Head_MakeDecision",
+      "G_Exclusive_Decision"
+    ],
+    "severity": "critical",
+    "suggested_answers": [
+      "Заявка окончательно отклоняется",
+      "Заявка возвращается на доработку клиенту",
+      "Заявка возвращается менеджеру для уточнения"
+    ],
+    "allow_custom_answer": true
+  }
+]

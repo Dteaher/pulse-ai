@@ -1,0 +1,218 @@
+{
+  "process": null,
+  "preflight": {
+    "original_text": "Оператор принимает заявку. Юрист и инженер проверяют заявку, но порядок их проверок не определён. После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано. После успешных проверок оператор выдаёт договор и завершает работу.",
+    "analysis": {
+      "ambiguities": [
+        {
+          "id": "amb-001",
+          "question": "Проверки юриста и инженера выполняются параллельно или последовательно? Если последовательно, укажите порядок.",
+          "type": "unclear_parallelism",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Параллельно",
+            "Сначала юрист, затем инженер",
+            "Сначала инженер, затем юрист"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Порядок проверок явно не определён; без этого нельзя построить принципиальный граф процесса.",
+          "source_excerpt": "Юрист и инженер проверяют заявку, но порядок их проверок не определён.",
+          "related_participants": [
+            "Юрист",
+            "Инженер"
+          ]
+        },
+        {
+          "id": "amb-002",
+          "question": "Кто дорабатывает заявку после замечаний?",
+          "type": "unclear_participant",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Оператор",
+            "Заявитель",
+            "Другое лицо (укажите роль)"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Исполнитель отдельного действия не указан; без него невозможно определить владельца задачи и локальный путь.",
+          "source_excerpt": "После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано.",
+          "related_participants": []
+        },
+        {
+          "id": "amb-003",
+          "question": "Кто выполняет повторную проверку после доработки заявки?",
+          "type": "unclear_participant",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Юрист и инженер",
+            "Только юрист",
+            "Только инженер",
+            "Другие роли (укажите)"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Исполнитель повторной проверки не указан; без этого нельзя построить цикл доработки и повторной проверки.",
+          "source_excerpt": "После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано.",
+          "related_participants": [
+            "Юрист",
+            "Инженер"
+          ]
+        }
+      ],
+      "assumptions": [],
+      "superseded_assumption_ids": []
+    },
+    "answers": {}
+  },
+  "ambiguities": [
+    {
+      "id": "amb-001",
+      "question": "Проверки юриста и инженера выполняются параллельно или последовательно? Если последовательно, укажите порядок.",
+      "type": "unclear_parallelism",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Параллельно",
+        "Сначала юрист, затем инженер",
+        "Сначала инженер, затем юрист"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Порядок проверок явно не определён; без этого нельзя построить принципиальный граф процесса.",
+      "source_excerpt": "Юрист и инженер проверяют заявку, но порядок их проверок не определён.",
+      "related_participants": [
+        "Юрист",
+        "Инженер"
+      ]
+    },
+    {
+      "id": "amb-002",
+      "question": "Кто дорабатывает заявку после замечаний?",
+      "type": "unclear_participant",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Оператор",
+        "Заявитель",
+        "Другое лицо (укажите роль)"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Исполнитель отдельного действия не указан; без него невозможно определить владельца задачи и локальный путь.",
+      "source_excerpt": "После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано.",
+      "related_participants": []
+    },
+    {
+      "id": "amb-003",
+      "question": "Кто выполняет повторную проверку после доработки заявки?",
+      "type": "unclear_participant",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Юрист и инженер",
+        "Только юрист",
+        "Только инженер",
+        "Другие роли (укажите)"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Исполнитель повторной проверки не указан; без этого нельзя построить цикл доработки и повторной проверки.",
+      "source_excerpt": "После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано.",
+      "related_participants": [
+        "Юрист",
+        "Инженер"
+      ]
+    }
+  ],
+  "xml": null,
+  "attempts": 0,
+  "status": "clarification_required",
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "timings": {
+    "llm_parse_ms": 0,
+    "normalization_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "xsd_validation_ms": 0,
+    "post_validation_ms": 0,
+    "combined_preparation_ms": 32965.58,
+    "ambiguity_analysis_ms": 0,
+    "total_ms": 32965.58
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": [],
+  "changes": [],
+  "human_message": "Перед построением схемы нужно уточнить бизнес-информацию.",
+  "diagnostics": [
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Проверки юриста и инженера выполняются параллельно или последовательно? Если последовательно, укажите порядок.",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Кто дорабатывает заявку после замечаний?",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Кто выполняет повторную проверку после доработки заявки?",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ]
+}

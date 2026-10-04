@@ -1,0 +1,53 @@
+{
+  "steps": [
+    {
+      "step": "generate",
+      "http": 200,
+      "metadata": {
+        "provider_used": "vertex_gemini",
+        "model_used": "gemini-2.5-flash",
+        "fallback_used": true,
+        "attempts": 2
+      }
+    },
+    {
+      "step": "initial-clarify-0",
+      "http": 200,
+      "metadata": {
+        "provider_used": "vertex_gemini",
+        "model_used": "gemini-2.5-flash",
+        "fallback_used": true,
+        "attempts": 2
+      }
+    },
+    {
+      "step": "modify-parallel",
+      "http": 200,
+      "metadata": {
+        "provider_used": "groq",
+        "model_used": "openai/gpt-oss-120b",
+        "fallback_used": false,
+        "attempts": 1
+      }
+    },
+    {
+      "step": "modify-condition",
+      "http": 200,
+      "metadata": {
+        "provider_used": "vertex_gemini",
+        "model_used": "gemini-2.5-flash",
+        "fallback_used": true,
+        "attempts": 2
+      }
+    }
+  ],
+  "undo_exact_xml": true,
+  "page_errors": [],
+  "shapes": 26,
+  "additional_groq_clarify": {
+    "provider_used": "groq",
+    "model_used": "openai/gpt-oss-120b",
+    "fallback_used": false,
+    "attempts": 1
+  }
+}

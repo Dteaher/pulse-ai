@@ -1,0 +1,220 @@
+{
+  "detail": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "human_message": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "diagnostics": [
+    {
+      "code": "INVALID_MESSAGE_ENDPOINT",
+      "node_id": "Task_SendRejectionNotification",
+      "process_id": "Pool_Internal",
+      "flow_id": "MessageFlow_RejectionNotification",
+      "severity": "error",
+      "source": "BPMN_SPEC",
+      "spec_section": "9.4.1; 10.5.2–10.5.4",
+      "type": "SPEC_ERROR",
+      "category": "bpmn_spec",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Message Flow должен соединять допустимые отправляющие и получающие действия/события.",
+      "node_ids": [
+        "Task_SendRejectionNotification",
+        "EndEvent_ProcessCompletedClient"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Task_ReviseDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Исправить документы» нет входящей связи.",
+      "node_ids": [
+        "Task_ReviseDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Task_CheckContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Проверить договор» нет входящей связи.",
+      "node_ids": [
+        "Task_CheckContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Task_ReviseContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Изменить договор» нет входящей связи.",
+      "node_ids": [
+        "Task_ReviseContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "Task_RegisterContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Зарегистрировать договор» нет входящей связи.",
+      "node_ids": [
+        "Task_RegisterContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_ReviseDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Исправить документы» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_ReviseDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_ResubmitDocuments",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Повторно отправить документы» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_ResubmitDocuments"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_CheckContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Проверить договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_CheckContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Gateway_ClientAgrees",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Клиент согласен?» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Gateway_ClientAgrees"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_ReturnContractForRevision",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Вернуть договор на доработку» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_ReturnContractForRevision"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_SignContract",
+      "process_id": "Pool_Client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Подписать договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_SignContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_ReviseContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Изменить договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_ReviseContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_ResendContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Повторно отправить договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_ResendContract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "Task_RegisterContract",
+      "process_id": "Pool_Internal",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Зарегистрировать договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "Task_RegisterContract"
+      ],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "6f091b90a7e24c358e4d7502c3255e87"
+}

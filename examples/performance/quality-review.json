@@ -1,0 +1,44 @@
+{
+  "before-complex": {
+    "roles": 6,
+    "nodes": 40,
+    "messages": 8,
+    "participant_names": [
+      "Клиент",
+      "Оператор",
+      "Юридический отдел",
+      "Служба безопасности",
+      "Руководитель",
+      "Менеджер"
+    ]
+  },
+  "patch-low-complex": {
+    "roles": 5,
+    "nodes": 36,
+    "messages": 7,
+    "participant_names": [
+      "Клиент",
+      "Оператор",
+      "Юридический отдел",
+      "Служба безопасности",
+      "Руководитель/менеджер"
+    ]
+  },
+  "after-safe-complex": {
+    "roles": 5,
+    "nodes": 42,
+    "messages": 8,
+    "participant_names": [
+      "Клиент",
+      "Оператор",
+      "Юридический отдел",
+      "Служба безопасности",
+      "Руководитель и менеджер"
+    ]
+  },
+  "review": {
+    "patch-low-complex": "Rejected: missing client document correction actions/messages",
+    "after-safe-complex": "Rejected: manager and head merged into one participant",
+    "final_runtime": "Full extraction/BPMN/corrective rules retained; combined and delta modes disabled"
+  }
+}

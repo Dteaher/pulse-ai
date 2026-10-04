@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "request_total_ms": 58795.47,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 2
+  },
+  "bpmn": true,
+  "questions": 0
+}

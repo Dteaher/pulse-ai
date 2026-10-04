@@ -1,0 +1,80 @@
+[
+  {
+    "scenario": "simple",
+    "api_status": 200,
+    "llm_http_statuses": [
+      200,
+      200
+    ],
+    "metadata": {
+      "provider_used": "multiai",
+      "model_used": "gpt-6.1-sol",
+      "fallback_used": false,
+      "attempts": 2
+    },
+    "xml_received": true,
+    "questions": 0,
+    "duration_s": 42.88
+  },
+  {
+    "scenario": "medium",
+    "api_status": 200,
+    "llm_http_statuses": [
+      200,
+      200
+    ],
+    "metadata": {
+      "provider_used": "multiai",
+      "model_used": "gpt-6.1-sol",
+      "fallback_used": false,
+      "attempts": 2
+    },
+    "xml_received": true,
+    "questions": 0,
+    "duration_s": 94.73
+  },
+  {
+    "scenario": "complex",
+    "api_status": 200,
+    "llm_http_statuses": [
+      200,
+      200
+    ],
+    "metadata": {
+      "provider_used": "multiai",
+      "model_used": "gpt-6.1-sol",
+      "fallback_used": false,
+      "attempts": 2
+    },
+    "xml_received": true,
+    "questions": 0,
+    "duration_s": 178.1
+  },
+  {
+    "scenario": "ambiguous",
+    "api_status": 200,
+    "llm_http_statuses": [
+      200
+    ],
+    "metadata": {
+      "provider_used": "multiai",
+      "model_used": "gpt-6.1-sol",
+      "fallback_used": false,
+      "attempts": 1
+    },
+    "xml_received": false,
+    "questions": 2,
+    "duration_s": 9.51
+  },
+  {
+    "scenario": "forced_primary_timeout_real_vertex",
+    "api_status": 200,
+    "metadata": {
+      "provider_used": "vertex_gemini",
+      "model_used": "gemini-2.5-flash",
+      "fallback_used": true,
+      "attempts": 3
+    },
+    "xml_received": true
+  }
+]

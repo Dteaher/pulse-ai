@@ -1,0 +1,43 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.1">
+  <bpmn:process id="P" name="Проверка subset" isExecutable="false">
+    <bpmn:documentation></bpmn:documentation>
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="Role" name="Оператор">
+        <bpmn:flowNodeRef>N0</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>N1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:task id="N0" name="Этап 0">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>F0</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:userTask id="N1" name="Этап 1">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>F0</bpmn:incoming>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="F0" sourceRef="N0" targetRef="N1" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="Collaboration">
+    <bpmn:participant id="Pool" name="Проверка subset" processRef="P"/>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="Collaboration">
+      <bpmndi:BPMNShape id="Shape_Pool" bpmnElement="Pool" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="520" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Role" bpmnElement="Role" isHorizontal="true">
+        <dc:Bounds x="90" y="70" width="490" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_N0" bpmnElement="N0">
+        <dc:Bounds x="190.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_N1" bpmnElement="N1">
+        <dc:Bounds x="380.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_F0" bpmnElement="F0">
+        <di:waypoint x="330.0" y="147.5"/>
+        <di:waypoint x="380.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

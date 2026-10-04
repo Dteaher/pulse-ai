@@ -1,0 +1,569 @@
+{
+  "process": {
+    "id": "process_1",
+    "name": "Процесс заключения договора",
+    "description": "Клиент подаёт заявку на заключение договора. Оператор проверяет документы. Если документы заполнены неправильно, заявку возвращают клиенту на исправление. После исправления клиент повторно отправляет документы. Если всё корректно, юридический отдел и служба безопасности одновременно выполняют проверки. После завершения обеих проверок менеджер определяет стоимость договора. Если стоимость больше 500 000 рублей, договор должен согласовать руководитель. Если руководитель отклоняет договор, менеджер дорабатывает его и повторно отправляет на согласование. Если стоимость не превышает 500 000 рублей или руководитель согласовал договор, менеджер отправляет договор клиенту. Клиент получает договор, и процесс завершается.",
+    "participants": [
+      {
+        "id": "participant_client",
+        "name": "Клиент",
+        "type": "role",
+        "kind": "external",
+        "pool_id": "pool_client"
+      },
+      {
+        "id": "participant_operator",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "participant_legal",
+        "name": "Юридический отдел",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "participant_security",
+        "name": "Служба безопасности",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "participant_manager",
+        "name": "Менеджер",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      },
+      {
+        "id": "participant_leader",
+        "name": "Руководитель",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_internal"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "n_start_client",
+        "type": "start_event",
+        "name": "Начало процесса",
+        "participant_id": "participant_client",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_submit_application",
+        "type": "user_task",
+        "name": "Подать заявку",
+        "participant_id": "participant_client",
+        "source_text": "Клиент подаёт заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_send_application",
+        "type": "send_task",
+        "name": "Отправить заявку",
+        "participant_id": "participant_client",
+        "source_text": "Клиент подаёт заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_receive_response",
+        "type": "receive_task",
+        "name": "Получить ответ",
+        "participant_id": "participant_client",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_gateway_response",
+        "type": "exclusive_gateway",
+        "name": "Получен ответ?",
+        "participant_id": "participant_client",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_correction",
+        "type": "user_task",
+        "name": "Внести исправления",
+        "participant_id": "participant_client",
+        "source_text": "После исправления клиент повторно отправляет документы",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_end_success",
+        "type": "end_event",
+        "name": "Процесс завершён (договор получен)",
+        "participant_id": "participant_client",
+        "source_text": "Клиент получает договор, и процесс завершается",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_start_internal",
+        "type": "start_event",
+        "name": "Начало процесса",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_receive_application",
+        "type": "receive_task",
+        "name": "Получить заявку",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_check_documents",
+        "type": "user_task",
+        "name": "Проверить документы",
+        "participant_id": "participant_operator",
+        "source_text": "Оператор проверяет документы",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_gateway_documents",
+        "type": "exclusive_gateway",
+        "name": "Документы корректны?",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_send_correction",
+        "type": "send_task",
+        "name": "Вернуть заявку на доработку",
+        "participant_id": "participant_operator",
+        "source_text": "Если документы заполнены неправильно, заявку возвращают клиенту на исправление",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_receive_correction",
+        "type": "receive_task",
+        "name": "Получить исправленные документы",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_parallel_split",
+        "type": "parallel_gateway",
+        "name": "Параллельные проверки",
+        "participant_id": "participant_manager",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_legal_check",
+        "type": "user_task",
+        "name": "Проверка юридическим отделом",
+        "participant_id": "participant_legal",
+        "source_text": "Если всё корректно, юридический отдел ... выполняет проверку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_security_check",
+        "type": "user_task",
+        "name": "Проверка службой безопасности",
+        "participant_id": "participant_security",
+        "source_text": "Если всё корректно, служба безопасности ... выполняет проверку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_parallel_join",
+        "type": "parallel_gateway",
+        "name": "Синхронизация проверок",
+        "participant_id": "participant_manager",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_determine_price",
+        "type": "user_task",
+        "name": "Определить стоимость договора",
+        "participant_id": "participant_manager",
+        "source_text": "Менеджер определяет стоимость договора",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_gateway_price",
+        "type": "exclusive_gateway",
+        "name": "Стоимость > 500 000?",
+        "participant_id": "participant_manager",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_send_to_leader",
+        "type": "user_task",
+        "name": "Отправить на согласование руководителю",
+        "participant_id": "participant_manager",
+        "source_text": "Если стоимость больше 500 000 рублей, договор должен согласовать руководитель",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_leader_approval",
+        "type": "user_task",
+        "name": "Руководитель согласует",
+        "participant_id": "participant_leader",
+        "source_text": "Руководитель согласует договор",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_gateway_leader",
+        "type": "exclusive_gateway",
+        "name": "Согласовано?",
+        "participant_id": "participant_leader",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "n_revision",
+        "type": "user_task",
+        "name": "Доработать договор",
+        "participant_id": "participant_manager",
+        "source_text": "Если руководитель отклоняет договор, менеджер дорабатывает его",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_send_contract",
+        "type": "send_task",
+        "name": "Отправить договор клиенту",
+        "participant_id": "participant_manager",
+        "source_text": "Менеджер отправляет договор клиенту",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "n_end_internal",
+        "type": "end_event",
+        "name": "Внутренний процесс завершён",
+        "participant_id": "participant_manager",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      }
+    ],
+    "flows": [
+      {
+        "id": "f1",
+        "source": "n_start_client",
+        "target": "n_submit_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f2",
+        "source": "n_submit_application",
+        "target": "n_send_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f3",
+        "source": "n_send_application",
+        "target": "n_receive_response",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f4",
+        "source": "n_receive_response",
+        "target": "n_gateway_response",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f5",
+        "source": "n_gateway_response",
+        "target": "n_correction",
+        "name": "",
+        "condition": "Запрос доработки",
+        "is_default": false
+      },
+      {
+        "id": "f6",
+        "source": "n_correction",
+        "target": "n_send_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f7",
+        "source": "n_gateway_response",
+        "target": "n_end_success",
+        "name": "",
+        "condition": "Договор согласован",
+        "is_default": false
+      },
+      {
+        "id": "f8",
+        "source": "n_start_internal",
+        "target": "n_receive_application",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f9",
+        "source": "n_receive_application",
+        "target": "n_check_documents",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f10",
+        "source": "n_check_documents",
+        "target": "n_gateway_documents",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f11",
+        "source": "n_gateway_documents",
+        "target": "n_send_correction",
+        "name": "",
+        "condition": "Некорректные",
+        "is_default": false
+      },
+      {
+        "id": "f12",
+        "source": "n_gateway_documents",
+        "target": "n_parallel_split",
+        "name": "",
+        "condition": "Корректные",
+        "is_default": false
+      },
+      {
+        "id": "f13",
+        "source": "n_send_correction",
+        "target": "n_receive_correction",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f14",
+        "source": "n_receive_correction",
+        "target": "n_check_documents",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f15",
+        "source": "n_parallel_split",
+        "target": "n_legal_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f16",
+        "source": "n_parallel_split",
+        "target": "n_security_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f17",
+        "source": "n_legal_check",
+        "target": "n_parallel_join",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f18",
+        "source": "n_security_check",
+        "target": "n_parallel_join",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f19",
+        "source": "n_parallel_join",
+        "target": "n_determine_price",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f20",
+        "source": "n_determine_price",
+        "target": "n_gateway_price",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f21",
+        "source": "n_gateway_price",
+        "target": "n_send_contract",
+        "name": "",
+        "condition": "Стоимость <= 500 000",
+        "is_default": false
+      },
+      {
+        "id": "f22",
+        "source": "n_gateway_price",
+        "target": "n_send_to_leader",
+        "name": "",
+        "condition": "Стоимость > 500 000",
+        "is_default": false
+      },
+      {
+        "id": "f23",
+        "source": "n_send_to_leader",
+        "target": "n_leader_approval",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f24",
+        "source": "n_leader_approval",
+        "target": "n_gateway_leader",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f25",
+        "source": "n_gateway_leader",
+        "target": "n_send_contract",
+        "name": "",
+        "condition": "Согласовано",
+        "is_default": false
+      },
+      {
+        "id": "f26",
+        "source": "n_gateway_leader",
+        "target": "n_revision",
+        "name": "",
+        "condition": "Отклонено",
+        "is_default": false
+      },
+      {
+        "id": "f27",
+        "source": "n_revision",
+        "target": "n_leader_approval",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "f28",
+        "source": "n_send_contract",
+        "target": "n_end_internal",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "pool_client",
+        "name": "Клиент",
+        "kind": "external"
+      },
+      {
+        "id": "pool_internal",
+        "name": "Организация",
+        "kind": "internal"
+      }
+    ],
+    "message_flows": [
+      {
+        "id": "mf1",
+        "source": "n_send_application",
+        "target": "n_receive_application",
+        "name": "Заявка"
+      },
+      {
+        "id": "mf2",
+        "source": "n_send_correction",
+        "target": "n_receive_response",
+        "name": "Запрос доработки"
+      },
+      {
+        "id": "mf3",
+        "source": "n_send_application",
+        "target": "n_receive_correction",
+        "name": "Исправленные документы"
+      },
+      {
+        "id": "mf4",
+        "source": "n_send_contract",
+        "target": "n_receive_response",
+        "name": "Договор"
+      }
+    ],
+    "ambiguities": []
+  },
+  "ambiguities": [],
+  "xml": "<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"Definitions\" targetNamespace=\"https://pulse.local/bpmn\" exporter=\"PULSE\" exporterVersion=\"0.2\">\n  <bpmn:process id=\"Process_pool_client\" name=\"Клиент\" isExecutable=\"false\">\n    <bpmn:startEvent id=\"n_start_client\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>f1</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:userTask id=\"n_submit_application\" name=\"Подать заявку\">\n      <bpmn:documentation>Клиент подаёт заявку</bpmn:documentation>\n      <bpmn:incoming>f1</bpmn:incoming>\n      <bpmn:outgoing>f2</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:sendTask id=\"n_send_application\" name=\"Отправить заявку\">\n      <bpmn:documentation>Клиент подаёт заявку</bpmn:documentation>\n      <bpmn:incoming>f2</bpmn:incoming>\n      <bpmn:incoming>f6</bpmn:incoming>\n      <bpmn:outgoing>f3</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:receiveTask id=\"n_receive_response\" name=\"Получить ответ\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f3</bpmn:incoming>\n      <bpmn:outgoing>f4</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:exclusiveGateway id=\"n_gateway_response\" name=\"Получен ответ?\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f4</bpmn:incoming>\n      <bpmn:outgoing>f5</bpmn:outgoing>\n      <bpmn:outgoing>f7</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:userTask id=\"n_correction\" name=\"Внести исправления\">\n      <bpmn:documentation>После исправления клиент повторно отправляет документы</bpmn:documentation>\n      <bpmn:incoming>f5</bpmn:incoming>\n      <bpmn:outgoing>f6</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:endEvent id=\"n_end_success\" name=\"Процесс завершён (договор получен)\">\n      <bpmn:documentation>Клиент получает договор, и процесс завершается</bpmn:documentation>\n      <bpmn:incoming>f7</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"f1\" sourceRef=\"n_start_client\" targetRef=\"n_submit_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f2\" sourceRef=\"n_submit_application\" targetRef=\"n_send_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f3\" sourceRef=\"n_send_application\" targetRef=\"n_receive_response\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f4\" sourceRef=\"n_receive_response\" targetRef=\"n_gateway_response\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f5\" sourceRef=\"n_gateway_response\" targetRef=\"n_correction\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Запрос доработки</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f6\" sourceRef=\"n_correction\" targetRef=\"n_send_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f7\" sourceRef=\"n_gateway_response\" targetRef=\"n_end_success\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Договор согласован</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n  </bpmn:process>\n  <bpmn:process id=\"Process_pool_internal\" name=\"Организация\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"LaneSet\">\n      <bpmn:lane id=\"participant_operator\" name=\"Оператор\">\n        <bpmn:flowNodeRef>n_start_internal</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_receive_application</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_check_documents</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_gateway_documents</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_send_correction</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_receive_correction</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"participant_legal\" name=\"Юридический отдел\">\n        <bpmn:flowNodeRef>n_legal_check</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"participant_security\" name=\"Служба безопасности\">\n        <bpmn:flowNodeRef>n_security_check</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"participant_manager\" name=\"Менеджер\">\n        <bpmn:flowNodeRef>n_parallel_split</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_parallel_join</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_determine_price</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_gateway_price</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_send_to_leader</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_revision</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_send_contract</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_end_internal</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"participant_leader\" name=\"Руководитель\">\n        <bpmn:flowNodeRef>n_leader_approval</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>n_gateway_leader</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"n_start_internal\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>f8</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:receiveTask id=\"n_receive_application\" name=\"Получить заявку\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f8</bpmn:incoming>\n      <bpmn:outgoing>f9</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:userTask id=\"n_check_documents\" name=\"Проверить документы\">\n      <bpmn:documentation>Оператор проверяет документы</bpmn:documentation>\n      <bpmn:incoming>f9</bpmn:incoming>\n      <bpmn:incoming>f14</bpmn:incoming>\n      <bpmn:outgoing>f10</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:exclusiveGateway id=\"n_gateway_documents\" name=\"Документы корректны?\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f10</bpmn:incoming>\n      <bpmn:outgoing>f11</bpmn:outgoing>\n      <bpmn:outgoing>f12</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:sendTask id=\"n_send_correction\" name=\"Вернуть заявку на доработку\">\n      <bpmn:documentation>Если документы заполнены неправильно, заявку возвращают клиенту на исправление</bpmn:documentation>\n      <bpmn:incoming>f11</bpmn:incoming>\n      <bpmn:outgoing>f13</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:receiveTask id=\"n_receive_correction\" name=\"Получить исправленные документы\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f13</bpmn:incoming>\n      <bpmn:outgoing>f14</bpmn:outgoing>\n    </bpmn:receiveTask>\n    <bpmn:parallelGateway id=\"n_parallel_split\" name=\"Параллельные проверки\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f12</bpmn:incoming>\n      <bpmn:outgoing>f15</bpmn:outgoing>\n      <bpmn:outgoing>f16</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"n_legal_check\" name=\"Проверка юридическим отделом\">\n      <bpmn:documentation>Если всё корректно, юридический отдел ... выполняет проверку</bpmn:documentation>\n      <bpmn:incoming>f15</bpmn:incoming>\n      <bpmn:outgoing>f17</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"n_security_check\" name=\"Проверка службой безопасности\">\n      <bpmn:documentation>Если всё корректно, служба безопасности ... выполняет проверку</bpmn:documentation>\n      <bpmn:incoming>f16</bpmn:incoming>\n      <bpmn:outgoing>f18</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"n_parallel_join\" name=\"Синхронизация проверок\" gatewayDirection=\"Converging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f17</bpmn:incoming>\n      <bpmn:incoming>f18</bpmn:incoming>\n      <bpmn:outgoing>f19</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"n_determine_price\" name=\"Определить стоимость договора\">\n      <bpmn:documentation>Менеджер определяет стоимость договора</bpmn:documentation>\n      <bpmn:incoming>f19</bpmn:incoming>\n      <bpmn:outgoing>f20</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:exclusiveGateway id=\"n_gateway_price\" name=\"Стоимость &gt; 500 000?\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f20</bpmn:incoming>\n      <bpmn:outgoing>f21</bpmn:outgoing>\n      <bpmn:outgoing>f22</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:userTask id=\"n_send_to_leader\" name=\"Отправить на согласование руководителю\">\n      <bpmn:documentation>Если стоимость больше 500 000 рублей, договор должен согласовать руководитель</bpmn:documentation>\n      <bpmn:incoming>f22</bpmn:incoming>\n      <bpmn:outgoing>f23</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"n_leader_approval\" name=\"Руководитель согласует\">\n      <bpmn:documentation>Руководитель согласует договор</bpmn:documentation>\n      <bpmn:incoming>f23</bpmn:incoming>\n      <bpmn:incoming>f27</bpmn:incoming>\n      <bpmn:outgoing>f24</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:exclusiveGateway id=\"n_gateway_leader\" name=\"Согласовано?\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f24</bpmn:incoming>\n      <bpmn:outgoing>f25</bpmn:outgoing>\n      <bpmn:outgoing>f26</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:userTask id=\"n_revision\" name=\"Доработать договор\">\n      <bpmn:documentation>Если руководитель отклоняет договор, менеджер дорабатывает его</bpmn:documentation>\n      <bpmn:incoming>f26</bpmn:incoming>\n      <bpmn:outgoing>f27</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:sendTask id=\"n_send_contract\" name=\"Отправить договор клиенту\">\n      <bpmn:documentation>Менеджер отправляет договор клиенту</bpmn:documentation>\n      <bpmn:incoming>f21</bpmn:incoming>\n      <bpmn:incoming>f25</bpmn:incoming>\n      <bpmn:outgoing>f28</bpmn:outgoing>\n    </bpmn:sendTask>\n    <bpmn:endEvent id=\"n_end_internal\" name=\"Внутренний процесс завершён\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>f28</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"f8\" sourceRef=\"n_start_internal\" targetRef=\"n_receive_application\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f9\" sourceRef=\"n_receive_application\" targetRef=\"n_check_documents\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f10\" sourceRef=\"n_check_documents\" targetRef=\"n_gateway_documents\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f11\" sourceRef=\"n_gateway_documents\" targetRef=\"n_send_correction\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Некорректные</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f12\" sourceRef=\"n_gateway_documents\" targetRef=\"n_parallel_split\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Корректные</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f13\" sourceRef=\"n_send_correction\" targetRef=\"n_receive_correction\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f14\" sourceRef=\"n_receive_correction\" targetRef=\"n_check_documents\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f15\" sourceRef=\"n_parallel_split\" targetRef=\"n_legal_check\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f16\" sourceRef=\"n_parallel_split\" targetRef=\"n_security_check\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f17\" sourceRef=\"n_legal_check\" targetRef=\"n_parallel_join\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f18\" sourceRef=\"n_security_check\" targetRef=\"n_parallel_join\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f19\" sourceRef=\"n_parallel_join\" targetRef=\"n_determine_price\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f20\" sourceRef=\"n_determine_price\" targetRef=\"n_gateway_price\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f21\" sourceRef=\"n_gateway_price\" targetRef=\"n_send_contract\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Стоимость &lt;= 500 000</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f22\" sourceRef=\"n_gateway_price\" targetRef=\"n_send_to_leader\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Стоимость &gt; 500 000</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f23\" sourceRef=\"n_send_to_leader\" targetRef=\"n_leader_approval\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f24\" sourceRef=\"n_leader_approval\" targetRef=\"n_gateway_leader\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f25\" sourceRef=\"n_gateway_leader\" targetRef=\"n_send_contract\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Согласовано</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f26\" sourceRef=\"n_gateway_leader\" targetRef=\"n_revision\" name=\"\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tFormalExpression\">Отклонено</bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"f27\" sourceRef=\"n_revision\" targetRef=\"n_leader_approval\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"f28\" sourceRef=\"n_send_contract\" targetRef=\"n_end_internal\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:collaboration id=\"process_1\" name=\"Процесс заключения договора\">\n    <bpmn:documentation>Клиент подаёт заявку на заключение договора. Оператор проверяет документы. Если документы заполнены неправильно, заявку возвращают клиенту на исправление. После исправления клиент повторно отправляет документы. Если всё корректно, юридический отдел и служба безопасности одновременно выполняют проверки. После завершения обеих проверок менеджер определяет стоимость договора. Если стоимость больше 500 000 рублей, договор должен согласовать руководитель. Если руководитель отклоняет договор, менеджер дорабатывает его и повторно отправляет на согласование. Если стоимость не превышает 500 000 рублей или руководитель согласовал договор, менеджер отправляет договор клиенту. Клиент получает договор, и процесс завершается.</bpmn:documentation>\n    <bpmn:participant id=\"pool_client\" name=\"Клиент\" processRef=\"Process_pool_client\">\n      <bpmn:documentation>PULSE:{\"kind\": \"external\", \"roles\": [{\"id\": \"participant_client\", \"name\": \"Клиент\", \"type\": \"role\", \"kind\": \"external\", \"pool_id\": \"pool_client\"}]}</bpmn:documentation>\n    </bpmn:participant>\n    <bpmn:participant id=\"pool_internal\" name=\"Организация\" processRef=\"Process_pool_internal\">\n      <bpmn:documentation>PULSE:{\"kind\": \"internal\", \"roles\": [{\"id\": \"participant_operator\", \"name\": \"Оператор\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"participant_legal\", \"name\": \"Юридический отдел\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"participant_security\", \"name\": \"Служба безопасности\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"participant_manager\", \"name\": \"Менеджер\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}, {\"id\": \"participant_leader\", \"name\": \"Руководитель\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_internal\"}]}</bpmn:documentation>\n    </bpmn:participant>\n    <bpmn:messageFlow id=\"mf1\" sourceRef=\"n_send_application\" targetRef=\"n_receive_application\" name=\"Заявка\"/>\n    <bpmn:messageFlow id=\"mf2\" sourceRef=\"n_send_correction\" targetRef=\"n_receive_response\" name=\"Запрос доработки\"/>\n    <bpmn:messageFlow id=\"mf3\" sourceRef=\"n_send_application\" targetRef=\"n_receive_correction\" name=\"Исправленные документы\"/>\n    <bpmn:messageFlow id=\"mf4\" sourceRef=\"n_send_contract\" targetRef=\"n_receive_response\" name=\"Договор\"/>\n  </bpmn:collaboration>\n  <bpmndi:BPMNDiagram id=\"Diagram\">\n    <bpmndi:BPMNPlane id=\"Plane\" bpmnElement=\"process_1\">\n      <bpmndi:BPMNShape id=\"Shape_pool_client\" bpmnElement=\"pool_client\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"70\" width=\"3940\" height=\"275\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_pool_internal\" bpmnElement=\"pool_internal\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"415\" width=\"3940\" height=\"895\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_operator\" bpmnElement=\"participant_operator\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"415\" width=\"3910\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_legal\" bpmnElement=\"participant_legal\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"570\" width=\"3910\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_security\" bpmnElement=\"participant_security\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"725\" width=\"3910\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_manager\" bpmnElement=\"participant_manager\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"880\" width=\"3910\" height=\"275\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_leader\" bpmnElement=\"participant_leader\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"1155\" width=\"3910\" height=\"155\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_start_client\" bpmnElement=\"n_start_client\">\n        <dc:Bounds x=\"241.0\" y=\"188.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_submit_application\" bpmnElement=\"n_submit_application\">\n        <dc:Bounds x=\"380.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_send_application\" bpmnElement=\"n_send_application\">\n        <dc:Bounds x=\"570.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_receive_response\" bpmnElement=\"n_receive_response\">\n        <dc:Bounds x=\"3230.0\" y=\"167.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_gateway_response\" bpmnElement=\"n_gateway_response\">\n        <dc:Bounds x=\"3464.0\" y=\"181.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_correction\" bpmnElement=\"n_correction\">\n        <dc:Bounds x=\"3800.0\" y=\"121.66666666666669\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_end_success\" bpmnElement=\"n_end_success\">\n        <dc:Bounds x=\"3851.0\" y=\"234.33333333333334\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_start_internal\" bpmnElement=\"n_start_internal\">\n        <dc:Bounds x=\"241.0\" y=\"473.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_receive_application\" bpmnElement=\"n_receive_application\">\n        <dc:Bounds x=\"570.0\" y=\"452.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_check_documents\" bpmnElement=\"n_check_documents\">\n        <dc:Bounds x=\"760.0\" y=\"452.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_gateway_documents\" bpmnElement=\"n_gateway_documents\">\n        <dc:Bounds x=\"994.0\" y=\"466.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_send_correction\" bpmnElement=\"n_send_correction\">\n        <dc:Bounds x=\"1330.0\" y=\"452.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_receive_correction\" bpmnElement=\"n_receive_correction\">\n        <dc:Bounds x=\"1520.0\" y=\"452.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_parallel_split\" bpmnElement=\"n_parallel_split\">\n        <dc:Bounds x=\"1374.0\" y=\"991.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_legal_check\" bpmnElement=\"n_legal_check\">\n        <dc:Bounds x=\"1520.0\" y=\"607.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_security_check\" bpmnElement=\"n_security_check\">\n        <dc:Bounds x=\"1520.0\" y=\"762.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_parallel_join\" bpmnElement=\"n_parallel_join\">\n        <dc:Bounds x=\"1754.0\" y=\"991.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_determine_price\" bpmnElement=\"n_determine_price\">\n        <dc:Bounds x=\"1900.0\" y=\"977.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_gateway_price\" bpmnElement=\"n_gateway_price\">\n        <dc:Bounds x=\"2134.0\" y=\"991.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_send_to_leader\" bpmnElement=\"n_send_to_leader\">\n        <dc:Bounds x=\"2470.0\" y=\"977.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_leader_approval\" bpmnElement=\"n_leader_approval\">\n        <dc:Bounds x=\"2660.0\" y=\"1192.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_gateway_leader\" bpmnElement=\"n_gateway_leader\">\n        <dc:Bounds x=\"2894.0\" y=\"1206.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_revision\" bpmnElement=\"n_revision\">\n        <dc:Bounds x=\"3230.0\" y=\"931.6666666666666\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_send_contract\" bpmnElement=\"n_send_contract\">\n        <dc:Bounds x=\"3230.0\" y=\"1023.3333333333334\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_n_end_internal\" bpmnElement=\"n_end_internal\">\n        <dc:Bounds x=\"3471.0\" y=\"998.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"Edge_f1\" bpmnElement=\"f1\">\n        <di:waypoint x=\"279.0\" y=\"207.5\"/>\n        <di:waypoint x=\"380.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f2\" bpmnElement=\"f2\">\n        <di:waypoint x=\"520.0\" y=\"207.5\"/>\n        <di:waypoint x=\"570.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f3\" bpmnElement=\"f3\">\n        <di:waypoint x=\"710.0\" y=\"207.5\"/>\n        <di:waypoint x=\"728.0\" y=\"207.5\"/>\n        <di:waypoint x=\"728.0\" y=\"94\"/>\n        <di:waypoint x=\"3212.0\" y=\"94\"/>\n        <di:waypoint x=\"3212.0\" y=\"207.5\"/>\n        <di:waypoint x=\"3230.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f4\" bpmnElement=\"f4\">\n        <di:waypoint x=\"3370.0\" y=\"207.5\"/>\n        <di:waypoint x=\"3464.0\" y=\"207.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f5\" bpmnElement=\"f5\">\n        <di:waypoint x=\"3516.0\" y=\"207.5\"/>\n        <di:waypoint x=\"3534.0\" y=\"207.5\"/>\n        <di:waypoint x=\"3534.0\" y=\"104\"/>\n        <di:waypoint x=\"3782.0\" y=\"104\"/>\n        <di:waypoint x=\"3782.0\" y=\"161.66666666666669\"/>\n        <di:waypoint x=\"3800.0\" y=\"161.66666666666669\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f6\" bpmnElement=\"f6\">\n        <di:waypoint x=\"3870.0\" y=\"121.66666666666669\"/>\n        <di:waypoint x=\"3870.0\" y=\"114\"/>\n        <di:waypoint x=\"640.0\" y=\"114\"/>\n        <di:waypoint x=\"640.0\" y=\"167.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f7\" bpmnElement=\"f7\">\n        <di:waypoint x=\"3516.0\" y=\"207.5\"/>\n        <di:waypoint x=\"3534.0\" y=\"207.5\"/>\n        <di:waypoint x=\"3534.0\" y=\"94\"/>\n        <di:waypoint x=\"3833.0\" y=\"94\"/>\n        <di:waypoint x=\"3833.0\" y=\"253.33333333333334\"/>\n        <di:waypoint x=\"3851.0\" y=\"253.33333333333334\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f8\" bpmnElement=\"f8\">\n        <di:waypoint x=\"279.0\" y=\"492.5\"/>\n        <di:waypoint x=\"297.0\" y=\"492.5\"/>\n        <di:waypoint x=\"297.0\" y=\"439\"/>\n        <di:waypoint x=\"552.0\" y=\"439\"/>\n        <di:waypoint x=\"552.0\" y=\"492.5\"/>\n        <di:waypoint x=\"570.0\" y=\"492.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f9\" bpmnElement=\"f9\">\n        <di:waypoint x=\"710.0\" y=\"492.5\"/>\n        <di:waypoint x=\"760.0\" y=\"492.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f10\" bpmnElement=\"f10\">\n        <di:waypoint x=\"900.0\" y=\"492.5\"/>\n        <di:waypoint x=\"994.0\" y=\"492.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f11\" bpmnElement=\"f11\">\n        <di:waypoint x=\"1046.0\" y=\"492.5\"/>\n        <di:waypoint x=\"1064.0\" y=\"492.5\"/>\n        <di:waypoint x=\"1064.0\" y=\"449\"/>\n        <di:waypoint x=\"1312.0\" y=\"449\"/>\n        <di:waypoint x=\"1312.0\" y=\"492.5\"/>\n        <di:waypoint x=\"1330.0\" y=\"492.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f12\" bpmnElement=\"f12\">\n        <di:waypoint x=\"1046.0\" y=\"492.5\"/>\n        <di:waypoint x=\"1081.0\" y=\"492.5\"/>\n        <di:waypoint x=\"1081.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1374.0\" y=\"1017.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f13\" bpmnElement=\"f13\">\n        <di:waypoint x=\"1470.0\" y=\"492.5\"/>\n        <di:waypoint x=\"1520.0\" y=\"492.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f14\" bpmnElement=\"f14\">\n        <di:waypoint x=\"1590.0\" y=\"452.5\"/>\n        <di:waypoint x=\"1590.0\" y=\"459\"/>\n        <di:waypoint x=\"830.0\" y=\"459\"/>\n        <di:waypoint x=\"830.0\" y=\"452.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f15\" bpmnElement=\"f15\">\n        <di:waypoint x=\"1426.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1461.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1461.0\" y=\"647.5\"/>\n        <di:waypoint x=\"1520.0\" y=\"647.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f16\" bpmnElement=\"f16\">\n        <di:waypoint x=\"1426.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1461.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1461.0\" y=\"802.5\"/>\n        <di:waypoint x=\"1520.0\" y=\"802.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f17\" bpmnElement=\"f17\">\n        <di:waypoint x=\"1660.0\" y=\"647.5\"/>\n        <di:waypoint x=\"1695.0\" y=\"647.5\"/>\n        <di:waypoint x=\"1695.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1754.0\" y=\"1017.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f18\" bpmnElement=\"f18\">\n        <di:waypoint x=\"1660.0\" y=\"802.5\"/>\n        <di:waypoint x=\"1695.0\" y=\"802.5\"/>\n        <di:waypoint x=\"1695.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1754.0\" y=\"1017.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f19\" bpmnElement=\"f19\">\n        <di:waypoint x=\"1806.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"1900.0\" y=\"1017.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f20\" bpmnElement=\"f20\">\n        <di:waypoint x=\"2040.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2134.0\" y=\"1017.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f21\" bpmnElement=\"f21\">\n        <di:waypoint x=\"2186.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2204.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2204.0\" y=\"904\"/>\n        <di:waypoint x=\"3212.0\" y=\"904\"/>\n        <di:waypoint x=\"3212.0\" y=\"1063.3333333333335\"/>\n        <di:waypoint x=\"3230.0\" y=\"1063.3333333333335\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f22\" bpmnElement=\"f22\">\n        <di:waypoint x=\"2186.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2204.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2204.0\" y=\"914\"/>\n        <di:waypoint x=\"2452.0\" y=\"914\"/>\n        <di:waypoint x=\"2452.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2470.0\" y=\"1017.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f23\" bpmnElement=\"f23\">\n        <di:waypoint x=\"2610.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2645.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"2645.0\" y=\"1232.5\"/>\n        <di:waypoint x=\"2660.0\" y=\"1232.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f24\" bpmnElement=\"f24\">\n        <di:waypoint x=\"2800.0\" y=\"1232.5\"/>\n        <di:waypoint x=\"2894.0\" y=\"1232.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f25\" bpmnElement=\"f25\">\n        <di:waypoint x=\"2946.0\" y=\"1232.5\"/>\n        <di:waypoint x=\"2981.0\" y=\"1232.5\"/>\n        <di:waypoint x=\"2981.0\" y=\"1063.3333333333335\"/>\n        <di:waypoint x=\"3230.0\" y=\"1063.3333333333335\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f26\" bpmnElement=\"f26\">\n        <di:waypoint x=\"2946.0\" y=\"1232.5\"/>\n        <di:waypoint x=\"2981.0\" y=\"1232.5\"/>\n        <di:waypoint x=\"2981.0\" y=\"971.6666666666666\"/>\n        <di:waypoint x=\"3230.0\" y=\"971.6666666666666\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f27\" bpmnElement=\"f27\">\n        <di:waypoint x=\"3300.0\" y=\"931.6666666666666\"/>\n        <di:waypoint x=\"3300.0\" y=\"924\"/>\n        <di:waypoint x=\"2730.0\" y=\"924\"/>\n        <di:waypoint x=\"2730.0\" y=\"1192.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_f28\" bpmnElement=\"f28\">\n        <di:waypoint x=\"3370.0\" y=\"1063.3333333333335\"/>\n        <di:waypoint x=\"3405.0\" y=\"1063.3333333333335\"/>\n        <di:waypoint x=\"3405.0\" y=\"1017.5\"/>\n        <di:waypoint x=\"3471.0\" y=\"1017.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf1\" bpmnElement=\"mf1\">\n        <di:waypoint x=\"640.0\" y=\"247.5\"/>\n        <di:waypoint x=\"640.0\" y=\"452.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"648.0\" y=\"352\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf2\" bpmnElement=\"mf2\">\n        <di:waypoint x=\"1400.0\" y=\"452.5\"/>\n        <di:waypoint x=\"1400.0\" y=\"390\"/>\n        <di:waypoint x=\"3412.0\" y=\"390\"/>\n        <di:waypoint x=\"3412.0\" y=\"265.5\"/>\n        <di:waypoint x=\"3300.0\" y=\"265.5\"/>\n        <di:waypoint x=\"3300.0\" y=\"247.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1408.0\" y=\"372\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf3\" bpmnElement=\"mf3\">\n        <di:waypoint x=\"640.0\" y=\"247.5\"/>\n        <di:waypoint x=\"640.0\" y=\"370\"/>\n        <di:waypoint x=\"1716.0\" y=\"370\"/>\n        <di:waypoint x=\"1716.0\" y=\"434.5\"/>\n        <di:waypoint x=\"1590.0\" y=\"434.5\"/>\n        <di:waypoint x=\"1590.0\" y=\"452.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"648.0\" y=\"352\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_mf4\" bpmnElement=\"mf4\">\n        <di:waypoint x=\"3300.0\" y=\"1023.3333333333334\"/>\n        <di:waypoint x=\"3300.0\" y=\"247.5\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"3308.0\" y=\"372\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+  "attempts": 1,
+  "semantic_warnings": [
+    {
+      "code": "LABEL_STYLE",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "warning",
+      "message": "Сократи задачу «Руководитель согласует» до действия в инфинитиве без роли: исполнитель уже указан дорожкой. Полную фразу сохрани в source_text.",
+      "node_ids": [
+        "n_leader_approval"
+      ],
+      "origin": "rule"
+    }
+  ],
+  "metadata": {
+    "provider_used": "groq",
+    "model_used": "openai/gpt-oss-120b",
+    "fallback_used": false,
+    "attempts": 2
+  }
+}

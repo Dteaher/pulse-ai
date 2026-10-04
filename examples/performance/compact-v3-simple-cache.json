@@ -1,0 +1,78 @@
+{
+  "status": 200,
+  "request_total_ms": 58894.84,
+  "performance": {
+    "request_total_ms": 58893.72,
+    "ambiguity_analysis_ms": 0,
+    "combined_preparation_ms": 58874.12,
+    "clarify_generation_ms": 0,
+    "llm_primary_ms": 58873.41,
+    "llm_corrective_ms": 0,
+    "llm_fallback_ms": 0,
+    "normalization_ms": 0.12,
+    "process_validation_ms": 0.08,
+    "semantic_validation_ms": 0.8,
+    "bpmn_build_ms": 12.18,
+    "reference_validation_ms": 1.96,
+    "xsd_validation_ms": 8.95,
+    "di_validation_ms": 0.6,
+    "doctor_ms": 0,
+    "modify_ms": 0,
+    "serialization_ms": 0.33,
+    "calls": [
+      {
+        "provider": "multiai",
+        "model": "gpt-6.1-sol",
+        "operation": "preparation",
+        "reasoning_effort": "low",
+        "system_prompt_chars": 5239,
+        "user_payload_chars": 249,
+        "prompt_size_chars": 5488,
+        "schema_chars": 6453,
+        "max_tokens": 8000,
+        "corrective": false,
+        "json_corrective": false,
+        "fallback": false,
+        "input_tokens": 2471,
+        "output_tokens": 1032,
+        "http_status": 200,
+        "reasoning_tokens": null,
+        "http_attempts": 1,
+        "duration_ms": 58873.41
+      }
+    ],
+    "attempt_count": 1,
+    "corrective_retry_count": 0,
+    "validation_error_count": 0,
+    "validation_codes": [],
+    "process_definition_size": 3470,
+    "fallback_used": false,
+    "input_tokens": 2471,
+    "output_tokens": 1032,
+    "usage_complete": true,
+    "cache_hit": false,
+    "deduplicated": false
+  },
+  "calls": [
+    {
+      "model": "gpt-6.1-sol",
+      "reasoning_effort": "low",
+      "prompt_sha256": "5e5a113df921dc6691b1110edfa4156a953d8a0d8a9de15b6572c3e9f8e79999",
+      "system_prompt_chars": 5239,
+      "user_payload_chars": 249,
+      "request_chars": 12217,
+      "max_tokens": 8000,
+      "schema": "WireProcessPreparation",
+      "http_status": 200,
+      "usage": {
+        "completion_tokens": 1032,
+        "prompt_tokens": 2471,
+        "total_tokens": 3503
+      },
+      "finish_reason": "stop",
+      "duration_ms": 58872.72
+    }
+  ],
+  "same_process": false,
+  "same_xml": false
+}

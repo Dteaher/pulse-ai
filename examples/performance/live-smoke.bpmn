@@ -1,0 +1,147 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.2">
+  <bpmn:process id="Process_pool_organization" name="Организация" isExecutable="false">
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="participant_operator" name="Оператор">
+        <bpmn:flowNodeRef>start_process</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task_register</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task_check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gateway_completeness</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task_accept</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task_reject</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end_accepted</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end_rejected</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="start_process" name="Начало процесса">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>flow_start_register</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="task_register" name="Зарегистрировать заявку">
+      <bpmn:documentation>Оператор регистрирует заявку</bpmn:documentation>
+      <bpmn:incoming>flow_start_register</bpmn:incoming>
+      <bpmn:outgoing>flow_register_check</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="task_check" name="Проверить комплектность документов">
+      <bpmn:documentation>проверяет комплектность документов</bpmn:documentation>
+      <bpmn:incoming>flow_register_check</bpmn:incoming>
+      <bpmn:outgoing>flow_check_gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="gateway_completeness" name="Комплектность документов" gatewayDirection="Diverging">
+      <bpmn:documentation>PULSE_NODE:{"source_text": "Если комплект полный... Если комплект неполный", "decision_basis": "data"}</bpmn:documentation>
+      <bpmn:incoming>flow_check_gateway</bpmn:incoming>
+      <bpmn:outgoing>flow_complete_accept</bpmn:outgoing>
+      <bpmn:outgoing>flow_incomplete_reject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="task_accept" name="Принять заявку">
+      <bpmn:documentation>оператор принимает заявку</bpmn:documentation>
+      <bpmn:incoming>flow_complete_accept</bpmn:incoming>
+      <bpmn:outgoing>flow_accept_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="task_reject" name="Отклонить заявку">
+      <bpmn:documentation>оператор отклоняет заявку</bpmn:documentation>
+      <bpmn:incoming>flow_incomplete_reject</bpmn:incoming>
+      <bpmn:outgoing>flow_reject_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="end_accepted" name="Заявка принята">
+      <bpmn:documentation>принимает заявку и завершает процесс</bpmn:documentation>
+      <bpmn:incoming>flow_accept_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="end_rejected" name="Заявка отклонена">
+      <bpmn:documentation>отклоняет заявку и завершает процесс</bpmn:documentation>
+      <bpmn:incoming>flow_reject_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_start_register" sourceRef="start_process" targetRef="task_register" name=""/>
+    <bpmn:sequenceFlow id="flow_register_check" sourceRef="task_register" targetRef="task_check" name=""/>
+    <bpmn:sequenceFlow id="flow_check_gateway" sourceRef="task_check" targetRef="gateway_completeness" name=""/>
+    <bpmn:sequenceFlow id="flow_complete_accept" sourceRef="gateway_completeness" targetRef="task_accept" name="Комплект полный">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Комплект полный</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_incomplete_reject" sourceRef="gateway_completeness" targetRef="task_reject" name="Комплект неполный">
+      <bpmn:conditionExpression xsi:type="bpmn:tExpression">
+        <bpmn:documentation>Комплект неполный</bpmn:documentation>
+      </bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_accept_end" sourceRef="task_accept" targetRef="end_accepted" name=""/>
+    <bpmn:sequenceFlow id="flow_reject_end" sourceRef="task_reject" targetRef="end_rejected" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="process_application_review" name="Регистрация и проверка заявки">
+    <bpmn:documentation>Оператор регистрирует заявку и проверяет комплектность документов. Если комплект полный, оператор принимает заявку и завершает процесс. Если комплект неполный, оператор отклоняет заявку и завершает процесс.</bpmn:documentation>
+    <bpmn:participant id="pool_organization" name="Организация" processRef="Process_pool_organization">
+      <bpmn:documentation>PULSE:{"kind": "internal", "roles": [{"id": "participant_operator", "name": "Оператор", "type": "role", "kind": "internal", "pool_id": "pool_organization"}]}</bpmn:documentation>
+    </bpmn:participant>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="process_application_review">
+      <bpmndi:BPMNShape id="Shape_pool_organization" bpmnElement="pool_organization" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="1280" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_participant_operator" bpmnElement="participant_operator" isHorizontal="true">
+        <dc:Bounds x="90" y="70" width="1250" height="340"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_start_process" bpmnElement="start_process">
+        <dc:Bounds x="241.0" y="253.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_register" bpmnElement="task_register">
+        <dc:Bounds x="380.0" y="232.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_check" bpmnElement="task_check">
+        <dc:Bounds x="570.0" y="232.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway_completeness" bpmnElement="gateway_completeness">
+        <dc:Bounds x="804.0" y="246.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_accept" bpmnElement="task_accept">
+        <dc:Bounds x="950.0" y="186.66666666666669" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_reject" bpmnElement="task_reject">
+        <dc:Bounds x="950.0" y="278.33333333333337" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_accepted" bpmnElement="end_accepted">
+        <dc:Bounds x="1191.0" y="207.66666666666669" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_rejected" bpmnElement="end_rejected">
+        <dc:Bounds x="1191.0" y="299.33333333333337" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flow_start_register" bpmnElement="flow_start_register">
+        <di:waypoint x="279.0" y="272.5"/>
+        <di:waypoint x="380.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_register_check" bpmnElement="flow_register_check">
+        <di:waypoint x="520.0" y="272.5"/>
+        <di:waypoint x="570.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_check_gateway" bpmnElement="flow_check_gateway">
+        <di:waypoint x="710.0" y="272.5"/>
+        <di:waypoint x="804.0" y="272.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_complete_accept" bpmnElement="flow_complete_accept">
+        <di:waypoint x="856.0" y="272.5"/>
+        <di:waypoint x="891.0" y="272.5"/>
+        <di:waypoint x="891.0" y="226.66666666666669"/>
+        <di:waypoint x="950.0" y="226.66666666666669"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1299.0" y="232.5" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_incomplete_reject" bpmnElement="flow_incomplete_reject">
+        <di:waypoint x="856.0" y="272.5"/>
+        <di:waypoint x="891.0" y="272.5"/>
+        <di:waypoint x="891.0" y="318.33333333333337"/>
+        <di:waypoint x="950.0" y="318.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="864.0" y="75" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_accept_end" bpmnElement="flow_accept_end">
+        <di:waypoint x="1090.0" y="226.66666666666669"/>
+        <di:waypoint x="1191.0" y="226.66666666666669"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_reject_end" bpmnElement="flow_reject_end">
+        <di:waypoint x="1090.0" y="318.33333333333337"/>
+        <di:waypoint x="1191.0" y="318.33333333333337"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

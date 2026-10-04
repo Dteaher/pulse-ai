@@ -1,0 +1,24 @@
+{
+  "detail": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: некорректное ветвление или исходы процесса. Уточните описание и повторите запрос.",
+  "human_message": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: некорректное ветвление или исходы процесса. Уточните описание и повторите запрос.",
+  "diagnostics": [
+    {
+      "code": "SHARED_EVENT_GATEWAY_SUCCESSOR",
+      "node_id": "c_wait_response_docs",
+      "process_id": "pool_client",
+      "gateway_id": "c_wait_response_docs",
+      "severity": "error",
+      "source": "BPMN_SPEC",
+      "spec_section": "10.6.6",
+      "type": "SPEC_ERROR",
+      "category": "gateway",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Ожидания после Event-Based Gateway должны быть различными и иметь только вход от шлюза.",
+      "node_ids": [
+        "c_wait_response_docs"
+      ],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "4a20417e05a340c591a4176be7d203e5"
+}

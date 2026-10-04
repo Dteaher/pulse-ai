@@ -1,0 +1,233 @@
+{
+  "detail": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "human_message": "Ответ модели не прошёл проверку после ограниченного числа исправлений. Причина: в одном из процессов есть действия без связного пути от начала к завершению. Уточните описание и повторите запрос.",
+  "diagnostics": [
+    {
+      "code": "START_HAS_INCOMING",
+      "node_id": "start-operator-001",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "BPMN_SPEC",
+      "spec_section": "10.5.2",
+      "type": "SPEC_ERROR",
+      "category": "bpmn_spec",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Стартовое событие имеет входящие связи.",
+      "node_ids": [
+        "start-operator-001"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "intermediate-client-receive_return_application",
+      "process_id": "pool-client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Получить заявку на доработку» нет входящей связи.",
+      "node_ids": [
+        "intermediate-client-receive_return_application"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "intermediate-client-receive_rejection_notification",
+      "process_id": "pool-client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Получить уведомление об отказе» нет входящей связи.",
+      "node_ids": [
+        "intermediate-client-receive_rejection_notification"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "intermediate-manager-receive_return_contract",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Получить договор на доработку» нет входящей связи.",
+      "node_ids": [
+        "intermediate-manager-receive_return_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "ORPHAN_NODE",
+      "node_id": "intermediate-manager-receive_signed_contract",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "У «Получить подписанный договор» нет входящей связи.",
+      "node_ids": [
+        "intermediate-manager-receive_signed_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "intermediate-client-receive_return_application",
+      "process_id": "pool-client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Получить заявку на доработку» недостижим от старта своего процесса.",
+      "node_ids": [
+        "intermediate-client-receive_return_application"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "task-client-revise_documents",
+      "process_id": "pool-client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Исправить документы» недостижим от старта своего процесса.",
+      "node_ids": [
+        "task-client-revise_documents"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "task-client-resend_documents",
+      "process_id": "pool-client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Повторно отправить документы» недостижим от старта своего процесса.",
+      "node_ids": [
+        "task-client-resend_documents"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "intermediate-client-receive_rejection_notification",
+      "process_id": "pool-client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Получить уведомление об отказе» недостижим от старта своего процесса.",
+      "node_ids": [
+        "intermediate-client-receive_rejection_notification"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "end-client-rejection",
+      "process_id": "pool-client",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Заявка отклонена» недостижим от старта своего процесса.",
+      "node_ids": [
+        "end-client-rejection"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "intermediate-manager-receive_return_contract",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Получить договор на доработку» недостижим от старта своего процесса.",
+      "node_ids": [
+        "intermediate-manager-receive_return_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "task-manager-revise_contract",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Изменить договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "task-manager-revise_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "task-manager-resend_contract",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Повторно отправить договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "task-manager-resend_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "intermediate-manager-receive_signed_contract",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Получить подписанный договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "intermediate-manager-receive_signed_contract"
+      ],
+      "origin": "rule"
+    },
+    {
+      "code": "UNREACHABLE_NODE",
+      "node_id": "ta[REDACTED]",
+      "process_id": "pool-organization",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "reachability",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "«Зарегистрировать договор» недостижим от старта своего процесса.",
+      "node_ids": [
+        "ta[REDACTED]"
+      ],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "097378067e464fe5818bb79e0b68ace3"
+}

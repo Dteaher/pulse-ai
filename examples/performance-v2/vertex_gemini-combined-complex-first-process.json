@@ -1,0 +1,717 @@
+{
+  "id": "process-001",
+  "name": "Подключение объекта",
+  "description": "Клиент подаёт заявку на подключение объекта. Оператор получает заявку и проверяет документы. Если документов не хватает или они заполнены неправильно, оператор возвращает заявку клиенту на доработку. Клиент исправляет документы и повторно отправляет их оператору. Если документы корректны, юридический отдел и служба безопасности одновременно проверяют заявку. После завершения обеих проверок руководитель принимает решение. Если заявка отклонена, оператор отправляет клиенту уведомление об отказе, после чего процесс завершается. Если заявка одобрена, менеджер формирует договор и отправляет его клиенту. Клиент проверяет договор. Если клиент не согласен, он возвращает договор менеджеру на доработку. Менеджер изменяет договор и повторно отправляет клиенту. Если клиент согласен, он подписывает договор и отправляет менеджеру. Менеджер регистрирует договор, после чего процесс завершается.",
+  "participants": [
+    {
+      "id": "participant-client",
+      "name": "Клиент",
+      "type": "external",
+      "kind": "external",
+      "pool_id": "pool-client"
+    },
+    {
+      "id": "participant-operator",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "pool-organization"
+    },
+    {
+      "id": "participant-legal",
+      "name": "Юридический отдел",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "pool-organization"
+    },
+    {
+      "id": "participant-security",
+      "name": "Служба безопасности",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "pool-organization"
+    },
+    {
+      "id": "participant-manager",
+      "name": "Менеджер",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "pool-organization"
+    },
+    {
+      "id": "participant-supervisor",
+      "name": "Руководитель",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "pool-organization"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "start-client-001",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начало процесса",
+      "participant_id": "participant-client",
+      "source_text": "Клиент подаёт заявку на подключение объекта.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-client-send_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подать заявку",
+      "participant_id": "participant-client",
+      "source_text": "Клиент подаёт заявку на подключение объекта.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "receive_task",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получить заявку",
+      "participant_id": "participant-operator",
+      "source_text": "Оператор получает заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить документы",
+      "participant_id": "participant-operator",
+      "source_text": "Оператор получает заявку и проверяет документы.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "gw-operator-documents_status",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Документы корректны?",
+      "participant_id": "participant-operator",
+      "source_text": "Если документов не хватает или они заполнены неправильно, оператор возвращает заявку клиенту на доработку. Если документы корректны,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Вернуть заявку на доработку",
+      "participant_id": "participant-operator",
+      "source_text": "оператор возвращает заявку клиенту на доработку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "receive_task",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получить заявку на доработку",
+      "participant_id": "participant-client",
+      "source_text": "оператор возвращает заявку клиенту на доработку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-client-revise_documents",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Исправить документы",
+      "participant_id": "participant-client",
+      "source_text": "Клиент исправляет документы",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-client-resend_documents",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Повторно отправить документы",
+      "participant_id": "participant-client",
+      "source_text": "и повторно отправляет их оператору.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "gw-parallel-check-split",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Параллельная проверка",
+      "participant_id": "participant-legal",
+      "source_text": "юридический отдел и служба безопасности одновременно проверяют заявку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-legal-check_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить заявку (ЮО)",
+      "participant_id": "participant-legal",
+      "source_text": "юридический отдел и служба безопасности одновременно проверяют заявку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить заявку (СБ)",
+      "participant_id": "participant-security",
+      "source_text": "юридический отдел и служба безопасности одновременно проверяют заявку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "gw-parallel-check-join",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Завершение параллельной проверки",
+      "participant_id": "participant-legal",
+      "source_text": "После завершения обеих проверок",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Принять решение",
+      "participant_id": "participant-supervisor",
+      "source_text": "руководитель принимает решение.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "gw-supervisor-decision",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Решение по заявке",
+      "participant_id": "participant-supervisor",
+      "source_text": "Если заявка отклонена, Если заявка одобрена,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить уведомление об отказе",
+      "participant_id": "participant-operator",
+      "source_text": "оператор отправляет клиенту уведомление об отказе,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "receive_task",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получить уведомление об отказе",
+      "participant_id": "participant-client",
+      "source_text": "оператор отправляет клиенту уведомление об отказе,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "end-client-rejection",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Заявка отклонена",
+      "participant_id": "participant-client",
+      "source_text": "после чего процесс завершается.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-manager-form_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Сформировать договор",
+      "participant_id": "participant-manager",
+      "source_text": "менеджер формирует договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-manager-send_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить договор",
+      "participant_id": "participant-manager",
+      "source_text": "и отправляет его клиенту.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-client-receive_contract",
+      "type": "receive_task",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получить договор",
+      "participant_id": "participant-client",
+      "source_text": "и отправляет его клиенту.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-client-check_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить договор",
+      "participant_id": "participant-client",
+      "source_text": "Клиент проверяет договор.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "gw-client-contract_status",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Клиент согласен?",
+      "participant_id": "participant-client",
+      "source_text": "Если клиент не согласен, он возвращает договор менеджеру на доработку. Если клиент согласен,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-client-return_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Вернуть договор на доработку",
+      "participant_id": "participant-client",
+      "source_text": "он возвращает договор менеджеру на доработку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "receive_task",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получить договор на доработку",
+      "participant_id": "participant-manager",
+      "source_text": "он возвращает договор менеджеру на доработку.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-manager-revise_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Изменить договор",
+      "participant_id": "participant-manager",
+      "source_text": "Менеджер изменяет договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-manager-resend_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Повторно отправить договор",
+      "participant_id": "participant-manager",
+      "source_text": "и повторно отправляет клиенту.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task-client-sign_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подписать договор",
+      "participant_id": "participant-client",
+      "source_text": "он подписывает договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить подписанный договор",
+      "participant_id": "participant-client",
+      "source_text": "и отправляет менеджеру.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "receive_task",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получить подписанный договор",
+      "participant_id": "participant-manager",
+      "source_text": "и отправляет менеджеру.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "ta[REDACTED]",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Зарегистрировать договор",
+      "participant_id": "participant-manager",
+      "source_text": "Менеджер регистрирует договор,",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "end-manager-contract_registered",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Договор зарегистрирован",
+      "participant_id": "participant-manager",
+      "source_text": "после чего процесс завершается.",
+      "confidence": "high",
+      "inferred": false
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow-client-start-to-send_application",
+      "source": "start-client-001",
+      "target": "task-client-send_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-operator-receive_application-to-check_documents",
+      "source": "ta[REDACTED]",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-operator-check_documents-to-documents_status",
+      "source": "ta[REDACTED]",
+      "target": "gw-operator-documents_status",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-operator-documents_status-to-return_application",
+      "source": "gw-operator-documents_status",
+      "target": "ta[REDACTED]",
+      "name": "Некорректны",
+      "condition": "Документы некорректны",
+      "is_default": false
+    },
+    {
+      "id": "flow-operator-documents_status-to-parallel_check_split",
+      "source": "gw-operator-documents_status",
+      "target": "gw-parallel-check-split",
+      "name": "Корректны",
+      "condition": "Документы корректны",
+      "is_default": false
+    },
+    {
+      "id": "flow-operator-return_application-to-receive_resubmission",
+      "source": "ta[REDACTED]",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-receive_return_application-to-revise_documents",
+      "source": "ta[REDACTED]",
+      "target": "task-client-revise_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-revise_documents-to-resend_documents",
+      "source": "task-client-revise_documents",
+      "target": "task-client-resend_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-resend_documents-to-receive_return_application",
+      "source": "task-client-resend_documents",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-parallel-check-split-to-legal-check",
+      "source": "gw-parallel-check-split",
+      "target": "task-legal-check_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-parallel-check-split-to-security-check",
+      "source": "gw-parallel-check-split",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-legal-check-to-parallel-check-join",
+      "source": "task-legal-check_application",
+      "target": "gw-parallel-check-join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-security-check-to-parallel-check-join",
+      "source": "ta[REDACTED]",
+      "target": "gw-parallel-check-join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-parallel-check-join-to-supervisor-make_decision",
+      "source": "gw-parallel-check-join",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-supervisor-make_decision-to-supervisor-decision",
+      "source": "ta[REDACTED]",
+      "target": "gw-supervisor-decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-supervisor-decision-to-operator-send_rejection_notification",
+      "source": "gw-supervisor-decision",
+      "target": "ta[REDACTED]",
+      "name": "Отклонена",
+      "condition": "Заявка отклонена",
+      "is_default": false
+    },
+    {
+      "id": "flow-operator-send_rejection_notification-to-end",
+      "source": "ta[REDACTED]",
+      "target": "end-client-rejection",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-receive_rejection_notification-to-end",
+      "source": "ta[REDACTED]",
+      "target": "end-client-rejection",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-supervisor-decision-to-manager-form_contract",
+      "source": "gw-supervisor-decision",
+      "target": "task-manager-form_contract",
+      "name": "Одобрена",
+      "condition": "Заявка одобрена",
+      "is_default": false
+    },
+    {
+      "id": "flow-manager-form_contract-to-manager-send_contract",
+      "source": "task-manager-form_contract",
+      "target": "task-manager-send_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-receive_contract-to-check_contract",
+      "source": "task-client-receive_contract",
+      "target": "task-client-check_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-check_contract-to-contract_status",
+      "source": "task-client-check_contract",
+      "target": "gw-client-contract_status",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-contract_status-to-return_contract",
+      "source": "gw-client-contract_status",
+      "target": "task-client-return_contract",
+      "name": "Не согласен",
+      "condition": "Клиент не согласен",
+      "is_default": false
+    },
+    {
+      "id": "flow-client-return_contract-to-resend_signed_contract",
+      "source": "task-client-return_contract",
+      "target": "task-client-receive_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-manager-receive_return_contract-to-revise_contract",
+      "source": "ta[REDACTED]",
+      "target": "task-manager-revise_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-manager-revise_contract-to-resend_contract",
+      "source": "task-manager-revise_contract",
+      "target": "task-manager-resend_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-manager-resend_contract-to-receive_return_contract",
+      "source": "task-manager-resend_contract",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-client-contract_status-to-sign_contract",
+      "source": "gw-client-contract_status",
+      "target": "task-client-sign_contract",
+      "name": "Согласен",
+      "condition": "Клиент согласен",
+      "is_default": false
+    },
+    {
+      "id": "flow-client-sign_contract-to-send_signed_contract",
+      "source": "task-client-sign_contract",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-manager-receive_signed_contract-to-register_contract",
+      "source": "ta[REDACTED]",
+      "target": "ta[REDACTED]",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow-manager-register_contract-to-end",
+      "source": "ta[REDACTED]",
+      "target": "end-manager-contract_registered",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "pool-client",
+      "name": "Клиент",
+      "kind": "external"
+    },
+    {
+      "id": "pool-organization",
+      "name": "Организация",
+      "kind": "internal"
+    }
+  ],
+  "message_flows": [
+    {
+      "id": "msg-flow-client-send_application-to-operator-receive_application",
+      "source": "task-client-send_application",
+      "target": "ta[REDACTED]",
+      "name": "Заявка на подключение"
+    },
+    {
+      "id": "msg-flow-operator-return_application-to-client-receive_return_application",
+      "source": "ta[REDACTED]",
+      "target": "ta[REDACTED]",
+      "name": "Заявка на доработку"
+    },
+    {
+      "id": "msg-flow-client-resend_documents-to-operator-receive_application",
+      "source": "task-client-resend_documents",
+      "target": "ta[REDACTED]",
+      "name": "Исправленные документы"
+    },
+    {
+      "id": "msg-flow-operator-send_rejection_notification-to-client-receive_rejection_notification",
+      "source": "ta[REDACTED]",
+      "target": "ta[REDACTED]",
+      "name": "Уведомление об отказе"
+    },
+    {
+      "id": "msg-flow-manager-send_contract-to-client-receive_contract",
+      "source": "task-manager-send_contract",
+      "target": "task-client-receive_contract",
+      "name": "Договор"
+    },
+    {
+      "id": "msg-flow-client-return_contract-to-manager-receive_return_contract",
+      "source": "task-client-return_contract",
+      "target": "ta[REDACTED]",
+      "name": "Договор на доработку"
+    },
+    {
+      "id": "msg-flow-manager-resend_contract-to-client-receive_contract",
+      "source": "task-manager-resend_contract",
+      "target": "task-client-receive_contract",
+      "name": "Исправленный договор"
+    },
+    {
+      "id": "msg-flow-client-send_signed_contract-to-manager-receive_signed_contract",
+      "source": "ta[REDACTED]",
+      "target": "ta[REDACTED]",
+      "name": "Подписанный договор"
+    }
+  ],
+  "ambiguities": [],
+  "assumptions": []
+}

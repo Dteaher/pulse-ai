@@ -1,0 +1,610 @@
+{
+  "id": "process_contract",
+  "name": "Заключение договора",
+  "description": "Клиент подаёт заявку на заключение договора. Оператор проверяет документы. Если документы заполнены неправильно, заявку возвращают клиенту на исправление. После исправления клиент повторно отправляет документы. Если всё корректно, юридический отдел и служба безопасности одновременно выполняют проверки. После завершения обеих проверок менеджер определяет стоимость договора. Если стоимость больше 500 000 рублей, договор должен согласовать руководитель. Если руководитель отклоняет договор, менеджер дорабатывает его и повторно отправляет на согласование. Если стоимость не превышает 500 000 рублей или руководитель согласовал договор, менеджер отправляет договор клиенту. Клиент получает договор, и процесс завершается.",
+  "participants": [
+    {
+      "id": "client",
+      "name": "Клиент",
+      "type": "external",
+      "kind": "external",
+      "pool_id": "pool_client"
+    },
+    {
+      "id": "operator",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "pool_org"
+    },
+    {
+      "id": "legal",
+      "name": "Юридический отдел",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "pool_org"
+    },
+    {
+      "id": "security",
+      "name": "Служба безопасности",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "pool_org"
+    },
+    {
+      "id": "manager",
+      "name": "Менеджер",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "pool_org"
+    },
+    {
+      "id": "supervisor",
+      "name": "Руководитель",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "pool_org"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "c_start",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начало процесса",
+      "participant_id": "client",
+      "source_text": "Клиент подаёт заявку на заключение договора.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_submit",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подать заявку",
+      "participant_id": "client",
+      "source_text": "Клиент подаёт заявку на заключение договора.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_merge",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Объединить возврат и первоначальную отправку",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_wait",
+      "type": "event_based_gateway",
+      "event_definition": "none",
+      "decision_basis": "event",
+      "name": "Ожидать ответ",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "c_corr",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить заявку на исправление",
+      "participant_id": "client",
+      "source_text": "заявку возвращают клиенту на исправление",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_fix",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Исправить документы",
+      "participant_id": "client",
+      "source_text": "После исправления клиент повторно отправляет документы.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_resubmit",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Повторно отправить документы",
+      "participant_id": "client",
+      "source_text": "клиент повторно отправляет документы",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_contract",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить договор",
+      "participant_id": "client",
+      "source_text": "Клиент получает договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "c_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Процесс завершён",
+      "participant_id": "client",
+      "source_text": "процесс завершается",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_start",
+      "type": "start_event",
+      "event_definition": "message",
+      "decision_basis": "event",
+      "name": "Получена заявка",
+      "participant_id": "operator",
+      "source_text": "Клиент подаёт заявку на заключение договора.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_check",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить документы",
+      "participant_id": "operator",
+      "source_text": "Оператор проверяет документы.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_check_decision",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Документы корректны?",
+      "participant_id": "operator",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_return",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Вернуть заявку на исправление",
+      "participant_id": "operator",
+      "source_text": "заявку возвращают клиенту на исправление",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_receive_fix",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить исправленные документы",
+      "participant_id": "operator",
+      "source_text": "После исправления клиент повторно отправляет документы.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_parallel_split",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начать одновременные проверки",
+      "participant_id": "operator",
+      "source_text": "юридический отдел и служба безопасности одновременно выполняют проверки",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_legal",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Выполнить юридическую проверку",
+      "participant_id": "legal",
+      "source_text": "юридический отдел ... выполняют проверки",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_security",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Выполнить проверку безопасности",
+      "participant_id": "security",
+      "source_text": "служба безопасности одновременно выполняют проверки",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_parallel_join",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Завершить обе проверки",
+      "participant_id": "operator",
+      "source_text": "После завершения обеих проверок",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_cost",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Определить стоимость договора",
+      "participant_id": "manager",
+      "source_text": "менеджер определяет стоимость договора",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_cost_decision",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Стоимость больше 500 000 рублей?",
+      "participant_id": "manager",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_approve",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Согласовать договор",
+      "participant_id": "supervisor",
+      "source_text": "договор должен согласовать руководитель",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_approve_decision",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Решение руководителя",
+      "participant_id": "supervisor",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": true
+    },
+    {
+      "id": "o_rework",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Доработать договор и повторно отправить на согласование",
+      "participant_id": "manager",
+      "source_text": "менеджер дорабатывает его и повторно отправляет на согласование",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_send_contract",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить договор клиенту",
+      "participant_id": "manager",
+      "source_text": "менеджер отправляет договор клиенту",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "o_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Процесс завершён",
+      "participant_id": "operator",
+      "source_text": "процесс завершается",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "Merge_o_send_contract",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Объединить пути",
+      "participant_id": "manager",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "f_c1",
+      "source": "c_start",
+      "target": "c_submit",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c2",
+      "source": "c_submit",
+      "target": "c_merge",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c3",
+      "source": "c_merge",
+      "target": "c_wait",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c4",
+      "source": "c_wait",
+      "target": "c_corr",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c5",
+      "source": "c_corr",
+      "target": "c_fix",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c6",
+      "source": "c_fix",
+      "target": "c_resubmit",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c7",
+      "source": "c_resubmit",
+      "target": "c_merge",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c8",
+      "source": "c_wait",
+      "target": "c_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_c9",
+      "source": "c_contract",
+      "target": "c_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o1",
+      "source": "o_start",
+      "target": "o_check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o2",
+      "source": "o_check",
+      "target": "o_check_decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o3",
+      "source": "o_check_decision",
+      "target": "o_return",
+      "name": "Нужны исправления",
+      "condition": "документы заполнены неправильно",
+      "is_default": false
+    },
+    {
+      "id": "f_o4",
+      "source": "o_check_decision",
+      "target": "o_parallel_split",
+      "name": "Документы корректны",
+      "condition": "документы заполнены правильно",
+      "is_default": false
+    },
+    {
+      "id": "f_o5",
+      "source": "o_return",
+      "target": "o_receive_fix",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o6",
+      "source": "o_receive_fix",
+      "target": "o_check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o7",
+      "source": "o_parallel_split",
+      "target": "o_legal",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o8",
+      "source": "o_parallel_split",
+      "target": "o_security",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o9",
+      "source": "o_legal",
+      "target": "o_parallel_join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o10",
+      "source": "o_security",
+      "target": "o_parallel_join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o11",
+      "source": "o_parallel_join",
+      "target": "o_cost",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o12",
+      "source": "o_cost",
+      "target": "o_cost_decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o13",
+      "source": "o_cost_decision",
+      "target": "o_approve",
+      "name": "Требуется согласование",
+      "condition": "стоимость больше 500 000 рублей",
+      "is_default": false
+    },
+    {
+      "id": "f_o14",
+      "source": "o_cost_decision",
+      "target": "Merge_o_send_contract",
+      "name": "Согласование не требуется",
+      "condition": "стоимость не превышает 500 000 рублей",
+      "is_default": false
+    },
+    {
+      "id": "f_o15",
+      "source": "o_approve",
+      "target": "o_approve_decision",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o16",
+      "source": "o_approve_decision",
+      "target": "Merge_o_send_contract",
+      "name": "Согласовано",
+      "condition": "руководитель согласовал договор",
+      "is_default": false
+    },
+    {
+      "id": "f_o17",
+      "source": "o_approve_decision",
+      "target": "o_rework",
+      "name": "Отклонено",
+      "condition": "руководитель отклонил договор",
+      "is_default": false
+    },
+    {
+      "id": "f_o18",
+      "source": "o_rework",
+      "target": "o_approve",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "f_o19",
+      "source": "o_send_contract",
+      "target": "o_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_Merge_o_send_contract",
+      "source": "Merge_o_send_contract",
+      "target": "o_send_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "pool_org",
+      "name": "Организация",
+      "kind": "internal"
+    },
+    {
+      "id": "pool_client",
+      "name": "Клиент",
+      "kind": "external"
+    }
+  ],
+  "message_flows": [
+    {
+      "id": "mf1",
+      "source": "c_submit",
+      "target": "o_start",
+      "name": "Заявка"
+    },
+    {
+      "id": "mf2",
+      "source": "o_return",
+      "target": "c_corr",
+      "name": "Запрос на исправление"
+    },
+    {
+      "id": "mf3",
+      "source": "c_resubmit",
+      "target": "o_receive_fix",
+      "name": "Исправленные документы"
+    },
+    {
+      "id": "mf4",
+      "source": "o_send_contract",
+      "target": "c_contract",
+      "name": "Договор"
+    }
+  ],
+  "ambiguities": []
+}

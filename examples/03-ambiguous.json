@@ -1,0 +1,364 @@
+{
+  "id": "Process_Connection",
+  "name": "Подключение к электросети",
+  "description": "Клиент отправляет заявку. Менеджер проверяет документы. Потом её смотрят юрист и безопасность. После этого руководитель решает, что делать.",
+  "participants": [
+    {
+      "id": "Client",
+      "name": "Клиент",
+      "type": "role"
+    },
+    {
+      "id": "Operator",
+      "name": "Оператор",
+      "type": "role"
+    },
+    {
+      "id": "Legal",
+      "name": "Юридический отдел",
+      "type": "role"
+    },
+    {
+      "id": "Security",
+      "name": "Служба безопасности",
+      "type": "role"
+    },
+    {
+      "id": "Head",
+      "name": "Руководитель",
+      "type": "role"
+    },
+    {
+      "id": "Manager",
+      "name": "Менеджер",
+      "type": "role"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "Start",
+      "type": "start_event",
+      "name": "Потребность в подключении",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Submit",
+      "type": "user_task",
+      "name": "Отправить заявку",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Check",
+      "type": "user_task",
+      "name": "Проверить документы",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Complete",
+      "type": "exclusive_gateway",
+      "name": "Документы полные?",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Return",
+      "type": "user_task",
+      "name": "Вернуть на доработку",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Revise",
+      "type": "user_task",
+      "name": "Дополнить документы",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Fork",
+      "type": "parallel_gateway",
+      "name": "Начать проверки",
+      "participant_id": "Operator",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "LegalCheck",
+      "type": "user_task",
+      "name": "Юридическая проверка",
+      "participant_id": "Legal",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "SecurityCheck",
+      "type": "user_task",
+      "name": "Проверка безопасности",
+      "participant_id": "Security",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Join",
+      "type": "parallel_gateway",
+      "name": "Проверки завершены",
+      "participant_id": "Head",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Decide",
+      "type": "user_task",
+      "name": "Принять решение",
+      "participant_id": "Head",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Approved",
+      "type": "exclusive_gateway",
+      "name": "Заявка одобрена?",
+      "participant_id": "Head",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Contract",
+      "type": "user_task",
+      "name": "Подготовить договор",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Send",
+      "type": "user_task",
+      "name": "Отправить договор",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "Reject",
+      "type": "user_task",
+      "name": "Уведомить об отказе",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "EndYes",
+      "type": "end_event",
+      "name": "Договор отправлен",
+      "participant_id": "Manager",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    },
+    {
+      "id": "EndNo",
+      "type": "end_event",
+      "name": "Отказ получен",
+      "participant_id": "Client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "Flow_0",
+      "source": "Start",
+      "target": "Submit",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_1",
+      "source": "Submit",
+      "target": "Check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_2",
+      "source": "Check",
+      "target": "Complete",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_3",
+      "source": "Complete",
+      "target": "Return",
+      "name": "Нет",
+      "condition": "Нет",
+      "is_default": false
+    },
+    {
+      "id": "Flow_4",
+      "source": "Return",
+      "target": "Revise",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_5",
+      "source": "Revise",
+      "target": "Check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_6",
+      "source": "Complete",
+      "target": "Fork",
+      "name": "Да",
+      "condition": "Да",
+      "is_default": false
+    },
+    {
+      "id": "Flow_7",
+      "source": "Fork",
+      "target": "LegalCheck",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_8",
+      "source": "Fork",
+      "target": "SecurityCheck",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_9",
+      "source": "LegalCheck",
+      "target": "Join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_10",
+      "source": "SecurityCheck",
+      "target": "Join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_11",
+      "source": "Join",
+      "target": "Decide",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_12",
+      "source": "Decide",
+      "target": "Approved",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_13",
+      "source": "Approved",
+      "target": "Contract",
+      "name": "Да",
+      "condition": "Да",
+      "is_default": false
+    },
+    {
+      "id": "Flow_14",
+      "source": "Approved",
+      "target": "Reject",
+      "name": "Нет",
+      "condition": "Нет",
+      "is_default": false
+    },
+    {
+      "id": "Flow_15",
+      "source": "Contract",
+      "target": "Send",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_16",
+      "source": "Send",
+      "target": "EndYes",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_17",
+      "source": "Reject",
+      "target": "EndNo",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "ambiguities": [
+    {
+      "id": "parallel",
+      "question": "Юрист и служба безопасности работают параллельно или последовательно?",
+      "related_node_ids": [
+        "Fork"
+      ],
+      "severity": "critical",
+      "suggested_answers": [
+        "Параллельно",
+        "Последовательно"
+      ]
+    },
+    {
+      "id": "refusal",
+      "question": "Что происходит при отказе руководителя?",
+      "related_node_ids": [
+        "Approved"
+      ],
+      "severity": "critical",
+      "suggested_answers": [
+        "Уведомить клиента об отказе",
+        "Вернуть документы на доработку"
+      ]
+    }
+  ]
+}

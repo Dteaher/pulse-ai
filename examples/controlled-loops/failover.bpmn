@@ -1,0 +1,555 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.2">
+  <bpmn:process id="Process_client_pool" name="Клиент" isExecutable="false">
+    <bpmn:startEvent id="start_event_client" name="Начало процесса">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>flow_client_start_to_podat_zayavku</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="task_podat_zayavku" name="Подать заявку на заключение договора">
+      <bpmn:documentation>Клиент подаёт заявку на заключение договора.</bpmn:documentation>
+      <bpmn:incoming>flow_client_start_to_podat_zayavku</bpmn:incoming>
+      <bpmn:outgoing>flow_client_podat_zayavku_to_send</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="send_task_send_zayavka" name="Отправить заявку">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_client_podat_zayavku_to_send</bpmn:incoming>
+      <bpmn:outgoing>flow_send_zayavka_to_expect_response</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:task id="task_expect_response_client" name="Ожидать ответ">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_send_zayavka_to_expect_response</bpmn:incoming>
+      <bpmn:incoming>flow_povtorno_otpravit_to_expect_response</bpmn:incoming>
+      <bpmn:outgoing>flow_expect_response_to_gateway</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="gateway_client_response_type" name="Какой ответ получен?" gatewayDirection="Diverging">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_expect_response_to_gateway</bpmn:incoming>
+      <bpmn:outgoing>flow_client_gateway_to_receive_na_ispravlenie</bpmn:outgoing>
+      <bpmn:outgoing>flow_client_gateway_to_receive_dogovor</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:receiveTask id="receive_task_poluchit_na_ispravlenie" name="Получить запрос на исправление">
+      <bpmn:documentation>заявку возвращают клиенту на исправление.</bpmn:documentation>
+      <bpmn:incoming>flow_client_gateway_to_receive_na_ispravlenie</bpmn:incoming>
+      <bpmn:outgoing>flow_client_receive_na_ispravlenie_to_ispravit</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:userTask id="task_ispr_dokumenty" name="Исправить документы">
+      <bpmn:documentation>После исправления клиент повторно отправляет документы.</bpmn:documentation>
+      <bpmn:incoming>flow_client_receive_na_ispravlenie_to_ispravit</bpmn:incoming>
+      <bpmn:outgoing>flow_client_ispravit_to_povtorno_otpravit</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="send_task_povtorno_otpravit_dokumenty" name="Повторно отправить документы">
+      <bpmn:documentation>клиент повторно отправляет документы.</bpmn:documentation>
+      <bpmn:incoming>flow_client_ispravit_to_povtorno_otpravit</bpmn:incoming>
+      <bpmn:outgoing>flow_povtorno_otpravit_to_expect_response</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:receiveTask id="receive_task_poluchit_dogovor" name="Получить договор">
+      <bpmn:documentation>Клиент получает договор</bpmn:documentation>
+      <bpmn:incoming>flow_client_gateway_to_receive_dogovor</bpmn:incoming>
+      <bpmn:outgoing>flow_client_receive_dogovor_to_end</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:endEvent id="end_event_process_complete_client" name="Договор получен">
+      <bpmn:documentation>процесс завершается.</bpmn:documentation>
+      <bpmn:incoming>flow_client_receive_dogovor_to_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_client_start_to_podat_zayavku" sourceRef="start_event_client" targetRef="task_podat_zayavku" name=""/>
+    <bpmn:sequenceFlow id="flow_client_podat_zayavku_to_send" sourceRef="task_podat_zayavku" targetRef="send_task_send_zayavka" name=""/>
+    <bpmn:sequenceFlow id="flow_send_zayavka_to_expect_response" sourceRef="send_task_send_zayavka" targetRef="task_expect_response_client" name=""/>
+    <bpmn:sequenceFlow id="flow_expect_response_to_gateway" sourceRef="task_expect_response_client" targetRef="gateway_client_response_type" name=""/>
+    <bpmn:sequenceFlow id="flow_client_gateway_to_receive_na_ispravlenie" sourceRef="gateway_client_response_type" targetRef="receive_task_poluchit_na_ispravlenie" name="Запрос на исправление">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Получен запрос на исправление</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_client_receive_na_ispravlenie_to_ispravit" sourceRef="receive_task_poluchit_na_ispravlenie" targetRef="task_ispr_dokumenty" name=""/>
+    <bpmn:sequenceFlow id="flow_client_ispravit_to_povtorno_otpravit" sourceRef="task_ispr_dokumenty" targetRef="send_task_povtorno_otpravit_dokumenty" name=""/>
+    <bpmn:sequenceFlow id="flow_povtorno_otpravit_to_expect_response" sourceRef="send_task_povtorno_otpravit_dokumenty" targetRef="task_expect_response_client" name=""/>
+    <bpmn:sequenceFlow id="flow_client_gateway_to_receive_dogovor" sourceRef="gateway_client_response_type" targetRef="receive_task_poluchit_dogovor" name="Получен договор">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Получен договор</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_client_receive_dogovor_to_end" sourceRef="receive_task_poluchit_dogovor" targetRef="end_event_process_complete_client" name=""/>
+  </bpmn:process>
+  <bpmn:process id="Process_organization_pool" name="Организация" isExecutable="false">
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="operator" name="Оператор">
+        <bpmn:flowNodeRef>start_event_organization</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>receive_task_poluchit_zayavku</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task_proverit_dokumenty</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gateway_dokumenty_korrektny</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>send_task_send_na_ispravlenie</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gateway_parallel_start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gateway_parallel_end</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="legal_department" name="Юридический отдел">
+        <bpmn:flowNodeRef>task_proverka_yuridicheskogo_otdela</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="security_service" name="Служба безопасности">
+        <bpmn:flowNodeRef>task_proverka_sluzhby_bezopasnosti</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="manager" name="Менеджер">
+        <bpmn:flowNodeRef>task_opredelit_stoimost_dogovora</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gateway_stoimost_bolshe_500k</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task_dorabotat_dogovor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>task_otpravit_dogovor_klientu</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end_event_process_complete_org</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="leader" name="Руководитель">
+        <bpmn:flowNodeRef>task_soglasovat_dogovor</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>gateway_rukovoditel_soglasoval</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="start_event_organization" name="Начало процесса">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>flow_organization_start_to_receive_zayavku</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:receiveTask id="receive_task_poluchit_zayavku" name="Получить заявку">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_organization_start_to_receive_zayavku</bpmn:incoming>
+      <bpmn:incoming>flow_send_na_ispravlenie_to_receive_zayavku</bpmn:incoming>
+      <bpmn:outgoing>flow_operator_receive_zayavku_to_proverit</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:userTask id="task_proverit_dokumenty" name="Проверить документы">
+      <bpmn:documentation>Оператор проверяет документы.</bpmn:documentation>
+      <bpmn:incoming>flow_operator_receive_zayavku_to_proverit</bpmn:incoming>
+      <bpmn:outgoing>flow_operator_proverit_to_gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="gateway_dokumenty_korrektny" name="Документы корректны?" gatewayDirection="Diverging">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_operator_proverit_to_gateway</bpmn:incoming>
+      <bpmn:outgoing>flow_operator_gateway_to_send_na_ispravlenie</bpmn:outgoing>
+      <bpmn:outgoing>flow_operator_gateway_to_parallel_start</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sendTask id="send_task_send_na_ispravlenie" name="Отправить на исправление">
+      <bpmn:documentation>Если документы заполнены неправильно, заявку возвращают клиенту на исправление.</bpmn:documentation>
+      <bpmn:incoming>flow_operator_gateway_to_send_na_ispravlenie</bpmn:incoming>
+      <bpmn:outgoing>flow_send_na_ispravlenie_to_receive_zayavku</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:parallelGateway id="gateway_parallel_start" name="Начать параллельные проверки" gatewayDirection="Diverging">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_operator_gateway_to_parallel_start</bpmn:incoming>
+      <bpmn:outgoing>flow_operator_parallel_start_to_legal</bpmn:outgoing>
+      <bpmn:outgoing>flow_operator_parallel_start_to_security</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:userTask id="task_proverka_yuridicheskogo_otdela" name="Выполнить проверку">
+      <bpmn:documentation>юридический отдел ... выполняет проверки.</bpmn:documentation>
+      <bpmn:incoming>flow_operator_parallel_start_to_legal</bpmn:incoming>
+      <bpmn:outgoing>flow_legal_to_parallel_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="task_proverka_sluzhby_bezopasnosti" name="Выполнить проверку">
+      <bpmn:documentation>служба безопасности одновременно выполняют проверки.</bpmn:documentation>
+      <bpmn:incoming>flow_operator_parallel_start_to_security</bpmn:incoming>
+      <bpmn:outgoing>flow_security_to_parallel_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:parallelGateway id="gateway_parallel_end" name="Завершить параллельные проверки" gatewayDirection="Converging">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_legal_to_parallel_end</bpmn:incoming>
+      <bpmn:incoming>flow_security_to_parallel_end</bpmn:incoming>
+      <bpmn:outgoing>flow_operator_parallel_end_to_opredelit_stoimost</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:userTask id="task_opredelit_stoimost_dogovora" name="Определить стоимость договора">
+      <bpmn:documentation>менеджер определяет стоимость договора.</bpmn:documentation>
+      <bpmn:incoming>flow_operator_parallel_end_to_opredelit_stoimost</bpmn:incoming>
+      <bpmn:outgoing>flow_manager_opredelit_stoimost_to_gateway_500k</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="gateway_stoimost_bolshe_500k" name="Стоимость &gt; 500 000 руб.?" gatewayDirection="Diverging">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_manager_opredelit_stoimost_to_gateway_500k</bpmn:incoming>
+      <bpmn:outgoing>flow_manager_stoimost_ne_bolshe_500k_to_otpravit</bpmn:outgoing>
+      <bpmn:outgoing>flow_manager_stoimost_bolshe_500k_to_soglasovat</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="task_soglasovat_dogovor" name="Согласовать договор">
+      <bpmn:documentation>договор должен согласовать руководитель.</bpmn:documentation>
+      <bpmn:incoming>flow_manager_stoimost_bolshe_500k_to_soglasovat</bpmn:incoming>
+      <bpmn:incoming>flow_manager_dorabotat_to_soglasovat</bpmn:incoming>
+      <bpmn:outgoing>flow_leader_soglasovat_to_gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="gateway_rukovoditel_soglasoval" name="Руководитель согласовал?" gatewayDirection="Diverging">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_leader_soglasovat_to_gateway</bpmn:incoming>
+      <bpmn:outgoing>flow_leader_gateway_otklonil_to_dorabotat</bpmn:outgoing>
+      <bpmn:outgoing>flow_leader_gateway_soglasoval_to_otpravit</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="task_dorabotat_dogovor" name="Доработать договор">
+      <bpmn:documentation>Если руководитель отклоняет договор, менеджер дорабатывает его</bpmn:documentation>
+      <bpmn:incoming>flow_leader_gateway_otklonil_to_dorabotat</bpmn:incoming>
+      <bpmn:outgoing>flow_manager_dorabotat_to_soglasovat</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="task_otpravit_dogovor_klientu" name="Отправить договор клиенту">
+      <bpmn:documentation>менеджер отправляет договор клиенту.</bpmn:documentation>
+      <bpmn:incoming>flow_manager_stoimost_ne_bolshe_500k_to_otpravit</bpmn:incoming>
+      <bpmn:incoming>flow_leader_gateway_soglasoval_to_otpravit</bpmn:incoming>
+      <bpmn:outgoing>flow_manager_otpravit_to_end_org</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="end_event_process_complete_org" name="Договор отправлен">
+      <bpmn:documentation>процесс завершается.</bpmn:documentation>
+      <bpmn:incoming>flow_manager_otpravit_to_end_org</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_organization_start_to_receive_zayavku" sourceRef="start_event_organization" targetRef="receive_task_poluchit_zayavku" name=""/>
+    <bpmn:sequenceFlow id="flow_operator_receive_zayavku_to_proverit" sourceRef="receive_task_poluchit_zayavku" targetRef="task_proverit_dokumenty" name=""/>
+    <bpmn:sequenceFlow id="flow_operator_proverit_to_gateway" sourceRef="task_proverit_dokumenty" targetRef="gateway_dokumenty_korrektny" name=""/>
+    <bpmn:sequenceFlow id="flow_operator_gateway_to_send_na_ispravlenie" sourceRef="gateway_dokumenty_korrektny" targetRef="send_task_send_na_ispravlenie" name="Документы неправильно заполнены">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Документы заполнены неправильно</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_send_na_ispravlenie_to_receive_zayavku" sourceRef="send_task_send_na_ispravlenie" targetRef="receive_task_poluchit_zayavku" name=""/>
+    <bpmn:sequenceFlow id="flow_operator_gateway_to_parallel_start" sourceRef="gateway_dokumenty_korrektny" targetRef="gateway_parallel_start" name="Все корректно">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Всё корректно</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_operator_parallel_start_to_legal" sourceRef="gateway_parallel_start" targetRef="task_proverka_yuridicheskogo_otdela" name=""/>
+    <bpmn:sequenceFlow id="flow_operator_parallel_start_to_security" sourceRef="gateway_parallel_start" targetRef="task_proverka_sluzhby_bezopasnosti" name=""/>
+    <bpmn:sequenceFlow id="flow_legal_to_parallel_end" sourceRef="task_proverka_yuridicheskogo_otdela" targetRef="gateway_parallel_end" name=""/>
+    <bpmn:sequenceFlow id="flow_security_to_parallel_end" sourceRef="task_proverka_sluzhby_bezopasnosti" targetRef="gateway_parallel_end" name=""/>
+    <bpmn:sequenceFlow id="flow_operator_parallel_end_to_opredelit_stoimost" sourceRef="gateway_parallel_end" targetRef="task_opredelit_stoimost_dogovora" name=""/>
+    <bpmn:sequenceFlow id="flow_manager_opredelit_stoimost_to_gateway_500k" sourceRef="task_opredelit_stoimost_dogovora" targetRef="gateway_stoimost_bolshe_500k" name=""/>
+    <bpmn:sequenceFlow id="flow_manager_stoimost_ne_bolshe_500k_to_otpravit" sourceRef="gateway_stoimost_bolshe_500k" targetRef="task_otpravit_dogovor_klientu" name="Стоимость не превышает 500 000 рублей">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Стоимость не превышает 500 000 рублей</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_manager_stoimost_bolshe_500k_to_soglasovat" sourceRef="gateway_stoimost_bolshe_500k" targetRef="task_soglasovat_dogovor" name="Стоимость больше 500 000 рублей">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Стоимость больше 500 000 рублей</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_leader_soglasovat_to_gateway" sourceRef="task_soglasovat_dogovor" targetRef="gateway_rukovoditel_soglasoval" name=""/>
+    <bpmn:sequenceFlow id="flow_leader_gateway_otklonil_to_dorabotat" sourceRef="gateway_rukovoditel_soglasoval" targetRef="task_dorabotat_dogovor" name="Руководитель отклонил">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Руководитель отклоняет договор</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_manager_dorabotat_to_soglasovat" sourceRef="task_dorabotat_dogovor" targetRef="task_soglasovat_dogovor" name=""/>
+    <bpmn:sequenceFlow id="flow_leader_gateway_soglasoval_to_otpravit" sourceRef="gateway_rukovoditel_soglasoval" targetRef="task_otpravit_dogovor_klientu" name="Руководитель согласовал">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">Руководитель согласовал договор</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="flow_manager_otpravit_to_end_org" sourceRef="task_otpravit_dogovor_klientu" targetRef="end_event_process_complete_org" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="process_zaklyucheniya_dogovora" name="Процесс заключения договора">
+    <bpmn:documentation>Клиент подаёт заявку на заключение договора. Оператор проверяет документы. Если документы заполнены неправильно, заявку возвращают клиенту на исправление. После исправления клиент повторно отправляет документы. Если всё корректно, юридический отдел и служба безопасности одновременно выполняют проверки. После завершения обеих проверок менеджер определяет стоимость договора. Если стоимость больше 500 000 рублей, договор должен согласовать руководитель. Если руководитель отклоняет договор, менеджер дорабатывает его и повторно отправляет на согласование. Если стоимость не превышает 500 000 рублей или руководитель согласовал договор, менеджер отправляет договор клиенту. Клиент получает договор, и процесс завершается.</bpmn:documentation>
+    <bpmn:participant id="client_pool" name="Клиент" processRef="Process_client_pool">
+      <bpmn:documentation>PULSE:{"kind": "external", "roles": [{"id": "client", "name": "Клиент", "type": "external", "kind": "external", "pool_id": "client_pool"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:participant id="organization_pool" name="Организация" processRef="Process_organization_pool">
+      <bpmn:documentation>PULSE:{"kind": "internal", "roles": [{"id": "operator", "name": "Оператор", "type": "role", "kind": "internal", "pool_id": "organization_pool"}, {"id": "legal_department", "name": "Юридический отдел", "type": "department", "kind": "internal", "pool_id": "organization_pool"}, {"id": "security_service", "name": "Служба безопасности", "type": "department", "kind": "internal", "pool_id": "organization_pool"}, {"id": "manager", "name": "Менеджер", "type": "role", "kind": "internal", "pool_id": "organization_pool"}, {"id": "leader", "name": "Руководитель", "type": "role", "kind": "internal", "pool_id": "organization_pool"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:messageFlow id="msg_flow_zayavka_client_to_operator" sourceRef="send_task_send_zayavka" targetRef="receive_task_poluchit_zayavku" name="Заявка на заключение договора"/>
+    <bpmn:messageFlow id="msg_flow_na_ispravlenie_operator_to_client" sourceRef="send_task_send_na_ispravlenie" targetRef="receive_task_poluchit_na_ispravlenie" name="Заявка на исправление"/>
+    <bpmn:messageFlow id="msg_flow_povtorno_dokumenty_client_to_operator" sourceRef="send_task_povtorno_otpravit_dokumenty" targetRef="receive_task_poluchit_zayavku" name="Повторно отправленные документы"/>
+    <bpmn:messageFlow id="msg_flow_dogovor_manager_to_client" sourceRef="task_otpravit_dogovor_klientu" targetRef="receive_task_poluchit_dogovor" name="Договор"/>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="process_zaklyucheniya_dogovora">
+      <bpmndi:BPMNShape id="Shape_client_pool" bpmnElement="client_pool" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="4510" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_organization_pool" bpmnElement="organization_pool" isHorizontal="true">
+        <dc:Bounds x="60" y="295" width="4510" height="1015"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_operator" bpmnElement="operator" isHorizontal="true">
+        <dc:Bounds x="90" y="295" width="4480" height="275"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_legal_department" bpmnElement="legal_department" isHorizontal="true">
+        <dc:Bounds x="90" y="570" width="4480" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_security_service" bpmnElement="security_service" isHorizontal="true">
+        <dc:Bounds x="90" y="725" width="4480" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_manager" bpmnElement="manager" isHorizontal="true">
+        <dc:Bounds x="90" y="880" width="4480" height="275"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_leader" bpmnElement="leader" isHorizontal="true">
+        <dc:Bounds x="90" y="1155" width="4480" height="155"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_start_event_client" bpmnElement="start_event_client">
+        <dc:Bounds x="241.0" y="128.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_podat_zayavku" bpmnElement="task_podat_zayavku">
+        <dc:Bounds x="380.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_send_task_send_zayavka" bpmnElement="send_task_send_zayavka">
+        <dc:Bounds x="570.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_expect_response_client" bpmnElement="task_expect_response_client">
+        <dc:Bounds x="760.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway_client_response_type" bpmnElement="gateway_client_response_type">
+        <dc:Bounds x="994.0" y="121.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_receive_task_poluchit_na_ispravlenie" bpmnElement="receive_task_poluchit_na_ispravlenie">
+        <dc:Bounds x="1330.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_ispr_dokumenty" bpmnElement="task_ispr_dokumenty">
+        <dc:Bounds x="1520.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_send_task_povtorno_otpravit_dokumenty" bpmnElement="send_task_povtorno_otpravit_dokumenty">
+        <dc:Bounds x="1710.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_receive_task_poluchit_dogovor" bpmnElement="receive_task_poluchit_dogovor">
+        <dc:Bounds x="4180.0" y="107.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_event_process_complete_client" bpmnElement="end_event_process_complete_client">
+        <dc:Bounds x="4421.0" y="128.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_start_event_organization" bpmnElement="start_event_organization">
+        <dc:Bounds x="241.0" y="413.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_receive_task_poluchit_zayavku" bpmnElement="receive_task_poluchit_zayavku">
+        <dc:Bounds x="1710.0" y="392.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_proverit_dokumenty" bpmnElement="task_proverit_dokumenty">
+        <dc:Bounds x="1900.0" y="392.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway_dokumenty_korrektny" bpmnElement="gateway_dokumenty_korrektny">
+        <dc:Bounds x="2134.0" y="406.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_send_task_send_na_ispravlenie" bpmnElement="send_task_send_na_ispravlenie">
+        <dc:Bounds x="2470.0" y="346.6666666666667" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway_parallel_start" bpmnElement="gateway_parallel_start">
+        <dc:Bounds x="2514.0" y="452.33333333333337" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_proverka_yuridicheskogo_otdela" bpmnElement="task_proverka_yuridicheskogo_otdela">
+        <dc:Bounds x="2660.0" y="607.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_proverka_sluzhby_bezopasnosti" bpmnElement="task_proverka_sluzhby_bezopasnosti">
+        <dc:Bounds x="2660.0" y="762.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway_parallel_end" bpmnElement="gateway_parallel_end">
+        <dc:Bounds x="2894.0" y="406.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_opredelit_stoimost_dogovora" bpmnElement="task_opredelit_stoimost_dogovora">
+        <dc:Bounds x="3040.0" y="977.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway_stoimost_bolshe_500k" bpmnElement="gateway_stoimost_bolshe_500k">
+        <dc:Bounds x="3274.0" y="991.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_soglasovat_dogovor" bpmnElement="task_soglasovat_dogovor">
+        <dc:Bounds x="3610.0" y="1192.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gateway_rukovoditel_soglasoval" bpmnElement="gateway_rukovoditel_soglasoval">
+        <dc:Bounds x="3844.0" y="1206.5" width="52" height="52"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_dorabotat_dogovor" bpmnElement="task_dorabotat_dogovor">
+        <dc:Bounds x="4180.0" y="931.6666666666666" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_otpravit_dogovor_klientu" bpmnElement="task_otpravit_dogovor_klientu">
+        <dc:Bounds x="4180.0" y="1023.3333333333333" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_event_process_complete_org" bpmnElement="end_event_process_complete_org">
+        <dc:Bounds x="4421.0" y="998.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flow_client_start_to_podat_zayavku" bpmnElement="flow_client_start_to_podat_zayavku">
+        <di:waypoint x="279.0" y="147.5"/>
+        <di:waypoint x="380.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_client_podat_zayavku_to_send" bpmnElement="flow_client_podat_zayavku_to_send">
+        <di:waypoint x="520.0" y="147.5"/>
+        <di:waypoint x="570.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_send_zayavka_to_expect_response" bpmnElement="flow_send_zayavka_to_expect_response">
+        <di:waypoint x="710.0" y="147.5"/>
+        <di:waypoint x="760.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_expect_response_to_gateway" bpmnElement="flow_expect_response_to_gateway">
+        <di:waypoint x="900.0" y="147.5"/>
+        <di:waypoint x="994.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_client_gateway_to_receive_na_ispravlenie" bpmnElement="flow_client_gateway_to_receive_na_ispravlenie">
+        <di:waypoint x="1046.0" y="147.5"/>
+        <di:waypoint x="1064.0" y="147.5"/>
+        <di:waypoint x="1064.0" y="94"/>
+        <di:waypoint x="1312.0" y="94"/>
+        <di:waypoint x="1312.0" y="147.5"/>
+        <di:waypoint x="1330.0" y="147.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1123.0" y="75" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_client_receive_na_ispravlenie_to_ispravit" bpmnElement="flow_client_receive_na_ispravlenie_to_ispravit">
+        <di:waypoint x="1470.0" y="147.5"/>
+        <di:waypoint x="1520.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_client_ispravit_to_povtorno_otpravit" bpmnElement="flow_client_ispravit_to_povtorno_otpravit">
+        <di:waypoint x="1660.0" y="147.5"/>
+        <di:waypoint x="1710.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_povtorno_otpravit_to_expect_response" bpmnElement="flow_povtorno_otpravit_to_expect_response">
+        <di:waypoint x="1780.0" y="107.5"/>
+        <di:waypoint x="1780.0" y="104"/>
+        <di:waypoint x="830.0" y="104"/>
+        <di:waypoint x="830.0" y="107.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_client_gateway_to_receive_dogovor" bpmnElement="flow_client_gateway_to_receive_dogovor">
+        <di:waypoint x="1046.0" y="147.5"/>
+        <di:waypoint x="1064.0" y="147.5"/>
+        <di:waypoint x="1064.0" y="84"/>
+        <di:waypoint x="4162.0" y="84"/>
+        <di:waypoint x="4162.0" y="147.5"/>
+        <di:waypoint x="4180.0" y="147.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2548.0" y="75" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_client_receive_dogovor_to_end" bpmnElement="flow_client_receive_dogovor_to_end">
+        <di:waypoint x="4320.0" y="147.5"/>
+        <di:waypoint x="4421.0" y="147.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_organization_start_to_receive_zayavku" bpmnElement="flow_organization_start_to_receive_zayavku">
+        <di:waypoint x="279.0" y="432.5"/>
+        <di:waypoint x="297.0" y="432.5"/>
+        <di:waypoint x="297.0" y="319"/>
+        <di:waypoint x="1692.0" y="319"/>
+        <di:waypoint x="1692.0" y="432.5"/>
+        <di:waypoint x="1710.0" y="432.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_operator_receive_zayavku_to_proverit" bpmnElement="flow_operator_receive_zayavku_to_proverit">
+        <di:waypoint x="1850.0" y="432.5"/>
+        <di:waypoint x="1900.0" y="432.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_operator_proverit_to_gateway" bpmnElement="flow_operator_proverit_to_gateway">
+        <di:waypoint x="2040.0" y="432.5"/>
+        <di:waypoint x="2134.0" y="432.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_operator_gateway_to_send_na_ispravlenie" bpmnElement="flow_operator_gateway_to_send_na_ispravlenie">
+        <di:waypoint x="2186.0" y="432.5"/>
+        <di:waypoint x="2204.0" y="432.5"/>
+        <di:waypoint x="2204.0" y="329"/>
+        <di:waypoint x="2452.0" y="329"/>
+        <di:waypoint x="2452.0" y="386.6666666666667"/>
+        <di:waypoint x="2470.0" y="386.6666666666667"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2263.0" y="300" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_send_na_ispravlenie_to_receive_zayavku" bpmnElement="flow_send_na_ispravlenie_to_receive_zayavku">
+        <di:waypoint x="2540.0" y="346.6666666666667"/>
+        <di:waypoint x="2540.0" y="339"/>
+        <di:waypoint x="1780.0" y="339"/>
+        <di:waypoint x="1780.0" y="392.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_operator_gateway_to_parallel_start" bpmnElement="flow_operator_gateway_to_parallel_start">
+        <di:waypoint x="2186.0" y="432.5"/>
+        <di:waypoint x="2204.0" y="432.5"/>
+        <di:waypoint x="2204.0" y="319"/>
+        <di:waypoint x="2496.0" y="319"/>
+        <di:waypoint x="2496.0" y="478.33333333333337"/>
+        <di:waypoint x="2514.0" y="478.33333333333337"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2285.0" y="300" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_operator_parallel_start_to_legal" bpmnElement="flow_operator_parallel_start_to_legal">
+        <di:waypoint x="2566.0" y="478.33333333333337"/>
+        <di:waypoint x="2601.0" y="478.33333333333337"/>
+        <di:waypoint x="2601.0" y="647.5"/>
+        <di:waypoint x="2660.0" y="647.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_operator_parallel_start_to_security" bpmnElement="flow_operator_parallel_start_to_security">
+        <di:waypoint x="2566.0" y="478.33333333333337"/>
+        <di:waypoint x="2601.0" y="478.33333333333337"/>
+        <di:waypoint x="2601.0" y="802.5"/>
+        <di:waypoint x="2660.0" y="802.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_legal_to_parallel_end" bpmnElement="flow_legal_to_parallel_end">
+        <di:waypoint x="2800.0" y="647.5"/>
+        <di:waypoint x="2835.0" y="647.5"/>
+        <di:waypoint x="2835.0" y="432.5"/>
+        <di:waypoint x="2894.0" y="432.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_security_to_parallel_end" bpmnElement="flow_security_to_parallel_end">
+        <di:waypoint x="2800.0" y="802.5"/>
+        <di:waypoint x="2835.0" y="802.5"/>
+        <di:waypoint x="2835.0" y="432.5"/>
+        <di:waypoint x="2894.0" y="432.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_operator_parallel_end_to_opredelit_stoimost" bpmnElement="flow_operator_parallel_end_to_opredelit_stoimost">
+        <di:waypoint x="2946.0" y="432.5"/>
+        <di:waypoint x="2981.0" y="432.5"/>
+        <di:waypoint x="2981.0" y="1017.5"/>
+        <di:waypoint x="3040.0" y="1017.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_manager_opredelit_stoimost_to_gateway_500k" bpmnElement="flow_manager_opredelit_stoimost_to_gateway_500k">
+        <di:waypoint x="3180.0" y="1017.5"/>
+        <di:waypoint x="3274.0" y="1017.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_manager_stoimost_ne_bolshe_500k_to_otpravit" bpmnElement="flow_manager_stoimost_ne_bolshe_500k_to_otpravit">
+        <di:waypoint x="3326.0" y="1017.5"/>
+        <di:waypoint x="3344.0" y="1017.5"/>
+        <di:waypoint x="3344.0" y="904"/>
+        <di:waypoint x="4162.0" y="904"/>
+        <di:waypoint x="4162.0" y="1063.3333333333333"/>
+        <di:waypoint x="4180.0" y="1063.3333333333333"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3688.0" y="885" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_manager_stoimost_bolshe_500k_to_soglasovat" bpmnElement="flow_manager_stoimost_bolshe_500k_to_soglasovat">
+        <di:waypoint x="3326.0" y="1017.5"/>
+        <di:waypoint x="3361.0" y="1017.5"/>
+        <di:waypoint x="3361.0" y="1232.5"/>
+        <di:waypoint x="3610.0" y="1232.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3420.5" y="1202.5" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_leader_soglasovat_to_gateway" bpmnElement="flow_leader_soglasovat_to_gateway">
+        <di:waypoint x="3750.0" y="1232.5"/>
+        <di:waypoint x="3844.0" y="1232.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_leader_gateway_otklonil_to_dorabotat" bpmnElement="flow_leader_gateway_otklonil_to_dorabotat">
+        <di:waypoint x="3896.0" y="1232.5"/>
+        <di:waypoint x="3931.0" y="1232.5"/>
+        <di:waypoint x="3931.0" y="971.6666666666666"/>
+        <di:waypoint x="4180.0" y="971.6666666666666"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3990.5" y="1160" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_manager_dorabotat_to_soglasovat" bpmnElement="flow_manager_dorabotat_to_soglasovat">
+        <di:waypoint x="4250.0" y="931.6666666666666"/>
+        <di:waypoint x="4250.0" y="914"/>
+        <di:waypoint x="3680.0" y="914"/>
+        <di:waypoint x="3680.0" y="1192.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_leader_gateway_soglasoval_to_otpravit" bpmnElement="flow_leader_gateway_soglasoval_to_otpravit">
+        <di:waypoint x="3896.0" y="1232.5"/>
+        <di:waypoint x="3931.0" y="1232.5"/>
+        <di:waypoint x="3931.0" y="1063.3333333333333"/>
+        <di:waypoint x="4180.0" y="1063.3333333333333"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3990.5" y="1160" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_manager_otpravit_to_end_org" bpmnElement="flow_manager_otpravit_to_end_org">
+        <di:waypoint x="4320.0" y="1063.3333333333333"/>
+        <di:waypoint x="4355.0" y="1063.3333333333333"/>
+        <di:waypoint x="4355.0" y="1017.5"/>
+        <di:waypoint x="4421.0" y="1017.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_msg_flow_zayavka_client_to_operator" bpmnElement="msg_flow_zayavka_client_to_operator">
+        <di:waypoint x="640.0" y="187.5"/>
+        <di:waypoint x="640.0" y="250"/>
+        <di:waypoint x="1878.0" y="250"/>
+        <di:waypoint x="1878.0" y="374.5"/>
+        <di:waypoint x="1780.0" y="374.5"/>
+        <di:waypoint x="1780.0" y="392.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="648.0" y="232" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_msg_flow_na_ispravlenie_operator_to_client" bpmnElement="msg_flow_na_ispravlenie_operator_to_client">
+        <di:waypoint x="2540.0" y="346.6666666666667"/>
+        <di:waypoint x="2540.0" y="270"/>
+        <di:waypoint x="2652.0" y="270"/>
+        <di:waypoint x="2652.0" y="205.5"/>
+        <di:waypoint x="1400.0" y="205.5"/>
+        <di:waypoint x="1400.0" y="187.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2548.0" y="252" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_msg_flow_povtorno_dokumenty_client_to_operator" bpmnElement="msg_flow_povtorno_dokumenty_client_to_operator">
+        <di:waypoint x="1780.0" y="187.5"/>
+        <di:waypoint x="1780.0" y="392.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1788.0" y="232" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_msg_flow_dogovor_manager_to_client" bpmnElement="msg_flow_dogovor_manager_to_client">
+        <di:waypoint x="4250.0" y="1023.3333333333333"/>
+        <di:waypoint x="4250.0" y="187.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="4258.0" y="252" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

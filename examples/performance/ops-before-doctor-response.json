@@ -1,0 +1,106 @@
+{
+  "technical": {
+    "BPMN XML / XSD": true,
+    "Граф / связи / события / шлюзы": true,
+    "Участники": true
+  },
+  "issues": [
+    {
+      "code": "VALIDATION_ISSUE",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "info",
+      "source": "MODEL_QUALITY",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "MODEL_ERROR",
+      "category": "model_quality",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Сроки и обработка исключений не проверяются без соответствующих исходных данных.",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "BUSINESS_CONDITION_UNCONFIRMED",
+      "node_id": "gateway_complete",
+      "process_id": "process_application_review",
+      "flow_id": "flow_check_gateway",
+      "gateway_id": "gateway_complete",
+      "source_pool": "pool_organization",
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_logic",
+      "suggested_fix": "Указать обязательные документы и правила обработки спорных или частично представленных комплектов.",
+      "message": "Критерии, по которым определяется «полный комплект документов», не описаны; условие требует подтверждения.",
+      "node_ids": [
+        "task_check",
+        "gateway_complete"
+      ],
+      "origin": "llm"
+    },
+    {
+      "code": "NO_EXCEPTION_PATH",
+      "node_id": "task_check",
+      "process_id": "process_application_review",
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": "pool_organization",
+      "target_pool": null,
+      "severity": "warning",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "BUSINESS_WARNING",
+      "category": "business_logic",
+      "suggested_fix": "Добавить обработку исключений и результат для случаев, когда проверка не может быть завершена.",
+      "message": "Не описано, что происходит при невозможности зарегистрировать заявку или проверить документы, например при недоступных данных или нечитаемых документах.",
+      "node_ids": [
+        "task_register",
+        "task_check"
+      ],
+      "origin": "llm"
+    },
+    {
+      "code": "REJECTION_CONSEQUENCES_UNCLEAR",
+      "node_id": "task_reject",
+      "process_id": "process_application_review",
+      "flow_id": "flow_incomplete_reject",
+      "gateway_id": "gateway_complete",
+      "source_pool": "pool_organization",
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_logic",
+      "suggested_fix": "Зафиксировать итог отклонения и дальнейший доступный сценарий для неполного комплекта.",
+      "message": "Указано отклонение заявки, но неясны его последствия для заявителя: возможны ли исправление документов, повторная подача или завершение без дальнейших действий.",
+      "node_ids": [
+        "task_reject",
+        "node_end_reject"
+      ],
+      "origin": "llm"
+    }
+  ],
+  "llm_audit": true,
+  "notice": "",
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "detail": "Модель вернула некорректный JSON после 1 попыток исправления.",
+  "human_message": "Модель вернула некорректный JSON после 1 попыток исправления.",
+  "diagnostics": [
+    {
+      "code": "LLM_INVALID_RESPONSE",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "MODEL_ERROR",
+      "category": "llm_response",
+      "suggested_fix": "Проверьте доступность модели и повторите запрос.",
+      "message": "Модель вернула некорректный JSON после 1 попыток исправления.",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "861602ea2e4543b9a5b643967271063a"
+}

@@ -1,0 +1,198 @@
+[
+  {
+    "path": "examples/bpmn-conformance/basic.json",
+    "nodes": 3,
+    "pools": 0,
+    "message_flows": 0,
+    "node_types": [
+      "end_event",
+      "start_event",
+      "task"
+    ],
+    "normalized_sha256": "0bbb339dfb1ec6e031fb2899877336631a140a3ff5e003d16ee66875d0370c87",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/bpmn-conformance/collaboration-loops.json",
+    "nodes": 29,
+    "pools": 2,
+    "message_flows": 4,
+    "node_types": [
+      "end_event",
+      "event_based_gateway",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "receive_task",
+      "send_task",
+      "start_event",
+      "user_task"
+    ],
+    "normalized_sha256": "13ab7acf657183a22f049770af62369e41e34c0cfef64ce13633e9f6e47f9012",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/bpmn-conformance/event-wait.json",
+    "nodes": 29,
+    "pools": 2,
+    "message_flows": 4,
+    "node_types": [
+      "end_event",
+      "event_based_gateway",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "receive_task",
+      "send_task",
+      "start_event",
+      "user_task"
+    ],
+    "normalized_sha256": "762cb4f193d6980fa1d4032767c51935465fd3e4c37ebb1880a673f9501c74bc",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/bpmn-conformance/implicit.json",
+    "nodes": 2,
+    "pools": 0,
+    "message_flows": 0,
+    "node_types": [
+      "task",
+      "user_task"
+    ],
+    "normalized_sha256": "076a808853eec936a89035d7c909db9b51e9c610c60ae129d749c5197cfc5a81",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/bpmn-conformance/none-intermediate.json",
+    "nodes": 3,
+    "pools": 0,
+    "message_flows": 0,
+    "node_types": [
+      "end_event",
+      "intermediate_event",
+      "start_event"
+    ],
+    "normalized_sha256": "2b38ebb52fceb9f7ba10b39dcf3eafa20ea2076f8b6851927f738a8dac580ea0",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/event-semantics/catch-events.json",
+    "nodes": 29,
+    "pools": 2,
+    "message_flows": 4,
+    "node_types": [
+      "end_event",
+      "event_based_gateway",
+      "exclusive_gateway",
+      "intermediate_event",
+      "parallel_gateway",
+      "receive_task",
+      "send_task",
+      "start_event",
+      "user_task"
+    ],
+    "normalized_sha256": "35eb35410c341d28a295e7e1c73e3278d0eb28c540726708e1dc4b812c92e3e5",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/event-semantics/reference.json",
+    "nodes": 29,
+    "pools": 2,
+    "message_flows": 4,
+    "node_types": [
+      "end_event",
+      "event_based_gateway",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "receive_task",
+      "send_task",
+      "start_event",
+      "user_task"
+    ],
+    "normalized_sha256": "762cb4f193d6980fa1d4032767c51935465fd3e4c37ebb1880a673f9501c74bc",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/controlled-loops/reference.json",
+    "nodes": 29,
+    "pools": 2,
+    "message_flows": 4,
+    "node_types": [
+      "end_event",
+      "event_based_gateway",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "receive_task",
+      "send_task",
+      "start_event",
+      "user_task"
+    ],
+    "normalized_sha256": "762cb4f193d6980fa1d4032767c51935465fd3e4c37ebb1880a673f9501c74bc",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/clarify-modify/v1.json",
+    "nodes": 12,
+    "pools": 0,
+    "message_flows": 0,
+    "node_types": [
+      "end_event",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "start_event",
+      "task"
+    ],
+    "normalized_sha256": "34b1b5f60fb2c8ea4999efbc450b2c130c1e39e7dac5ec7a17755ee360fc6c5d",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/clarify-modify/v2.json",
+    "nodes": 14,
+    "pools": 0,
+    "message_flows": 0,
+    "node_types": [
+      "end_event",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "start_event",
+      "task",
+      "user_task"
+    ],
+    "normalized_sha256": "a6f5a9969a2696f152c30a06140e7b05d97cdf91719cd21760a33a7f2aeb167c",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/pipeline-resilience/exact-reference.json",
+    "nodes": 41,
+    "pools": 2,
+    "message_flows": 8,
+    "node_types": [
+      "end_event",
+      "event_based_gateway",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "receive_task",
+      "send_task",
+      "start_event",
+      "user_task"
+    ],
+    "normalized_sha256": "300ac2078d2f3062fddc75a9a28f8e83e7f34133b6f3401dfa2f8f3c9c120b28",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  },
+  {
+    "path": "examples/pipeline-resilience/exact-complex-polished-response.json",
+    "nodes": 40,
+    "pools": 2,
+    "message_flows": 8,
+    "node_types": [
+      "end_event",
+      "event_based_gateway",
+      "exclusive_gateway",
+      "parallel_gateway",
+      "receive_task",
+      "send_task",
+      "start_event",
+      "user_task"
+    ],
+    "normalized_sha256": "b6db807d7bfddbc8c229a2c9e206e93cb892f5b475acf47cf6dcee914baf18c9",
+    "baseline_commit": "4251110174a7d7b04cb8c37a3ec7fd3b6716eb7c"
+  }
+]

@@ -1,0 +1,389 @@
+{
+  "process": {
+    "id": "process_application_contract",
+    "name": "Обработка заявки и выдача договора",
+    "description": "Оператор принимает заявку. Юрист и инженер проверяют заявку, но порядок их проверок не определён. После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано. После успешных проверок оператор выдаёт договор и завершает работу.",
+    "participants": [
+      {
+        "id": "participant_operator",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_organization"
+      },
+      {
+        "id": "participant_legal",
+        "name": "Юридический отдел",
+        "type": "department",
+        "kind": "internal",
+        "pool_id": "pool_organization"
+      },
+      {
+        "id": "participant_engineer",
+        "name": "Инженер",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_organization"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "start_process",
+        "type": "start_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Начало процесса",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_accept",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Принять заявку",
+        "participant_id": "participant_operator",
+        "source_text": "Оператор принимает заявку.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gateway_parallel_split_initial",
+        "type": "parallel_gateway",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Начать параллельные проверки",
+        "participant_id": "participant_operator",
+        "source_text": "Юрист и инженер проверяют заявку, но порядок их проверок не определён.",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_legal_check",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить заявку",
+        "participant_id": "participant_legal",
+        "source_text": "Юрист и инженер проверяют заявку, но порядок их проверок не определён.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_engineer_check",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить заявку",
+        "participant_id": "participant_engineer",
+        "source_text": "Юрист и инженер проверяют заявку, но порядок их проверок не определён.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gateway_parallel_join_initial",
+        "type": "parallel_gateway",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Завершить параллельные проверки",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "gateway_check_result",
+        "type": "exclusive_gateway",
+        "event_definition": "none",
+        "decision_basis": "data",
+        "name": "Результат проверок",
+        "participant_id": "participant_operator",
+        "source_text": "После замечаний заявка дорабатывается. После успешных проверок оператор выдаёт договор и завершает работу.",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_rework",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Доработать заявку",
+        "participant_id": "participant_operator",
+        "source_text": "Оператор дорабатывает заявку после замечаний юриста или инженера.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_operator_recheck",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Повторно проверить заявку",
+        "participant_id": "participant_operator",
+        "source_text": "После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gateway_parallel_split_repeat",
+        "type": "parallel_gateway",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Начать повторные параллельные проверки",
+        "participant_id": "participant_operator",
+        "source_text": "После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_legal_check_repeat",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить заявку повторно",
+        "participant_id": "participant_legal",
+        "source_text": "После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_engineer_check_repeat",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить заявку повторно",
+        "participant_id": "participant_engineer",
+        "source_text": "После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gateway_parallel_join_repeat",
+        "type": "parallel_gateway",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Завершить повторные параллельные проверки",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "high",
+        "inferred": true
+      },
+      {
+        "id": "task_issue_contract",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Выдать договор",
+        "participant_id": "participant_operator",
+        "source_text": "После успешных проверок оператор выдаёт договор и завершает работу.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "end_process",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Завершение работы",
+        "participant_id": "participant_operator",
+        "source_text": "После успешных проверок оператор выдаёт договор и завершает работу.",
+        "confidence": "high",
+        "inferred": false
+      }
+    ],
+    "flows": [
+      {
+        "id": "flow_start_accept",
+        "source": "start_process",
+        "target": "task_accept",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_accept_split",
+        "source": "task_accept",
+        "target": "gateway_parallel_split_initial",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_split_initial_legal",
+        "source": "gateway_parallel_split_initial",
+        "target": "task_legal_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_split_initial_engineer",
+        "source": "gateway_parallel_split_initial",
+        "target": "task_engineer_check",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_legal_join",
+        "source": "task_legal_check",
+        "target": "gateway_parallel_join_initial",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_engineer_join",
+        "source": "task_engineer_check",
+        "target": "gateway_parallel_join_initial",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_join_result",
+        "source": "gateway_parallel_join_initial",
+        "target": "gateway_check_result",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_result_remarks",
+        "source": "gateway_check_result",
+        "target": "task_rework",
+        "name": "Есть замечания",
+        "condition": "Есть замечания",
+        "is_default": false
+      },
+      {
+        "id": "flow_result_success",
+        "source": "gateway_check_result",
+        "target": "task_issue_contract",
+        "name": "Проверки пройдены успешно",
+        "condition": "Проверки пройдены успешно",
+        "is_default": false
+      },
+      {
+        "id": "flow_rework_recheck",
+        "source": "task_rework",
+        "target": "task_operator_recheck",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_recheck_split",
+        "source": "task_operator_recheck",
+        "target": "gateway_parallel_split_repeat",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_split_repeat_legal",
+        "source": "gateway_parallel_split_repeat",
+        "target": "task_legal_check_repeat",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_split_repeat_engineer",
+        "source": "gateway_parallel_split_repeat",
+        "target": "task_engineer_check_repeat",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_repeat_legal_join",
+        "source": "task_legal_check_repeat",
+        "target": "gateway_parallel_join_repeat",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_repeat_engineer_join",
+        "source": "task_engineer_check_repeat",
+        "target": "gateway_parallel_join_repeat",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_repeat_join_result",
+        "source": "gateway_parallel_join_repeat",
+        "target": "gateway_check_result",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      },
+      {
+        "id": "flow_issue_end",
+        "source": "task_issue_contract",
+        "target": "end_process",
+        "name": "",
+        "condition": null,
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "pool_organization",
+        "name": "Организация",
+        "kind": "internal"
+      }
+    ],
+    "message_flows": [],
+    "ambiguities": [],
+    "assumptions": [
+      {
+        "id": "asm_parallel_checks",
+        "text": "Юридический отдел и инженер выполняют проверки параллельно.",
+        "source": "user_accepted",
+        "confidence": 1.0
+      },
+      {
+        "id": "asm_repeat_check_operator",
+        "text": "После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.",
+        "source": "user_accepted",
+        "confidence": 1.0
+      },
+      {
+        "id": "asm_rework_operator",
+        "text": "Оператор дорабатывает заявку после замечаний юриста или инженера.",
+        "source": "user_accepted",
+        "confidence": 1.0
+      }
+    ]
+  },
+  "ambiguities": [],
+  "xml": "<bpmn:definitions xmlns:bpmn=\"http://www.omg.org/spec/BPMN/20100524/MODEL\" xmlns:bpmndi=\"http://www.omg.org/spec/BPMN/20100524/DI\" xmlns:dc=\"http://www.omg.org/spec/DD/20100524/DC\" xmlns:di=\"http://www.omg.org/spec/DD/20100524/DI\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" id=\"Definitions\" targetNamespace=\"https://pulse.local/bpmn\" exporter=\"PULSE\" exporterVersion=\"0.2\">\n  <bpmn:process id=\"Process_pool_organization\" name=\"Организация\" isExecutable=\"false\">\n    <bpmn:laneSet id=\"LaneSet\">\n      <bpmn:lane id=\"participant_operator\" name=\"Оператор\">\n        <bpmn:flowNodeRef>start_process</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_accept</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_parallel_split_initial</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_parallel_join_initial</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_check_result</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_rework</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_operator_recheck</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_parallel_split_repeat</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>gateway_parallel_join_repeat</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_issue_contract</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>end_process</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"participant_legal\" name=\"Юридический отдел\">\n        <bpmn:flowNodeRef>task_legal_check</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_legal_check_repeat</bpmn:flowNodeRef>\n      </bpmn:lane>\n      <bpmn:lane id=\"participant_engineer\" name=\"Инженер\">\n        <bpmn:flowNodeRef>task_engineer_check</bpmn:flowNodeRef>\n        <bpmn:flowNodeRef>task_engineer_check_repeat</bpmn:flowNodeRef>\n      </bpmn:lane>\n    </bpmn:laneSet>\n    <bpmn:startEvent id=\"start_process\" name=\"Начало процесса\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:outgoing>flow_start_accept</bpmn:outgoing>\n    </bpmn:startEvent>\n    <bpmn:userTask id=\"task_accept\" name=\"Принять заявку\">\n      <bpmn:documentation>Оператор принимает заявку.</bpmn:documentation>\n      <bpmn:incoming>flow_start_accept</bpmn:incoming>\n      <bpmn:outgoing>flow_accept_split</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"gateway_parallel_split_initial\" name=\"Начать параллельные проверки\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation>Юрист и инженер проверяют заявку, но порядок их проверок не определён.</bpmn:documentation>\n      <bpmn:incoming>flow_accept_split</bpmn:incoming>\n      <bpmn:outgoing>flow_split_initial_legal</bpmn:outgoing>\n      <bpmn:outgoing>flow_split_initial_engineer</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"task_legal_check\" name=\"Проверить заявку\">\n      <bpmn:documentation>Юрист и инженер проверяют заявку, но порядок их проверок не определён.</bpmn:documentation>\n      <bpmn:incoming>flow_split_initial_legal</bpmn:incoming>\n      <bpmn:outgoing>flow_legal_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_engineer_check\" name=\"Проверить заявку\">\n      <bpmn:documentation>Юрист и инженер проверяют заявку, но порядок их проверок не определён.</bpmn:documentation>\n      <bpmn:incoming>flow_split_initial_engineer</bpmn:incoming>\n      <bpmn:outgoing>flow_engineer_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"gateway_parallel_join_initial\" name=\"Завершить параллельные проверки\" gatewayDirection=\"Converging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>flow_legal_join</bpmn:incoming>\n      <bpmn:incoming>flow_engineer_join</bpmn:incoming>\n      <bpmn:outgoing>flow_join_result</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:exclusiveGateway id=\"gateway_check_result\" name=\"Результат проверок\" gatewayDirection=\"Mixed\">\n      <bpmn:documentation>PULSE_NODE:{\"source_text\": \"После замечаний заявка дорабатывается. После успешных проверок оператор выдаёт договор и завершает работу.\", \"decision_basis\": \"data\"}</bpmn:documentation>\n      <bpmn:incoming>flow_join_result</bpmn:incoming>\n      <bpmn:incoming>flow_repeat_join_result</bpmn:incoming>\n      <bpmn:outgoing>flow_result_remarks</bpmn:outgoing>\n      <bpmn:outgoing>flow_result_success</bpmn:outgoing>\n    </bpmn:exclusiveGateway>\n    <bpmn:userTask id=\"task_rework\" name=\"Доработать заявку\">\n      <bpmn:documentation>Оператор дорабатывает заявку после замечаний юриста или инженера.</bpmn:documentation>\n      <bpmn:incoming>flow_result_remarks</bpmn:incoming>\n      <bpmn:outgoing>flow_rework_recheck</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_operator_recheck\" name=\"Повторно проверить заявку\">\n      <bpmn:documentation>После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.</bpmn:documentation>\n      <bpmn:incoming>flow_rework_recheck</bpmn:incoming>\n      <bpmn:outgoing>flow_recheck_split</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"gateway_parallel_split_repeat\" name=\"Начать повторные параллельные проверки\" gatewayDirection=\"Diverging\">\n      <bpmn:documentation>После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.</bpmn:documentation>\n      <bpmn:incoming>flow_recheck_split</bpmn:incoming>\n      <bpmn:outgoing>flow_split_repeat_legal</bpmn:outgoing>\n      <bpmn:outgoing>flow_split_repeat_engineer</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"task_legal_check_repeat\" name=\"Проверить заявку повторно\">\n      <bpmn:documentation>После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.</bpmn:documentation>\n      <bpmn:incoming>flow_split_repeat_legal</bpmn:incoming>\n      <bpmn:outgoing>flow_repeat_legal_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:userTask id=\"task_engineer_check_repeat\" name=\"Проверить заявку повторно\">\n      <bpmn:documentation>После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.</bpmn:documentation>\n      <bpmn:incoming>flow_split_repeat_engineer</bpmn:incoming>\n      <bpmn:outgoing>flow_repeat_engineer_join</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:parallelGateway id=\"gateway_parallel_join_repeat\" name=\"Завершить повторные параллельные проверки\" gatewayDirection=\"Converging\">\n      <bpmn:documentation></bpmn:documentation>\n      <bpmn:incoming>flow_repeat_legal_join</bpmn:incoming>\n      <bpmn:incoming>flow_repeat_engineer_join</bpmn:incoming>\n      <bpmn:outgoing>flow_repeat_join_result</bpmn:outgoing>\n    </bpmn:parallelGateway>\n    <bpmn:userTask id=\"task_issue_contract\" name=\"Выдать договор\">\n      <bpmn:documentation>После успешных проверок оператор выдаёт договор и завершает работу.</bpmn:documentation>\n      <bpmn:incoming>flow_result_success</bpmn:incoming>\n      <bpmn:outgoing>flow_issue_end</bpmn:outgoing>\n    </bpmn:userTask>\n    <bpmn:endEvent id=\"end_process\" name=\"Завершение работы\">\n      <bpmn:documentation>После успешных проверок оператор выдаёт договор и завершает работу.</bpmn:documentation>\n      <bpmn:incoming>flow_issue_end</bpmn:incoming>\n    </bpmn:endEvent>\n    <bpmn:sequenceFlow id=\"flow_start_accept\" sourceRef=\"start_process\" targetRef=\"task_accept\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_accept_split\" sourceRef=\"task_accept\" targetRef=\"gateway_parallel_split_initial\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_split_initial_legal\" sourceRef=\"gateway_parallel_split_initial\" targetRef=\"task_legal_check\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_split_initial_engineer\" sourceRef=\"gateway_parallel_split_initial\" targetRef=\"task_engineer_check\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_legal_join\" sourceRef=\"task_legal_check\" targetRef=\"gateway_parallel_join_initial\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_engineer_join\" sourceRef=\"task_engineer_check\" targetRef=\"gateway_parallel_join_initial\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_join_result\" sourceRef=\"gateway_parallel_join_initial\" targetRef=\"gateway_check_result\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_result_remarks\" sourceRef=\"gateway_check_result\" targetRef=\"task_rework\" name=\"Есть замечания\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tExpression\">\n        <bpmn:documentation>Есть замечания</bpmn:documentation>\n      </bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"flow_result_success\" sourceRef=\"gateway_check_result\" targetRef=\"task_issue_contract\" name=\"Проверки пройдены успешно\">\n      <bpmn:conditionExpression xsi:type=\"bpmn:tExpression\">\n        <bpmn:documentation>Проверки пройдены успешно</bpmn:documentation>\n      </bpmn:conditionExpression>\n    </bpmn:sequenceFlow>\n    <bpmn:sequenceFlow id=\"flow_rework_recheck\" sourceRef=\"task_rework\" targetRef=\"task_operator_recheck\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_recheck_split\" sourceRef=\"task_operator_recheck\" targetRef=\"gateway_parallel_split_repeat\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_split_repeat_legal\" sourceRef=\"gateway_parallel_split_repeat\" targetRef=\"task_legal_check_repeat\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_split_repeat_engineer\" sourceRef=\"gateway_parallel_split_repeat\" targetRef=\"task_engineer_check_repeat\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_repeat_legal_join\" sourceRef=\"task_legal_check_repeat\" targetRef=\"gateway_parallel_join_repeat\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_repeat_engineer_join\" sourceRef=\"task_engineer_check_repeat\" targetRef=\"gateway_parallel_join_repeat\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_repeat_join_result\" sourceRef=\"gateway_parallel_join_repeat\" targetRef=\"gateway_check_result\" name=\"\"/>\n    <bpmn:sequenceFlow id=\"flow_issue_end\" sourceRef=\"task_issue_contract\" targetRef=\"end_process\" name=\"\"/>\n  </bpmn:process>\n  <bpmn:collaboration id=\"process_application_contract\" name=\"Обработка заявки и выдача договора\">\n    <bpmn:documentation>Оператор принимает заявку. Юрист и инженер проверяют заявку, но порядок их проверок не определён. После замечаний заявка дорабатывается, но кто выполняет повторную проверку не указано. После успешных проверок оператор выдаёт договор и завершает работу.</bpmn:documentation>\n    <bpmn:documentation>PULSE_ASSUMPTIONS:[{\"id\": \"asm_parallel_checks\", \"text\": \"Юридический отдел и инженер выполняют проверки параллельно.\", \"source\": \"user_accepted\", \"confidence\": 1.0}, {\"id\": \"asm_repeat_check_operator\", \"text\": \"После доработки повторную проверку выполняет оператор; затем заявка снова проходит проверки юриста и инженера.\", \"source\": \"user_accepted\", \"confidence\": 1.0}, {\"id\": \"asm_rework_operator\", \"text\": \"Оператор дорабатывает заявку после замечаний юриста или инженера.\", \"source\": \"user_accepted\", \"confidence\": 1.0}]</bpmn:documentation>\n    <bpmn:participant id=\"pool_organization\" name=\"Организация\" processRef=\"Process_pool_organization\">\n      <bpmn:documentation>PULSE:{\"kind\": \"internal\", \"roles\": [{\"id\": \"participant_operator\", \"name\": \"Оператор\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_organization\"}, {\"id\": \"participant_legal\", \"name\": \"Юридический отдел\", \"type\": \"department\", \"kind\": \"internal\", \"pool_id\": \"pool_organization\"}, {\"id\": \"participant_engineer\", \"name\": \"Инженер\", \"type\": \"role\", \"kind\": \"internal\", \"pool_id\": \"pool_organization\"}]}</bpmn:documentation>\n    </bpmn:participant>\n  </bpmn:collaboration>\n  <bpmndi:BPMNDiagram id=\"Diagram\">\n    <bpmndi:BPMNPlane id=\"Plane\" bpmnElement=\"process_application_contract\">\n      <bpmndi:BPMNShape id=\"Shape_pool_organization\" bpmnElement=\"pool_organization\" isHorizontal=\"true\">\n        <dc:Bounds x=\"60\" y=\"70\" width=\"2230\" height=\"780\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_operator\" bpmnElement=\"participant_operator\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"70\" width=\"2200\" height=\"340\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_legal\" bpmnElement=\"participant_legal\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"410\" width=\"2200\" height=\"220\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_participant_engineer\" bpmnElement=\"participant_engineer\" isHorizontal=\"true\">\n        <dc:Bounds x=\"90\" y=\"630\" width=\"2200\" height=\"220\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_start_process\" bpmnElement=\"start_process\">\n        <dc:Bounds x=\"241.0\" y=\"253.5\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_accept\" bpmnElement=\"task_accept\">\n        <dc:Bounds x=\"380.0\" y=\"232.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_parallel_split_initial\" bpmnElement=\"gateway_parallel_split_initial\">\n        <dc:Bounds x=\"614.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_legal_check\" bpmnElement=\"task_legal_check\">\n        <dc:Bounds x=\"760.0\" y=\"512.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_engineer_check\" bpmnElement=\"task_engineer_check\">\n        <dc:Bounds x=\"760.0\" y=\"732.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_parallel_join_initial\" bpmnElement=\"gateway_parallel_join_initial\">\n        <dc:Bounds x=\"994.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_check_result\" bpmnElement=\"gateway_check_result\">\n        <dc:Bounds x=\"1184.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_rework\" bpmnElement=\"task_rework\">\n        <dc:Bounds x=\"1330.0\" y=\"186.66666666666669\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_operator_recheck\" bpmnElement=\"task_operator_recheck\">\n        <dc:Bounds x=\"1520.0\" y=\"186.66666666666669\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_parallel_split_repeat\" bpmnElement=\"gateway_parallel_split_repeat\">\n        <dc:Bounds x=\"1754.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_legal_check_repeat\" bpmnElement=\"task_legal_check_repeat\">\n        <dc:Bounds x=\"1900.0\" y=\"512.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_engineer_check_repeat\" bpmnElement=\"task_engineer_check_repeat\">\n        <dc:Bounds x=\"1900.0\" y=\"732.5\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_gateway_parallel_join_repeat\" bpmnElement=\"gateway_parallel_join_repeat\">\n        <dc:Bounds x=\"2134.0\" y=\"246.5\" width=\"52\" height=\"52\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_task_issue_contract\" bpmnElement=\"task_issue_contract\">\n        <dc:Bounds x=\"1330.0\" y=\"278.33333333333337\" width=\"140\" height=\"80\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNShape id=\"Shape_end_process\" bpmnElement=\"end_process\">\n        <dc:Bounds x=\"1571.0\" y=\"299.33333333333337\" width=\"38\" height=\"38\"/>\n      </bpmndi:BPMNShape>\n      <bpmndi:BPMNEdge id=\"Edge_flow_start_accept\" bpmnElement=\"flow_start_accept\">\n        <di:waypoint x=\"279.0\" y=\"272.5\"/>\n        <di:waypoint x=\"380.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_accept_split\" bpmnElement=\"flow_accept_split\">\n        <di:waypoint x=\"520.0\" y=\"272.5\"/>\n        <di:waypoint x=\"614.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_split_initial_legal\" bpmnElement=\"flow_split_initial_legal\">\n        <di:waypoint x=\"666.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"552.5\"/>\n        <di:waypoint x=\"760.0\" y=\"552.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_split_initial_engineer\" bpmnElement=\"flow_split_initial_engineer\">\n        <di:waypoint x=\"666.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"272.5\"/>\n        <di:waypoint x=\"701.0\" y=\"772.5\"/>\n        <di:waypoint x=\"760.0\" y=\"772.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_legal_join\" bpmnElement=\"flow_legal_join\">\n        <di:waypoint x=\"900.0\" y=\"552.5\"/>\n        <di:waypoint x=\"935.0\" y=\"552.5\"/>\n        <di:waypoint x=\"935.0\" y=\"272.5\"/>\n        <di:waypoint x=\"994.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_engineer_join\" bpmnElement=\"flow_engineer_join\">\n        <di:waypoint x=\"900.0\" y=\"772.5\"/>\n        <di:waypoint x=\"935.0\" y=\"772.5\"/>\n        <di:waypoint x=\"935.0\" y=\"272.5\"/>\n        <di:waypoint x=\"994.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_join_result\" bpmnElement=\"flow_join_result\">\n        <di:waypoint x=\"1046.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1184.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_result_remarks\" bpmnElement=\"flow_result_remarks\">\n        <di:waypoint x=\"1236.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"1330.0\" y=\"226.66666666666669\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"809.0\" y=\"232.5\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_result_success\" bpmnElement=\"flow_result_success\">\n        <di:waypoint x=\"1236.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1271.0\" y=\"318.33333333333337\"/>\n        <di:waypoint x=\"1330.0\" y=\"318.33333333333337\"/>\n        <bpmndi:BPMNLabel>\n          <dc:Bounds x=\"1244.0\" y=\"75\" width=\"130\" height=\"30\"/>\n        </bpmndi:BPMNLabel>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_rework_recheck\" bpmnElement=\"flow_rework_recheck\">\n        <di:waypoint x=\"1470.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"1520.0\" y=\"226.66666666666669\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_recheck_split\" bpmnElement=\"flow_recheck_split\">\n        <di:waypoint x=\"1660.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"1695.0\" y=\"226.66666666666669\"/>\n        <di:waypoint x=\"1695.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1754.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_split_repeat_legal\" bpmnElement=\"flow_split_repeat_legal\">\n        <di:waypoint x=\"1806.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1841.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1841.0\" y=\"552.5\"/>\n        <di:waypoint x=\"1900.0\" y=\"552.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_split_repeat_engineer\" bpmnElement=\"flow_split_repeat_engineer\">\n        <di:waypoint x=\"1806.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1841.0\" y=\"272.5\"/>\n        <di:waypoint x=\"1841.0\" y=\"772.5\"/>\n        <di:waypoint x=\"1900.0\" y=\"772.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_repeat_legal_join\" bpmnElement=\"flow_repeat_legal_join\">\n        <di:waypoint x=\"2040.0\" y=\"552.5\"/>\n        <di:waypoint x=\"2075.0\" y=\"552.5\"/>\n        <di:waypoint x=\"2075.0\" y=\"272.5\"/>\n        <di:waypoint x=\"2134.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_repeat_engineer_join\" bpmnElement=\"flow_repeat_engineer_join\">\n        <di:waypoint x=\"2040.0\" y=\"772.5\"/>\n        <di:waypoint x=\"2075.0\" y=\"772.5\"/>\n        <di:waypoint x=\"2075.0\" y=\"272.5\"/>\n        <di:waypoint x=\"2134.0\" y=\"272.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_repeat_join_result\" bpmnElement=\"flow_repeat_join_result\">\n        <di:waypoint x=\"2160.0\" y=\"246.5\"/>\n        <di:waypoint x=\"2160.0\" y=\"96\"/>\n        <di:waypoint x=\"1210.0\" y=\"96\"/>\n        <di:waypoint x=\"1210.0\" y=\"246.5\"/>\n      </bpmndi:BPMNEdge>\n      <bpmndi:BPMNEdge id=\"Edge_flow_issue_end\" bpmnElement=\"flow_issue_end\">\n        <di:waypoint x=\"1470.0\" y=\"318.33333333333337\"/>\n        <di:waypoint x=\"1571.0\" y=\"318.33333333333337\"/>\n      </bpmndi:BPMNEdge>\n    </bpmndi:BPMNPlane>\n  </bpmndi:BPMNDiagram>\n</bpmn:definitions>\n",
+  "attempts": 3,
+  "semantic_warnings": [],
+  "diagnostics": [],
+  "timings": {
+    "ambiguity_analysis_ms": 5768.28,
+    "llm_parse_ms": 61422.52,
+    "normalization_ms": 0.23,
+    "semantic_validation_ms": 0.96,
+    "bpmn_build_ms": 14.82,
+    "xsd_validation_ms": 0.49,
+    "post_validation_ms": 2.4,
+    "total_ms": 169576.66
+  },
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 4
+  },
+  "clarification_round": 2,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": [],
+  "changes": []
+}

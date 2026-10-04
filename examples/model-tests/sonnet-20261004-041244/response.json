@@ -1,0 +1,18 @@
+{
+  "detail": "Модель не ответила вовремя. Повторите запрос или проверьте настройки провайдера.",
+  "human_message": "Модель не ответила вовремя. Повторите запрос или проверьте настройки провайдера.",
+  "diagnostics": [
+    {
+      "code": "LLM_TIMEOUT",
+      "severity": "error",
+      "source": "MODEL_QUALITY",
+      "type": "INTEROPERABILITY_ERROR",
+      "category": "llm_transport",
+      "suggested_fix": "Проверьте доступность модели и повторите запрос.",
+      "message": "Модель не ответила вовремя. Повторите запрос или проверьте настройки провайдера.",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ],
+  "request_id": "98a0c500e9dd4559a9805e17b9c03bc3"
+}

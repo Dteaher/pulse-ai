@@ -1,0 +1,57 @@
+{
+  "scenario": "examples/qwen/complex.txt",
+  "provider": "multiai",
+  "model": "gpt-5.5",
+  "reasoning_effort": "low",
+  "test_mode": "recheck saved real candidate, repair and recheck through real API; not fresh extraction",
+  "fallback": false,
+  "cache": false,
+  "elapsed_ms": 110208.76,
+  "quality_passed": true,
+  "invariants": {
+    "two_pools": true,
+    "six_distinct_roles": true,
+    "legal_security_parallel": true,
+    "approval_xor": true,
+    "document_correction_loop": true,
+    "contract_correction_loop": true,
+    "eight_expected_message_directions": true,
+    "contract_form_send_revise_resend_register": true,
+    "client_review_sign_send_rework_documents": true,
+    "operator_docs_rejection_return": true,
+    "head_decision_separate": true,
+    "task_count_not_reduced": true,
+    "evidence_explicit_actions_or_message_basis": true,
+    "all_explicit_actions": true,
+    "message_business_relationships": true,
+    "parallel_join_before_decision": true
+  },
+  "missing_actions": [],
+  "pools": 2,
+  "roles": 6,
+  "messages": 8,
+  "attempts": 2,
+  "calls": [
+    {
+      "operation": "business_coverage",
+      "http_status": 200,
+      "duration_ms": 17854.26
+    },
+    {
+      "operation": "corrective",
+      "http_status": 200,
+      "duration_ms": 83301.72
+    },
+    {
+      "operation": "business_coverage",
+      "http_status": 200,
+      "duration_ms": 8942.11
+    }
+  ],
+  "browser": {
+    "imported": true,
+    "elements": 127,
+    "error_boxes": 0,
+    "page_errors": []
+  }
+}

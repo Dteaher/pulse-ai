@@ -1,0 +1,21 @@
+{
+  "provider_requested": "multiai",
+  "model_requested": "gpt-6.1-sol",
+  "http_statuses": [
+    200
+  ],
+  "fallback_enabled_for_check": false,
+  "configured_timeout_seconds": 180,
+  "reasoning_effort": "low",
+  "pydantic_valid": true,
+  "error_reason": "graph_validation",
+  "cause_type": null,
+  "bpmn_generated": false,
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "elapsed_seconds": 89.42
+}

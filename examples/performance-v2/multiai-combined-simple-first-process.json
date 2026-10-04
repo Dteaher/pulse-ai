@@ -1,0 +1,172 @@
+{
+  "id": "process_application_review",
+  "name": "Регистрация и проверка заявки",
+  "description": "Оператор регистрирует заявку и проверяет комплектность документов. Если комплект полный, оператор принимает заявку и завершает процесс. Если комплект неполный, оператор отклоняет заявку и завершает процесс.",
+  "participants": [
+    {
+      "id": "participant_operator",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "pool_organization"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "start_process",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начало процесса",
+      "participant_id": "participant_operator",
+      "source_text": "",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task_register",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Зарегистрировать заявку",
+      "participant_id": "participant_operator",
+      "source_text": "Оператор регистрирует заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task_check",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить комплектность документов",
+      "participant_id": "participant_operator",
+      "source_text": "проверяет комплектность документов",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "gateway_completeness",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Комплект документов полный?",
+      "participant_id": "participant_operator",
+      "source_text": "Если комплект полный... Если комплект неполный",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task_accept",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Принять заявку",
+      "participant_id": "participant_operator",
+      "source_text": "оператор принимает заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "task_reject",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отклонить заявку",
+      "participant_id": "participant_operator",
+      "source_text": "оператор отклоняет заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "end_accepted",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Заявка принята",
+      "participant_id": "participant_operator",
+      "source_text": "завершает процесс",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "end_rejected",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Заявка отклонена",
+      "participant_id": "participant_operator",
+      "source_text": "завершает процесс",
+      "confidence": "high",
+      "inferred": false
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow_start_register",
+      "source": "start_process",
+      "target": "task_register",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_register_check",
+      "source": "task_register",
+      "target": "task_check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_check_gateway",
+      "source": "task_check",
+      "target": "gateway_completeness",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_complete_accept",
+      "source": "gateway_completeness",
+      "target": "task_accept",
+      "name": "Комплект полный",
+      "condition": "Комплект полный",
+      "is_default": false
+    },
+    {
+      "id": "flow_incomplete_reject",
+      "source": "gateway_completeness",
+      "target": "task_reject",
+      "name": "Комплект неполный",
+      "condition": "Комплект неполный",
+      "is_default": false
+    },
+    {
+      "id": "flow_accept_end",
+      "source": "task_accept",
+      "target": "end_accepted",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_reject_end",
+      "source": "task_reject",
+      "target": "end_rejected",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "pool_organization",
+      "name": "Организация",
+      "kind": "internal"
+    }
+  ],
+  "message_flows": [],
+  "ambiguities": [],
+  "assumptions": []
+}

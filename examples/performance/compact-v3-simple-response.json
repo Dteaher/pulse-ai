@@ -1,0 +1,241 @@
+{
+  "process": {
+    "id": "process_application_registration",
+    "name": "Регистрация и проверка заявки",
+    "description": "Оператор регистрирует заявку и проверяет комплектность документов. Если комплект полный, оператор принимает заявку и завершает процесс. Если комплект неполный, оператор отклоняет заявку и завершает процесс.",
+    "participants": [
+      {
+        "id": "participant_operator",
+        "name": "Оператор",
+        "type": "role",
+        "kind": "internal",
+        "pool_id": "pool_operator"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "start_registration",
+        "type": "start_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Начать регистрацию заявки",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "task_register",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Зарегистрировать заявку",
+        "participant_id": "participant_operator",
+        "source_text": "Оператор регистрирует заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_check",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Проверить комплектность документов",
+        "participant_id": "participant_operator",
+        "source_text": "Оператор регистрирует заявку и проверяет комплектность документов",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "gateway_completeness",
+        "type": "exclusive_gateway",
+        "event_definition": "none",
+        "decision_basis": "data",
+        "name": "Комплектность документов",
+        "participant_id": "participant_operator",
+        "source_text": "Если комплект полный, оператор принимает заявку и завершает процесс. Если комплект неполный, оператор отклоняет заявку и завершает процесс.",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "task_accept",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Принять заявку",
+        "participant_id": "participant_operator",
+        "source_text": "оператор принимает заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "end_accepted",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Завершить процесс после принятия",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      },
+      {
+        "id": "task_reject",
+        "type": "user_task",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Отклонить заявку",
+        "participant_id": "participant_operator",
+        "source_text": "оператор отклоняет заявку",
+        "confidence": "high",
+        "inferred": false
+      },
+      {
+        "id": "end_rejected",
+        "type": "end_event",
+        "event_definition": "none",
+        "decision_basis": "unspecified",
+        "name": "Завершить процесс после отклонения",
+        "participant_id": "participant_operator",
+        "source_text": "",
+        "confidence": "confirmation_required",
+        "inferred": true
+      }
+    ],
+    "flows": [
+      {
+        "id": "flow_start_register",
+        "source": "start_registration",
+        "target": "task_register",
+        "name": "",
+        "condition": "",
+        "is_default": false
+      },
+      {
+        "id": "flow_register_check",
+        "source": "task_register",
+        "target": "task_check",
+        "name": "",
+        "condition": "",
+        "is_default": false
+      },
+      {
+        "id": "flow_check_decision",
+        "source": "task_check",
+        "target": "gateway_completeness",
+        "name": "",
+        "condition": "",
+        "is_default": false
+      },
+      {
+        "id": "flow_complete",
+        "source": "gateway_completeness",
+        "target": "task_accept",
+        "name": "Комплект полный",
+        "condition": "",
+        "is_default": false
+      },
+      {
+        "id": "flow_incomplete",
+        "source": "gateway_completeness",
+        "target": "task_reject",
+        "name": "Комплект неполный",
+        "condition": "",
+        "is_default": false
+      },
+      {
+        "id": "flow_accept_end",
+        "source": "task_accept",
+        "target": "end_accepted",
+        "name": "",
+        "condition": "",
+        "is_default": false
+      },
+      {
+        "id": "flow_reject_end",
+        "source": "task_reject",
+        "target": "end_rejected",
+        "name": "",
+        "condition": "",
+        "is_default": false
+      }
+    ],
+    "pools": [
+      {
+        "id": "pool_operator",
+        "name": "Организация",
+        "kind": "internal"
+      }
+    ],
+    "message_flows": [],
+    "ambiguities": [
+      {
+        "id": "amb_missing_condition_field",
+        "question": "Как передать условия ветвления? В предоставленной JSON Schema у WireFlow отсутствует поле condition (if), необходимое для исправления ошибок.",
+        "type": "other",
+        "related_node_ids": [
+          "gateway_completeness"
+        ],
+        "severity": "critical",
+        "suggested_answers": [],
+        "allow_custom_answer": false,
+        "assumption": "",
+        "reason": "Невозможно записать условия «Комплект полный» и «Комплект неполный» без нарушения JSON Schema.",
+        "source_excerpt": "errors: MISSING_BRANCH_CONDITION",
+        "related_participants": [
+          "participant_operator"
+        ]
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "a_start_internal",
+        "text": "Процесс начинается внутренним стартовым событием без отдельного внешнего отправителя заявки.",
+        "source": "model_inference",
+        "confidence": 0.86
+      }
+    ]
+  },
+  "ambiguities": [
+    {
+      "id": "amb_missing_condition_field",
+      "question": "Как передать условия ветвления? В предоставленной JSON Schema у WireFlow отсутствует поле condition (if), необходимое для исправления ошибок.",
+      "type": "other",
+      "related_node_ids": [
+        "gateway_completeness"
+      ],
+      "severity": "critical",
+      "suggested_answers": [],
+      "allow_custom_answer": false,
+      "assumption": "",
+      "reason": "Невозможно записать условия «Комплект полный» и «Комплект неполный» без нарушения JSON Schema.",
+      "source_excerpt": "errors: MISSING_BRANCH_CONDITION",
+      "related_participants": [
+        "participant_operator"
+      ]
+    }
+  ],
+  "xml": null,
+  "attempts": 2,
+  "semantic_warnings": [],
+  "timings": {
+    "llm_parse_ms": 62873.34,
+    "normalization_ms": 0.13,
+    "semantic_validation_ms": 0.15,
+    "bpmn_build_ms": 0.0,
+    "xsd_validation_ms": 0.0,
+    "post_validation_ms": 0.0,
+    "combined_preparation_ms": 61970.4,
+    "ambiguity_analysis_ms": 0,
+    "total_ms": 124844.15
+  },
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 2
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": []
+}

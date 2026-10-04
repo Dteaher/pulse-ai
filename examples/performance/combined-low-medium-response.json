@@ -1,0 +1,220 @@
+{
+  "process": null,
+  "preflight": {
+    "original_text": "Оператор получает заявку и проверяет комплектность документов. Если комплект неполный, оператор запрашивает дополнения, получает их и повторяет проверку. При полном комплекте оператор последовательно рассчитывает стоимость и оформляет договор. Руководитель проверяет договор. При согласовании оператор отправляет договор клиенту и завершает обработку. При отказе руководителя оператор исправляет договор и повторно направляет руководителю на проверку. Клиент подписывает полученный договор и отправляет компании подписанный экземпляр, после чего компания архивирует его и завершает процесс.",
+    "analysis": {
+      "ambiguities": [
+        {
+          "id": "amb-001",
+          "question": "Кто отправляет заявку оператору?",
+          "type": "unclear_participant",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Клиент",
+            "Другой внешний участник (укажите кто)"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "Не указан исполнитель/отправитель первичного входящего сообщения, поэтому нельзя построить корректный межпуловый обмен и старт процесса.",
+          "source_excerpt": "Оператор получает заявку",
+          "related_participants": [
+            "Оператор",
+            "Клиент"
+          ]
+        },
+        {
+          "id": "amb-002",
+          "question": "Кто именно архивирует подписанный экземпляр договора?",
+          "type": "unclear_participant",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "Оператор",
+            "Отдельный сотрудник/роль (укажите название)",
+            "Внутренняя система (укажите название)"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "«Компания» — организация, а не конкретный исполнитель; для задачи требуется реальная роль или система.",
+          "source_excerpt": "после чего компания архивирует его",
+          "related_participants": [
+            "Компания"
+          ]
+        },
+        {
+          "id": "amb-003",
+          "question": "Когда процесс компании считается завершённым: после отправки договора клиенту или после получения и архивации подписанного экземпляра?",
+          "type": "unclear_end",
+          "related_node_ids": [],
+          "severity": "critical",
+          "suggested_answers": [
+            "После архивации подписанного экземпляра",
+            "После отправки договора клиенту; подписание и архивация — отдельный последующий процесс",
+            "Другое (укажите точку завершения)"
+          ],
+          "allow_custom_answer": true,
+          "assumption": "",
+          "reason": "В описании оператор завершает обработку сразу после отправки, но далее клиент подписывает договор и компания архивирует его; это задаёт разные точки завершения.",
+          "source_excerpt": "При согласовании оператор отправляет договор клиенту и завершает обработку. Клиент подписывает полученный договор и отправляет компании подписанный экземпляр, после чего компания архивирует его и завершает процесс.",
+          "related_participants": [
+            "Оператор",
+            "Клиент",
+            "Компания"
+          ]
+        }
+      ],
+      "assumptions": [],
+      "superseded_assumption_ids": []
+    },
+    "answers": {}
+  },
+  "ambiguities": [
+    {
+      "id": "amb-001",
+      "question": "Кто отправляет заявку оператору?",
+      "type": "unclear_participant",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Клиент",
+        "Другой внешний участник (укажите кто)"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "Не указан исполнитель/отправитель первичного входящего сообщения, поэтому нельзя построить корректный межпуловый обмен и старт процесса.",
+      "source_excerpt": "Оператор получает заявку",
+      "related_participants": [
+        "Оператор",
+        "Клиент"
+      ]
+    },
+    {
+      "id": "amb-002",
+      "question": "Кто именно архивирует подписанный экземпляр договора?",
+      "type": "unclear_participant",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "Оператор",
+        "Отдельный сотрудник/роль (укажите название)",
+        "Внутренняя система (укажите название)"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "«Компания» — организация, а не конкретный исполнитель; для задачи требуется реальная роль или система.",
+      "source_excerpt": "после чего компания архивирует его",
+      "related_participants": [
+        "Компания"
+      ]
+    },
+    {
+      "id": "amb-003",
+      "question": "Когда процесс компании считается завершённым: после отправки договора клиенту или после получения и архивации подписанного экземпляра?",
+      "type": "unclear_end",
+      "related_node_ids": [],
+      "severity": "critical",
+      "suggested_answers": [
+        "После архивации подписанного экземпляра",
+        "После отправки договора клиенту; подписание и архивация — отдельный последующий процесс",
+        "Другое (укажите точку завершения)"
+      ],
+      "allow_custom_answer": true,
+      "assumption": "",
+      "reason": "В описании оператор завершает обработку сразу после отправки, но далее клиент подписывает договор и компания архивирует его; это задаёт разные точки завершения.",
+      "source_excerpt": "При согласовании оператор отправляет договор клиенту и завершает обработку. Клиент подписывает полученный договор и отправляет компании подписанный экземпляр, после чего компания архивирует его и завершает процесс.",
+      "related_participants": [
+        "Оператор",
+        "Клиент",
+        "Компания"
+      ]
+    }
+  ],
+  "xml": null,
+  "attempts": 0,
+  "status": "clarification_required",
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  },
+  "timings": {
+    "llm_parse_ms": 0,
+    "normalization_ms": 0,
+    "semantic_validation_ms": 0,
+    "bpmn_build_ms": 0,
+    "xsd_validation_ms": 0,
+    "post_validation_ms": 0,
+    "combined_preparation_ms": 51265.61,
+    "ambiguity_analysis_ms": 0,
+    "total_ms": 0
+  },
+  "clarification_round": 0,
+  "clarification_limit_reached": false,
+  "accepted_assumptions": [],
+  "changes": [],
+  "human_message": "Перед построением схемы нужно уточнить бизнес-информацию.",
+  "diagnostics": [
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Кто отправляет заявку оператору?",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Кто именно архивирует подписанный экземпляр договора?",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "CLARIFICATION_REQUIRED",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_information",
+      "suggested_fix": "Ответьте на вопрос перед построением схемы.",
+      "message": "Когда процесс компании считается завершённым: после отправки договора клиенту или после получения и архивации подписанного экземпляра?",
+      "node_ids": [],
+      "origin": "rule"
+    }
+  ]
+}

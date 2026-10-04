@@ -1,0 +1,29 @@
+{
+  "review_type": "manual_business_semantics",
+  "real_api_requests_total": 2,
+  "initial_result": {
+    "xsd_and_document_valid": true,
+    "business_accepted": false,
+    "issues": [
+      "Пропущены отдельная роль руководителя и задача принятия решения.",
+      "Клиент ошибочно завершает процесс после возврата договора вместо ожидания исправленной версии."
+    ],
+    "verification_file": "real-first-verification.json"
+  },
+  "corrected_result": {
+    "provider": "multiai",
+    "model": "gpt-6.1-sol",
+    "fallback_used": false,
+    "http_status": 200,
+    "business_accepted": true,
+    "all_explicit_roles_present": true,
+    "leader_decision_task_present": true,
+    "document_rework_loop_present": true,
+    "client_contract_rework_loop_present": true,
+    "manager_contract_rework_loop_present": true,
+    "parallel_checks_with_join_present": true,
+    "refusal_and_success_outcomes_present": true,
+    "verification_file": "real-verification.json"
+  },
+  "limitation": "Ручная проверка этого примера не доказывает полноту автоматического анализа произвольного описания процесса."
+}

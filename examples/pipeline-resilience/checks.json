@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-03",
+  "backend": {
+    "passed": 313,
+    "failed": 0,
+    "new_cases": 38
+  },
+  "browser": {
+    "passed": 55,
+    "failed": 0,
+    "new_cases": 12,
+    "browser": "Microsoft Edge"
+  },
+  "total_passed": 368,
+  "production_build": "passed",
+  "typescript": "passed",
+  "warnings": [
+    "Vite main chunk exceeds 500 kB",
+    "FastAPI TestClient httpx migration warning"
+  ],
+  "git_diff_check": "passed",
+  "secret_scan": {
+    "checked_files": 115,
+    "matches": 0
+  }
+}

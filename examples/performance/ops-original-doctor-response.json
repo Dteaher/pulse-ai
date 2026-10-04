@@ -1,0 +1,108 @@
+{
+  "technical": {
+    "BPMN XML / XSD": true,
+    "Граф / связи / события / шлюзы": true,
+    "Участники": true
+  },
+  "issues": [
+    {
+      "code": "VALIDATION_ISSUE",
+      "node_id": null,
+      "process_id": null,
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": null,
+      "target_pool": null,
+      "severity": "info",
+      "source": "MODEL_QUALITY",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "MODEL_ERROR",
+      "category": "model_quality",
+      "suggested_fix": "Проверьте указанные элементы и их связи.",
+      "message": "Сроки и обработка исключений не проверяются без соответствующих исходных данных.",
+      "node_ids": [],
+      "origin": "rule"
+    },
+    {
+      "code": "UNDEFINED_COMPLETENESS_CRITERIA",
+      "node_id": "gateway_complete",
+      "process_id": "process_application_review",
+      "flow_id": "flow_complete_accept",
+      "gateway_id": "gateway_complete",
+      "source_pool": "pool_organization",
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_logic",
+      "suggested_fix": "Зафиксировать перечень обязательных документов и правила обработки спорных или нечитаемых документов.",
+      "message": "Не определено, по каким проверяемым критериям оператор устанавливает полноту комплекта документов; условие «Комплект полный» остаётся недостаточно операционализированным.",
+      "node_ids": [
+        "task_check",
+        "gateway_complete"
+      ],
+      "origin": "llm"
+    },
+    {
+      "code": "UNHANDLED_EXCEPTION_OUTCOMES",
+      "node_id": null,
+      "process_id": "process_application_review",
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": "pool_organization",
+      "target_pool": null,
+      "severity": "warning",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "BUSINESS_WARNING",
+      "category": "business_logic",
+      "suggested_fix": "Уточнить, нужны ли отдельные исходы или возврат на обработку для исключительных случаев.",
+      "message": "Не описана обработка исключительных ситуаций: невозможности зарегистрировать заявку, сбоя или неоднозначного результата проверки документов. Это рекомендация по полноте процесса, а не доказанная ошибка.",
+      "node_ids": [
+        "task_register",
+        "task_check"
+      ],
+      "origin": "llm"
+    },
+    {
+      "code": "OUTCOME_DETAILS_UNCLEAR",
+      "node_id": null,
+      "process_id": "process_application_review",
+      "flow_id": null,
+      "gateway_id": null,
+      "source_pool": "pool_organization",
+      "target_pool": null,
+      "severity": "clarification",
+      "source": "BUSINESS_LOGIC",
+      "spec_section": null,
+      "line": null,
+      "column": null,
+      "type": "CLARIFICATION_REQUIRED",
+      "category": "business_logic",
+      "suggested_fix": "Уточнить фиксируемый результат для каждого исхода и необходимость передачи или уведомления результата.",
+      "message": "После принятия или отклонения заявки не указано, какой бизнес-результат фиксируется и требуется ли уведомление заявителя; наличие двух конечных событий само по себе этого не определяет.",
+      "node_ids": [
+        "task_accept",
+        "task_reject",
+        "node_end_accept",
+        "node_end_reject"
+      ],
+      "origin": "llm"
+    }
+  ],
+  "llm_audit": true,
+  "notice": "",
+  "metadata": {
+    "provider_used": "multiai",
+    "model_used": "gpt-6.1-sol",
+    "fallback_used": false,
+    "attempts": 1
+  }
+}

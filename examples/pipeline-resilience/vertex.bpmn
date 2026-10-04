@@ -1,0 +1,158 @@
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions" targetNamespace="https://pulse.local/bpmn" exporter="PULSE" exporterVersion="0.2">
+  <bpmn:process id="Process_applicant_pool" name="Заявитель" isExecutable="false">
+    <bpmn:startEvent id="start_event_applicant" name="Начало процесса">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:outgoing>flow_5</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sendTask id="send_request" name="Отправить заявку">
+      <bpmn:documentation>Оператор получает заявку</bpmn:documentation>
+      <bpmn:incoming>flow_5</bpmn:incoming>
+      <bpmn:outgoing>flow_6</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:receiveTask id="receive_confirmation" name="Получить подтверждение">
+      <bpmn:documentation>отправляет заявителю подтверждение регистрации</bpmn:documentation>
+      <bpmn:incoming>flow_6</bpmn:incoming>
+      <bpmn:outgoing>flow_7</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:endEvent id="end_event_applicant" name="Конец">
+      <bpmn:documentation></bpmn:documentation>
+      <bpmn:incoming>flow_7</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_5" sourceRef="start_event_applicant" targetRef="send_request" name=""/>
+    <bpmn:sequenceFlow id="flow_6" sourceRef="send_request" targetRef="receive_confirmation" name=""/>
+    <bpmn:sequenceFlow id="flow_7" sourceRef="receive_confirmation" targetRef="end_event_applicant" name=""/>
+  </bpmn:process>
+  <bpmn:process id="Process_org_pool" name="Организация" isExecutable="false">
+    <bpmn:laneSet id="LaneSet">
+      <bpmn:lane id="operator" name="Оператор">
+        <bpmn:flowNodeRef>start_event_operator</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>register_request</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>send_confirmation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>end_event_operator</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="start_event_operator" name="Получено сообщение: Заявка">
+      <bpmn:documentation>Оператор получает заявку</bpmn:documentation>
+      <bpmn:outgoing>flow_1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEvent_start_event_operator"/>
+    </bpmn:startEvent>
+    <bpmn:userTask id="register_request" name="Регистрация заявки в системе">
+      <bpmn:documentation>регистрирует её в системе</bpmn:documentation>
+      <bpmn:incoming>flow_1</bpmn:incoming>
+      <bpmn:outgoing>flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sendTask id="send_confirmation" name="Отправить подтверждение регистрации">
+      <bpmn:documentation>отправляет заявителю подтверждение регистрации</bpmn:documentation>
+      <bpmn:incoming>flow_3</bpmn:incoming>
+      <bpmn:outgoing>flow_4</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="end_event_operator" name="Завершение обработки">
+      <bpmn:documentation>завершает обработку</bpmn:documentation>
+      <bpmn:incoming>flow_4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="flow_1" sourceRef="start_event_operator" targetRef="register_request" name=""/>
+    <bpmn:sequenceFlow id="flow_3" sourceRef="register_request" targetRef="send_confirmation" name=""/>
+    <bpmn:sequenceFlow id="flow_4" sourceRef="send_confirmation" targetRef="end_event_operator" name=""/>
+  </bpmn:process>
+  <bpmn:collaboration id="process_operator_registers_request" name="Обработка заявки оператором">
+    <bpmn:documentation>Оператор получает заявку, регистрирует её в системе, отправляет заявителю подтверждение регистрации и завершает обработку.</bpmn:documentation>
+    <bpmn:documentation>PULSE_ASSUMPTIONS:[{"id": "operator_starts_process", "text": "Процесс инициируется получением заявки Оператором.", "source": "user_accepted", "confidence": 0.9}]</bpmn:documentation>
+    <bpmn:participant id="applicant_pool" name="Заявитель" processRef="Process_applicant_pool">
+      <bpmn:documentation>PULSE:{"kind": "external", "roles": [{"id": "applicant", "name": "Заявитель", "type": "external", "kind": "external", "pool_id": "applicant_pool"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:participant id="org_pool" name="Организация" processRef="Process_org_pool">
+      <bpmn:documentation>PULSE:{"kind": "internal", "roles": [{"id": "operator", "name": "Оператор", "type": "role", "kind": "internal", "pool_id": "org_pool"}]}</bpmn:documentation>
+    </bpmn:participant>
+    <bpmn:messageFlow id="mf_1" sourceRef="send_request" targetRef="start_event_operator" name="Заявка"/>
+    <bpmn:messageFlow id="mf_2" sourceRef="send_confirmation" targetRef="receive_confirmation" name="Подтверждение регистрации"/>
+  </bpmn:collaboration>
+  <bpmndi:BPMNDiagram id="Diagram">
+    <bpmndi:BPMNPlane id="Plane" bpmnElement="process_operator_registers_request">
+      <bpmndi:BPMNShape id="Shape_applicant_pool" bpmnElement="applicant_pool" isHorizontal="true">
+        <dc:Bounds x="60" y="70" width="1090" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_org_pool" bpmnElement="org_pool" isHorizontal="true">
+        <dc:Bounds x="60" y="390" width="1090" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_operator" bpmnElement="operator" isHorizontal="true">
+        <dc:Bounds x="90" y="390" width="1060" height="220"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_start_event_operator" bpmnElement="start_event_operator">
+        <dc:Bounds x="431.0" y="513.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_register_request" bpmnElement="register_request">
+        <dc:Bounds x="570.0" y="492.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_send_confirmation" bpmnElement="send_confirmation">
+        <dc:Bounds x="760.0" y="492.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_event_operator" bpmnElement="end_event_operator">
+        <dc:Bounds x="1001.0" y="513.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_start_event_applicant" bpmnElement="start_event_applicant">
+        <dc:Bounds x="241.0" y="193.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_send_request" bpmnElement="send_request">
+        <dc:Bounds x="380.0" y="172.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_receive_confirmation" bpmnElement="receive_confirmation">
+        <dc:Bounds x="760.0" y="172.5" width="140" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_event_applicant" bpmnElement="end_event_applicant">
+        <dc:Bounds x="1001.0" y="193.5" width="38" height="38"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flow_1" bpmnElement="flow_1">
+        <di:waypoint x="469.0" y="532.5"/>
+        <di:waypoint x="570.0" y="532.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_3" bpmnElement="flow_3">
+        <di:waypoint x="710.0" y="532.5"/>
+        <di:waypoint x="760.0" y="532.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_4" bpmnElement="flow_4">
+        <di:waypoint x="900.0" y="532.5"/>
+        <di:waypoint x="1001.0" y="532.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_5" bpmnElement="flow_5">
+        <di:waypoint x="279.0" y="212.5"/>
+        <di:waypoint x="380.0" y="212.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_6" bpmnElement="flow_6">
+        <di:waypoint x="520.0" y="212.5"/>
+        <di:waypoint x="538.0" y="212.5"/>
+        <di:waypoint x="538.0" y="96"/>
+        <di:waypoint x="742.0" y="96"/>
+        <di:waypoint x="742.0" y="212.5"/>
+        <di:waypoint x="760.0" y="212.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_7" bpmnElement="flow_7">
+        <di:waypoint x="900.0" y="212.5"/>
+        <di:waypoint x="1001.0" y="212.5"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_mf_1" bpmnElement="mf_1">
+        <di:waypoint x="520.0" y="212.5"/>
+        <di:waypoint x="548" y="212.5"/>
+        <di:waypoint x="548" y="315"/>
+        <di:waypoint x="548" y="315"/>
+        <di:waypoint x="548" y="404"/>
+        <di:waypoint x="450.0" y="404"/>
+        <di:waypoint x="450.0" y="513.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="528.0" y="297" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_mf_2" bpmnElement="mf_2">
+        <di:waypoint x="900.0" y="532.5"/>
+        <di:waypoint x="928" y="532.5"/>
+        <di:waypoint x="928" y="365"/>
+        <di:waypoint x="928" y="365"/>
+        <di:waypoint x="928" y="276"/>
+        <di:waypoint x="830.0" y="276"/>
+        <di:waypoint x="830.0" y="252.5"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="908.0" y="347" width="130" height="30"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,49 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/backend.Dockerfile
+    env_file:
+      - .env
+    environment:
+      APP_ENV: production
+      LLM_DEBUG_RAW_RESPONSE: "false"
+      LLM_BUSINESS_COVERAGE_ENABLED: "true"
+      LLM_PERFORMANCE_ENABLED: "true"
+      LLM_REQUEST_BUDGET: "450"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import httpx; httpx.get('http://127.0.0.1:8000/api/health', timeout=5, trust_env=False).raise_for_status()",
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+  web:
+    build:
+      context: .
+      dockerfile: deploy/web.Dockerfile
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+volumes:
+  caddy_data:
+  caddy_config:

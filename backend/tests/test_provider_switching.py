@@ -71,6 +71,9 @@ def test_explicit_settings_remain_fixed(monkeypatch):
 
 
 def test_model_is_stable_during_graph_correction(monkeypatch, tmp_path):
+    # The temporary file owns this scenario, regardless of CI/hosting variables.
+    for name in Settings.model_fields:
+        monkeypatch.delenv(name.upper(), raising=False)
     env_file = tmp_path / '.env'
     env_file.write_text('LLM_PROVIDER=openai_compatible\nLLM_API_KEY=test-key\nLLM_MODEL=first-model\nLLM_BASE_URL=https://first.test/v1', encoding='utf-8')
     monkeypatch.setattr('app.main.Settings', lambda: Settings(_env_file=env_file))

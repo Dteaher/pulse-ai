@@ -34,7 +34,7 @@ jobs:
         with: { python-version: '3.12' }
       - run: python -m venv .venv
       - run: .venv/bin/python -m pip install -r backend/requirements-dev.lock.txt
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with: { node-version: '24', package-manager-cache: false }
       - run: npm install -g pnpm@11.19.0
       - run: pnpm install --frozen-lockfile
@@ -62,7 +62,7 @@ jobs:
         with: { fetch-depth: 0, persist-credentials: false }
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with: { python-version: '3.12' }
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with: { node-version: '24', package-manager-cache: false }
       - run: python -m pip install pip-audit==2.10.1 bandit==1.9.4
       - run: python scripts/check-secrets.py

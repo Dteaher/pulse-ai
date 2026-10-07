@@ -19,7 +19,7 @@ test('long input, large collaboration, dense findings and all requested desktop 
   page.on('pageerror', (error) => errors.push(error.message));
   await page.route('**/api/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
-    const response = await route.fetch({ url: 'http://127.0.0.1:8001' + path });
+    const response = await route.fetch({ url: 'http://127.0.0.1:8003' + path });
     if (path === '/api/process/import') {
       const data = await response.json();
       // Deliberately long metadata tests truncation without changing the fixture graph/XML.

@@ -20,7 +20,7 @@ for (const name of [
     await page.route('**/api/**', async (route) => {
       await route.fulfill({
         response: await route.fetch({
-          url: route.request().url().replace('http://127.0.0.1:5173', 'http://127.0.0.1:8001'),
+          url: route.request().url().replace('http://127.0.0.1:5181', 'http://127.0.0.1:8003'),
         }),
       });
     });
@@ -40,7 +40,7 @@ for (const name of [
     const download = page.waitForEvent('download');
     await page.getByRole('button', { name: 'Экспорт BPMN', exact: true }).click();
     const xml = fs.readFileSync((await (await download).path())!, 'utf8');
-    const response = await request.post('http://127.0.0.1:8001/api/process/import', {
+    const response = await request.post('http://127.0.0.1:8003/api/process/import', {
       data: { xml, previous: p },
     });
     expect(response.status()).toBe(200);
@@ -70,7 +70,7 @@ test('Doctor distinguishes normative errors, business warnings and clarification
   await page.route('**/api/**', async (route) => {
     await route.fulfill({
       response: await route.fetch({
-        url: route.request().url().replace('http://127.0.0.1:5173', 'http://127.0.0.1:8001'),
+        url: route.request().url().replace('http://127.0.0.1:5181', 'http://127.0.0.1:8003'),
       }),
     });
   });

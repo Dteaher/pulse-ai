@@ -17,7 +17,7 @@ test('home polish: laptop layouts, examples, keyboard generation and entire bran
   await page.route('**/api/**', async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/process/generate') generations++;
-    const response = await route.fetch({ url: 'http://127.0.0.1:8001' + path });
+    const response = await route.fetch({ url: 'http://127.0.0.1:8003' + path });
     await route.fulfill({ response });
   });
   await page.goto('/');

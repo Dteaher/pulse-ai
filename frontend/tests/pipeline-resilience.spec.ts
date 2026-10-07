@@ -128,7 +128,7 @@ test('assumptions remain visible and survive a bpmn-js export/import roundtrip',
   await page.route('**/api/**', async (route) =>
     route.fulfill({
       response: await route.fetch({
-        url: route.request().url().replace('http://127.0.0.1:5173', 'http://127.0.0.1:8001'),
+        url: route.request().url().replace('http://127.0.0.1:5181', 'http://127.0.0.1:8003'),
       }),
     }),
   );
@@ -146,7 +146,7 @@ test('assumptions remain visible and survive a bpmn-js export/import roundtrip',
   const downloading = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Экспорт BPMN', exact: true }).click();
   const xml = fs.readFileSync((await (await downloading).path())!, 'utf8');
-  const result = await request.post('http://127.0.0.1:8001/api/process/import', { data: { xml } });
+  const result = await request.post('http://127.0.0.1:8003/api/process/import', { data: { xml } });
   expect(result.status()).toBe(200);
   expect((await result.json()).process.assumptions).toEqual([
     {

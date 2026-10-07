@@ -10,3 +10,10 @@ playwright-report/
 .runtime/
 .llm-debug/
 *.tsbuildinfo
+
+# Local credentials and development artifacts
+.env.*
+!.env.example
+*.pem
+*.key
+output/

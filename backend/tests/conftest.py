@@ -13,6 +13,7 @@ def isolate_provider_cooldowns():
 def isolate_deployment_coverage_setting(monkeypatch):
     # Old tests isolate their own pipeline stage; coverage tests opt in explicitly.
     monkeypatch.setenv('LLM_BUSINESS_COVERAGE_ENABLED', 'false')
+    monkeypatch.setenv('API_LIMITS_ENABLED', 'false')
 
 
 @pytest.fixture(autouse=True)

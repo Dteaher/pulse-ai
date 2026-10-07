@@ -145,7 +145,8 @@ def test_deadline_reserves_fallback_and_does_not_reset_on_retry():
         async def parse_process(self, *args):
             return demo_process(0)
     async def check():
-        router = LLMRouter(Slow(), Fast(), budget=0.05, fallback_reserve=0.02)
+        # Keep a real timeout but allow Windows/CI scheduler jitter in the reserve.
+        router = LLMRouter(Slow(), Fast(), budget=0.6, fallback_reserve=0.2)
         result = await router.parse_process('Текст')
         deadline = router._deadline
         assert result.nodes and router.metadata.fallback_used

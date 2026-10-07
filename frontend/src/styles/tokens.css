@@ -1,0 +1,30 @@
+:root {
+  font-family: 'Segoe UI', Manrope, sans-serif;
+  font-synthesis: none;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--background);
+  --background: #f6f6f3;
+  --surface: #ffffff;
+  --surface-secondary: #f4f5f7;
+  --surface-hover: #edf0f5;
+  --line: #e0e3e8;
+  --border-strong: #c6cdd7;
+  --text: #202631;
+  --muted: #657080;
+  --text-muted: #747d8a;
+  --accent: #3658d4;
+  --accent-hover: #2945b3;
+  --accent-soft: #edf1ff;
+  --success: #39705d;
+  --warning: #906126;
+  --error: #a54543;
+  --info: #526b8c;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius: 6px;
+}

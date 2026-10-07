@@ -170,3 +170,15 @@ def test_business_modules_do_not_import_concrete_providers():
         for node in ast.walk(tree):
             modules = [node.module or ''] if isinstance(node, ast.ImportFrom) else [n.name for n in node.names] if isinstance(node, ast.Import) else []
             assert not any(module.split('.')[-1] in forbidden for module in modules), relative
+
+
+def test_blank_primary_overrides_preserve_generic_llm_configuration():
+    from app.config import Settings
+    from app.services.llm.factory import get_llm_provider
+    settings = Settings(_env_file=None, llm_provider='openai_compatible', llm_model='generic-model',
+        llm_base_url='https://example.test/v1', llm_api_key='test-generic-key',
+        primary_llm_model='', primary_llm_base_url='', primary_llm_api_key='', llm_fallback_enabled=False)
+    router = get_llm_provider(settings)
+    assert router.primary.model == 'generic-model'
+    assert router.primary.configured
+    assert router.primary.base_url == 'https://example.test/v1'

@@ -15,11 +15,17 @@ DEFAULT_BASE_URLS = {
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ROOT / '.env', extra='ignore')
     app_env: str = 'development'
+    pulse_access_token: str = Field(default='', repr=False)
+    api_limits_enabled: bool = True
+    api_max_concurrent: int = Field(default=2, ge=1, le=10)
+    api_requests_per_minute: int = Field(default=10, ge=1, le=100)
+    api_requests_per_day: int = Field(default=100, ge=1, le=10000)
+    api_max_body_bytes: int = Field(default=2_000_000, ge=1024, le=10_000_000)
     llm_provider: str = 'openai_compatible'
     primary_llm_provider: str = ''
     primary_llm_model: str | None = None
     primary_llm_base_url: str | None = None
-    primary_llm_api_key: str | None = None
+    primary_llm_api_key: str | None = Field(default=None, repr=False)
     primary_llm_omit_token_limit: bool = False
     llm_business_coverage_enabled: bool = False
     llm_fallback_enabled: bool = True
@@ -27,12 +33,12 @@ class Settings(BaseSettings):
     llm_graph_max_retries: int = Field(default=1, ge=0, le=2)
     max_clarification_rounds: int = Field(default=3, ge=1, le=10)
     fallback_llm_provider: str = ''
-    fallback_llm_api_key: str = ''
+    fallback_llm_api_key: str = Field(default='', repr=False)
     fallback_llm_base_url: str = ''
     fallback_llm_model: str = ''
     fallback_llm_folder_id: str = ''
     fallback_llm_structured_output: bool | None = None
-    llm_api_key: str = ''
+    llm_api_key: str = Field(default='', repr=False)
     llm_base_url: str = ''
     llm_model: str = ''
     llm_structured_output: bool | None = None

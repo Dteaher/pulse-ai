@@ -1,0 +1,56 @@
+/* Shared demo access uses the browser's modal focus boundary. */
+.access-dialog {
+  border: 1px solid #dce1e9;
+  border-radius: 16px;
+  padding: 32px;
+  width: min(420px, calc(100vw - 32px));
+  color: #172338;
+  box-shadow: 0 24px 80px #10203426;
+}
+.access-dialog::backdrop {
+  background: #101d36a6;
+}
+.access-icon {
+  color: #3760e9;
+  margin-bottom: 18px;
+}
+.access-dialog h2 {
+  font-size: 22px;
+  margin: 0 0 12px;
+}
+.access-dialog p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #637086;
+}
+.access-dialog label {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  margin: 20px 0 8px;
+}
+.access-dialog input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #bbc7d9;
+  border-radius: 8px;
+  font: inherit;
+}
+.access-dialog input:focus-visible {
+  outline: 3px solid #3760e950;
+  outline-offset: 2px;
+}
+.access-dialog button {
+  width: 100%;
+  margin: 18px 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.access-dialog .access-error {
+  color: #ae2741;
+}
+.access-dialog small {
+  font-size: 12px;
+  color: #637086;
+}

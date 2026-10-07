@@ -2,6 +2,7 @@
 
 PULSE превращает описание бизнес-процесса в редактируемую **BPMN 2.0-модель**: уточняет неоднозначности, проверяет структуру и помогает изменять процесс обычными словами. Аналитик проверяет предложенные изменения перед применением.
 
+[![Quality — tests, build, security](https://github.com/Dteaher/pulse-ai/actions/workflows/quality.yml/badge.svg)](https://github.com/Dteaher/pulse-ai/actions/workflows/quality.yml)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![React 19](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)

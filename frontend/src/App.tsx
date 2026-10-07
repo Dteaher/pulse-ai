@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, lazy, Suspense } from 'react';
-import type Modeler from 'bpmn-js/lib/Modeler';
 import {
   PanelRightClose,
   PanelRightOpen,
@@ -26,11 +25,14 @@ import {
   FileText,
   MousePointer2,
 } from 'lucide-react';
+import HistoryPanel from './components/HistoryPanel';
+import AccessGate from './components/AccessGate';
 import BrandMark from './components/BrandMark';
 import Finding from './components/Finding';
 import type { EditorHandle } from './components/Editor';
 import { api } from './services/api';
-import { recordBpmnImport } from './services/performance';
+import { checkImport } from './services/bpmnImport';
+import { modelLabel } from './services/modelLabel';
 import ChangeList from './components/ChangeList';
 import ChangePreview from './components/ChangePreview';
 import { useProcessState } from './services/useProcessState';
@@ -38,42 +40,18 @@ import type { Process, Result, Audit, Snapshot, LLMMetadata, Ambiguity } from '.
 
 type Panel = 'copilot' | 'audit' | 'history';
 const Editor = lazy(() => import('./components/Editor'));
-function modelLabel(model: string) {
-  return model.startsWith('gpt://')
-    ? model.slice(6).split('/').slice(1).join('/')
-    : (model.split('/').pop() ?? model).replace(/:free$/, '');
-}
 interface Example {
   name: string;
   text: string;
 }
 
-async function checkImport(xml: string) {
-  const started = performance.now();
-  const container = document.createElement('div');
-  let modeler: Modeler | undefined;
-  try {
-    const { default: BPMNModeler } = await import('bpmn-js/lib/Modeler');
-    modeler = new BPMNModeler({ container });
-    const { warnings } = await modeler.importXML(xml);
-    if (warnings.length)
-      throw new Error(
-        'BPMN содержит неподдерживаемые элементы или потерянные ссылки. Импорт отменён: ' +
-          'Проверьте ссылки и поддерживаемые элементы схемы.',
-      );
-  } catch (e) {
-    throw new Error(
-      'Не удалось импортировать BPMN. Проверьте XML и поддерживаемые элементы схемы.',
-    );
-  } finally {
-    recordBpmnImport(started, 'check');
-    modeler?.destroy();
-  }
-}
-
 export default function App() {
   const [examples, setExamples] = useState<Example[]>([]);
-  const [health, setHealth] = useState<{ provider: string; configured: boolean } | null>(null);
+  const [health, setHealth] = useState<{
+    provider: string;
+    configured: boolean;
+    access_required?: boolean;
+  } | null>(null);
   const [llmMetadata, setLLMMetadata] = useState<LLMMetadata | null>(null);
   const [text, setText] = useState('');
   const {
@@ -209,7 +187,7 @@ export default function App() {
     api<Example[]>('examples')
       .then(setExamples)
       .catch((e) => setError(e.message));
-    api<{ provider: string; configured: boolean }>('health')
+    api<{ provider: string; configured: boolean; access_required?: boolean }>('health')
       .then(setHealth)
       .catch((e) => setError(e.message));
   }, []);
@@ -530,6 +508,7 @@ export default function App() {
         (panelCollapsed && ready ? ' panel-collapsed' : '')
       }
     >
+      <AccessGate required={Boolean(health?.access_required)} />
       <header className="header">
         <a
           className="brand"
@@ -642,21 +621,27 @@ export default function App() {
         >
           {ready ? (
             <>
-              <Suspense fallback={<div className="bpmn-canvas" role="status" aria-busy="true">Загрузка редактора BPMN…</div>}>
-              <Editor
-                ref={editor}
-                xml={xml}
-                showTools={showTools}
-                onSelect={setSelected}
-                onReady={setEditorReady}
-                onError={setError}
-                onChange={() => {
-                  setDirty(true);
-                  setAudit(null);
-                  setProposal(null);
-                  setSelected(null);
-                }}
-              />
+              <Suspense
+                fallback={
+                  <div className="bpmn-canvas" role="status" aria-busy="true">
+                    Загрузка редактора BPMN…
+                  </div>
+                }
+              >
+                <Editor
+                  ref={editor}
+                  xml={xml}
+                  showTools={showTools}
+                  onSelect={setSelected}
+                  onReady={setEditorReady}
+                  onError={setError}
+                  onChange={() => {
+                    setDirty(true);
+                    setAudit(null);
+                    setProposal(null);
+                    setSelected(null);
+                  }}
+                />
               </Suspense>
               <div className="canvas-heading">
                 <span className="status-dot" />
@@ -828,6 +813,11 @@ export default function App() {
                     Важные детали уточним перед построением{' '}
                     <span className="input-shortcut">Ctrl + Enter — создать</span>
                   </div>
+                  <p className="data-note">
+                    {health?.provider === 'mock'
+                      ? 'Демо на примерах · без обращения к AI-модели'
+                      : 'Текст передаётся настроенному AI-провайдеру. Для демо используйте обезличенные данные.'}
+                  </p>
                 </div>
                 <aside className="home-guide">
                   <span className="section-kicker">ПОДСКАЗКИ ДЛЯ ОПИСАНИЯ</span>
@@ -1368,48 +1358,15 @@ export default function App() {
               </div>
             )}
             {panel === 'history' && (
-              <div className="history">
-                <div className="section-kicker">ВЕРСИИ ПРОЦЕССА</div>
-                <h2>История изменений</h2>
-                {ready && (
-                  <div className="current-version">
-                    <strong>v{version || 1} · Текущая версия</strong>
-                    <p>{versionDescription || process?.name}</p>
-                  </div>
-                )}
-                <p className="muted">
-                  До 20 предыдущих версий в текущей сессии. Ручные правки отменяются кнопками на
-                  полотне.
-                </p>
-                {versions.length ? (
-                  [...versions].reverse().map((v, i) => (
-                    <button
-                      className="version"
-                      disabled={blocking}
-                      key={versions.length - i}
-                      onClick={() => restore(versions.length - 1 - i)}
-                    >
-                      <span className="version-number">v{v.version ?? versions.length - i}</span>
-                      <div>
-                        <strong title={v.label}>{v.label}</strong>
-                        <span>
-                          {new Date(v.timestamp).toLocaleTimeString('ru-RU', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}{' '}
-                          · Восстановить версию
-                        </span>
-                      </div>
-                      <Undo2 size={15} />
-                    </button>
-                  ))
-                ) : (
-                  <div className="empty-panel">
-                    <History size={25} />
-                    <p>Предыдущие версии появятся после изменения или замены схемы.</p>
-                  </div>
-                )}
-              </div>
+              <HistoryPanel
+                ready={ready}
+                version={version}
+                description={versionDescription}
+                processName={process?.name}
+                versions={versions}
+                disabled={blocking}
+                onRestore={restore}
+              />
             )}
           </div>
           {ready && panel === 'copilot' && !pending && !editPreview && (
@@ -1449,7 +1406,7 @@ export default function App() {
                   {blocking ? <LoaderCircle className="spin" size={17} /> : <Send size={17} />}
                 </button>
               </div>
-              {aiReady && (
+              {aiReady && process?.nodes.some((n) => n.name === 'Проверить документы') && (
                 <button
                   className="command-suggestion"
                   onClick={() =>

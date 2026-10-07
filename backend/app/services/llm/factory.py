@@ -18,9 +18,9 @@ def _create(settings: Settings, name: str, *, fallback=False) -> LLMProvider:
     url = getattr(settings, prefix + 'base_url') or DEFAULT_BASE_URLS.get(name, '')
     structured = getattr(settings, prefix + 'structured_output')
     if not fallback:
-        key = settings.primary_llm_api_key if settings.primary_llm_api_key is not None else key
-        model = settings.primary_llm_model if settings.primary_llm_model is not None else model
-        url = settings.primary_llm_base_url if settings.primary_llm_base_url is not None else url
+        key = settings.primary_llm_api_key or key
+        model = settings.primary_llm_model or model
+        url = settings.primary_llm_base_url or url
     options = dict(structured=structured, timeout=settings.llm_timeout, max_tokens=settings.llm_max_tokens, max_retries=settings.llm_max_retries)
     if name == 'mock':
         if fallback:

@@ -5,7 +5,7 @@ import path from 'node:path';
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/**', async (route) => {
     const url = new URL(route.request().url());
-    const response = await route.fetch({ url: 'http://127.0.0.1:8001' + url.pathname });
+    const response = await route.fetch({ url: 'http://127.0.0.1:8003' + url.pathname });
     await route.fulfill({ response });
   });
 });
@@ -178,7 +178,7 @@ test('TO-BE UI: предложение требует применения, AS-I
   await generate(page);
   await page.route('**/api/process/modify', async (route) => {
     const body = route.request().postDataJSON();
-    const response = await page.request.post('http://127.0.0.1:8001/api/process/modify', {
+    const response = await page.request.post('http://127.0.0.1:8003/api/process/modify', {
       data: {
         process: body.process,
         command: 'После проверки документов добавь согласование руководителем',

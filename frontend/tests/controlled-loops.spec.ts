@@ -7,14 +7,14 @@ for (const name of ['reference', 'vertex', 'failover', 'groq']) {
     const errors: string[] = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.route('**/api/**', async route => {
-      const url = route.request().url().replace('http://127.0.0.1:5173','http://127.0.0.1:8001');
+      const url = route.request().url().replace('http://127.0.0.1:5181','http://127.0.0.1:8003');
       await route.fulfill({ response: await route.fetch({ url }) });
     });
     const xml = fs.readFileSync(path.join(folder, `${name}.bpmn`),'utf8');
     await page.goto('/');
     await page.locator('input[type=file]').setInputFiles(path.join(folder, `${name}.bpmn`));
     await expect(page.locator('#command')).toBeEnabled();
-    const imported = await request.post('http://127.0.0.1:8001/api/process/import', { data: { xml } });
+    const imported = await request.post('http://127.0.0.1:8003/api/process/import', { data: { xml } });
     expect(imported.status()).toBe(200);
     const p = (await imported.json()).process;
     expect(p.pools).toHaveLength(2);
@@ -25,7 +25,7 @@ for (const name of ['reference', 'vertex', 'failover', 'groq']) {
     const download = page.waitForEvent('download');
     await page.getByRole('button',{name:'Экспорт BPMN',exact:true}).click();
     const exported = fs.readFileSync((await (await download).path())!, 'utf8');
-    const restored = await request.post('http://127.0.0.1:8001/api/process/import', { data: { xml:exported, previous:p } });
+    const restored = await request.post('http://127.0.0.1:8003/api/process/import', { data: { xml:exported, previous:p } });
     expect(restored.status()).toBe(200);
     expect((await restored.json()).process).toEqual(p);
     expect(errors).toEqual([]);

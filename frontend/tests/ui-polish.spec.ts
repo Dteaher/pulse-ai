@@ -4,7 +4,7 @@ import fs from 'node:fs';
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/**', async (route) => {
     const url = new URL(route.request().url());
-    const response = await route.fetch({ url: 'http://127.0.0.1:8001' + url.pathname });
+    const response = await route.fetch({ url: 'http://127.0.0.1:8003' + url.pathname });
     await route.fulfill({ response });
   });
 });
@@ -74,7 +74,7 @@ test('loading keeps button width stable and prevents duplicate generation', asyn
   let calls = 0;
   await page.route('**/api/process/generate', async (route) => {
     calls++;
-    const response = await route.fetch({ url: 'http://127.0.0.1:8001/api/process/generate' });
+    const response = await route.fetch({ url: 'http://127.0.0.1:8003/api/process/generate' });
     await wait;
     await route.fulfill({ response });
   });

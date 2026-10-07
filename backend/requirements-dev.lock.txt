@@ -1,0 +1,5 @@
+-r requirements.lock.txt
+hypothesis==6.168.5
+sortedcontainers==2.4.0
+tiktoken==0.14.0
+regex==2026.9.29

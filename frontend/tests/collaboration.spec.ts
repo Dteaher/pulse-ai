@@ -12,7 +12,7 @@ test('collaboration: bpmn-js import, messages, manual edit, Modify preview and e
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.route('**/api/**', async (route) => {
-    const url = route.request().url().replace('http://127.0.0.1:5173', 'http://127.0.0.1:8001');
+    const url = route.request().url().replace('http://127.0.0.1:5181', 'http://127.0.0.1:8003');
     await route.fulfill({ response: await route.fetch({ url }) });
   });
   await page.route('**/api/process/modify', async (route) => {
@@ -43,7 +43,7 @@ test('collaboration: bpmn-js import, messages, manual edit, Modify preview and e
   await page.mouse.move(box.x + box.width / 2 + 15, box.y + box.height / 2 + 10, { steps: 8 });
   await page.mouse.up();
   const before = await xml();
-  const imported = await request.post('http://127.0.0.1:8001/api/process/import', {
+  const imported = await request.post('http://127.0.0.1:8003/api/process/import', {
     data: { xml: before },
   });
   expect(imported.status()).toBe(200);

@@ -66,6 +66,15 @@ export interface LLMMetadata {
   model_used: string;
   fallback_used: boolean;
   attempts?: number;
+  provider_requested?: string | null;
+  model_requested?: string | null;
+  fallback_reason?: string | null;
+  generation_duration_ms?: number | null;
+  input_tokens?: number | null;
+  output_tokens?: number | null;
+  cost_rub?: number | null;
+  business_coverage_provider_used?: string | null;
+  business_coverage_model_used?: string | null;
 }
 export interface Result {
   preflight?: PreflightState;

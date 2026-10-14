@@ -30,7 +30,7 @@ for (const fallback of [false, true]) {
     await page.getByRole('button', { name: 'Подключение к электросети', exact: true }).click();
     await page.getByRole('button', { name: 'Создать BPMN', exact: true }).click();
     await expect(page.locator('.provider-info')).toContainText(
-      fallback ? 'gemini-2.5-flash · резервная модель' : 'Модель: gpt-6.1-sol',
+      fallback ? 'gemini-2.5-flash · Vertex Gemini (резервная модель)' : 'Модель: gpt-6.1-sol',
     );
     await expect(page.locator('.djs-shape[data-element-id="Check"]')).toBeVisible();
     await expect(page.getByRole('alert')).toHaveCount(0);

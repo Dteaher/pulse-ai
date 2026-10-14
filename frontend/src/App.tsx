@@ -32,7 +32,7 @@ import Finding from './components/Finding';
 import type { EditorHandle } from './components/Editor';
 import { api } from './services/api';
 import { checkImport } from './services/bpmnImport';
-import { modelLabel } from './services/modelLabel';
+import { friendlyModelLabel, providerLabel } from './services/modelLabel';
 import ChangeList from './components/ChangeList';
 import ChangePreview from './components/ChangePreview';
 import { useProcessState } from './services/useProcessState';
@@ -924,10 +924,12 @@ export default function App() {
               {llmMetadata && llmMetadata.provider_used !== 'mock' ? (
                 <div role="status" aria-live="polite">
                   <span className="provider-name">
-                    {llmMetadata.fallback_used
-                      ? modelLabel(llmMetadata.model_used) + ' · резервная модель'
-                      : 'Модель: ' + modelLabel(llmMetadata.model_used)}
+                    {'Модель: ' + friendlyModelLabel(llmMetadata.model_used) + ' · ' + providerLabel(llmMetadata.provider_used)}
+                    {llmMetadata.fallback_used && (!llmMetadata.provider_requested || llmMetadata.provider_used !== llmMetadata.provider_requested || llmMetadata.model_requested && friendlyModelLabel(llmMetadata.model_used) !== friendlyModelLabel(llmMetadata.model_requested)) ? ' (резервная модель)' : ''}
                   </span>
+                  {llmMetadata.business_coverage_provider_used && (llmMetadata.business_coverage_provider_used !== llmMetadata.provider_used || llmMetadata.business_coverage_model_used !== llmMetadata.model_used) && (
+                    <small>Проверка полноты: {friendlyModelLabel(llmMetadata.business_coverage_model_used ?? '')} · {providerLabel(llmMetadata.business_coverage_provider_used)}</small>
+                  )}
                 </div>
               ) : !health ? (
                 'Подключение к backend…'

@@ -20,7 +20,7 @@ def isolate_deployment_coverage_setting(monkeypatch):
 def isolate_new_preflight_from_legacy_graph_tests(monkeypatch, request):
     # Existing tests isolate extraction/graph/failover. Dedicated preflight tests
     # exercise analysis itself, including its HTTP transport and routing.
-    if request.node.path.name in {'test_pipeline_resilience.py', 'test_performance.py','test_qwen_integration.py'}:
+    if request.node.path.name in {'test_pipeline_resilience.py', 'test_performance.py','test_qwen_integration.py','test_detailed_telemetry.py'}:
         return
     from app.models import AmbiguityAnalysis
     from app.services.llm.openai_compatible_provider import OpenAICompatibleProvider

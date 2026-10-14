@@ -165,6 +165,7 @@ class LLMMetadata(StrictModel):
     cost_rub: float | None = None
     business_coverage_provider_used: str | None = None
     business_coverage_model_used: str | None = None
+    performance: dict | None = None
 
 
 class ClarificationResult(StrictModel):

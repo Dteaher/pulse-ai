@@ -29,7 +29,7 @@ def validate_xsd(xml: str) -> list[Issue]:
         validate_xml(xml)
         return []
     except (E.LxmlError, ValueError) as exc:
-        logger.debug('bpmn_xsd_failed details=%s', str(exc)[:2000])
+        logger.debug('bpmn_xsd_failed exception=%s', type(exc).__name__)
         entries = list(exc.error_log) if isinstance(exc, E.LxmlError) else []
         return [Issue(severity='error', source='XSD', code='INVALID_BPMN_XML',
                       spec_section='§15.3.2', message='BPMN XML не соответствует XML-схеме стандарта.',
@@ -248,7 +248,7 @@ def validate_document(xml: str, *, complete_di=False, check_xsd=True) -> list[Is
             add('MISSING_DI_ELEMENT', 'Профиль полного экспорта PULSE требует Shape/Edge для каждого элемента.', index[key], '§12.1 (частичные diagrams допустимы)', 'LAYOUT')
     add_stage('di_validation_ms', di_started)
     for issue in issues:
-        logger.debug('bpmn_document code=%s element=%s severity=%s source=%s spec=%s', issue.code, issue.node_id, issue.severity, issue.source, issue.spec_section)
+        logger.debug('bpmn_document code=%s element_present=%s severity=%s source=%s spec=%s', issue.code, bool(issue.node_id), issue.severity, issue.source, issue.spec_section)
     return issues
 
 

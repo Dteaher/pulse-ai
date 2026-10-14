@@ -28,6 +28,9 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
         try:
             parse_started = perf_counter()
             process = await call(correction)
+            measurement = profile.get()
+            if measurement:
+                measurement.validation_attempt = attempt + 1
             original = process.model_copy(deep=True) if audit_trace is not None else None
             if audit_trace is not None:
                 audit_trace.append({'attempt': attempt + 1, 'stage': 'provider_output', 'process': original.model_dump()})
@@ -52,11 +55,12 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
             if process.pools:
                 issues += validate_labels(process)
             errors = [i for i in issues if i.severity == 'error']
+            semantic_started = perf_counter()
             semantic_issues = validate_semantics(process) if not errors else []
             issues += semantic_issues
             issues = [classify(i) for i in issues]
             errors = [i for i in issues if i.severity == 'error']
-            add_stage('semantic_validation_ms', validation_started)
+            add_stage('semantic_validation_ms', semantic_started)
             current = profile.get()
             if current:
                 current.validation_error_count += len(errors)
@@ -143,8 +147,8 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
                                         'differences': compare_process_xml(process, xml)})
                 from .logic_audit import require_xml_fidelity
                 require_xml_fidelity(process, xml)
-            except (ValueError, etree.LxmlError):
-                logger.exception('bpmn_build_failed attempt=%s', attempt + 1)
+            except (ValueError, etree.LxmlError) as exc:
+                logger.error('bpmn_build_failed attempt=%s exception=%s', attempt + 1, type(exc).__name__)
                 raise build_failure() from None
             timings['bpmn_build_ms'] += round((perf_counter() - build_started) * 1000, 2)
             add_stage('bpmn_build_ms', build_started)
@@ -173,7 +177,7 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
             correction = json.dumps({'errors': details}, ensure_ascii=False)
             last_reason = 'Причина: ответ модели не соответствует структуре процесса.'
             if development:
-                logger.info('validation attempt=%s corrective_retry=%s errors=%s', attempt + 1, attempt, correction)
+                logger.info('validation attempt=%s corrective_retry=%s reason=model_schema_validation', attempt + 1, attempt)
     if provider is not None and provider.use_validation_fallback():
         result = await generate_valid(call, semantic_check=semantic_check, provider=provider, development=development, correction=correction, max_retries=max_retries, source_text=source_text, coverage_answers=coverage_answers, audit_trace=audit_trace)
         result['attempts'] += max_retries + 1

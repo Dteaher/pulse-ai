@@ -3,6 +3,7 @@ import logging
 import json
 from dataclasses import dataclass, field
 from time import perf_counter
+from datetime import datetime, timezone
 from contextvars import ContextVar
 
 request_id = ContextVar('pulse_request_id', default='outside_http')
@@ -15,6 +16,8 @@ class PerformanceProfile:
     started: float = field(default_factory=perf_counter)
     calls: list = field(default_factory=list)
     stages: dict = field(default_factory=dict)
+    stage_events: list = field(default_factory=list)
+    validation_attempt: int | None = None
     validation_error_count: int = 0
     graph_corrective_count: int = 0
     patch_corrective_count: int = 0
@@ -25,7 +28,10 @@ class PerformanceProfile:
     cache_hit: bool = False
     deduplicated: bool = False
 
-    def add(self, stage, elapsed):
+    def add(self, stage, elapsed, *, started=None):
+        ended = perf_counter()
+        if started is not None:
+            self.stage_events.append({'stage': stage, 'provider': 'backend', 'model': None, 'attempt': self.validation_attempt, 'start_offset_ms': round((started-self.started)*1000,3), 'end_offset_ms': round((ended-self.started)*1000,3), 'duration_ms': round(elapsed,3)})
         self.stages[stage] = round(self.stages.get(stage, 0) + elapsed, 2)
 
     def report(self):
@@ -33,7 +39,7 @@ class PerformanceProfile:
                 'llm_corrective_ms', 'llm_fallback_ms', 'normalization_ms',
                 'process_validation_ms', 'semantic_validation_ms', 'business_coverage_ms', 'bpmn_build_ms',
                 'reference_validation_ms', 'xsd_validation_ms', 'di_validation_ms',
-                'doctor_ms', 'modify_ms', 'serialization_ms')
+                'doctor_ms', 'modify_ms', 'serialization_ms', 'layout_ms')
         stages = {key: self.stages.get(key, 0) for key in keys}
         for call in self.calls:
             key = 'llm_fallback_ms' if call.get('fallback') else 'llm_corrective_ms' if call.get('corrective') else 'llm_primary_ms'
@@ -45,7 +51,7 @@ class PerformanceProfile:
             values = [c.get('output_tokens') for c in self.calls if c.get('operation') == name]
             return None if any(v is None for v in values) else sum(values)
         return {'request_total_ms': round((perf_counter()-self.started)*1000, 2),
-                **stages, 'calls': self.calls, 'attempt_count': sum(c.get('http_attempts', 1) for c in self.calls),
+                **stages, 'stage_events': self.stage_events, 'calls': self.calls, 'attempt_count': sum(c.get('http_attempts', 1) for c in self.calls),
                 'corrective_retry_count': self.graph_corrective_count + sum(bool(c.get('json_corrective')) for c in self.calls),
                 'validation_error_count': self.validation_error_count,
                 'validation_codes': self.validation_codes,
@@ -84,14 +90,38 @@ def corrective_metrics(reports):
 def add_stage(name, started):
     current = profile.get()
     if current:
-        current.add(name, (perf_counter()-started)*1000)
+        current.add(name, (perf_counter()-started)*1000, started=started)
 
 
-def record_call(entry):
+def utc_now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+CALL_FIELDS = frozenset({
+    'provider', 'model', 'operation', 'reasoning_effort', 'response_format',
+    'system_prompt_chars', 'user_payload_chars', 'prompt_size_chars', 'schema_chars',
+    'max_tokens', 'corrective', 'json_corrective', 'output_budget_retry', 'fallback',
+    'input_tokens', 'output_tokens', 'reasoning_tokens', 'http_status', 'response_model',
+    'cost_rub', 'finish_reason', 'http_attempts', 'duration_ms', 'failure_class',
+    'timeout_phase', 'started_at', 'ended_at', 'attempt', 'ttft_ms', 'streaming',
+    'retry_reason', 'format_attempts',
+})
+
+
+def record_call(entry, *, secrets=()):
+    # Allow only metric fields, never request bodies, headers or customer text.
+    safe = {key: value for key, value in entry.items() if key in CALL_FIELDS}
+    for key, value in safe.items():
+        if isinstance(value, str):
+            for secret in secrets:
+                if secret:
+                    value = value.replace(secret, '[REDACTED]')
+            safe[key] = value
     current = profile.get()
     if current:
-        current.calls.append(entry)
-    logging.getLogger('pulse.llm').info('llm_performance %s', json.dumps(entry))
+        current.calls.append(safe)
+    logging.getLogger('pulse.llm').info('llm_performance %s', json.dumps(safe))
+    return safe
 
 
 class RequestLogContext(logging.Filter):

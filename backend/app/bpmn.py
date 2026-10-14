@@ -219,7 +219,9 @@ def build_bpmn(p: ProcessDefinition) -> str:
     child(collaboration, 'bpmn:participant', id=pool_id, name=p.name, processRef=p.id)
     diagram = child(root, 'bpmndi:BPMNDiagram', id=allocate('Diagram'))
     plane = child(diagram, 'bpmndi:BPMNPlane', id=allocate('Plane'), bpmnElement=collaboration_id)
+    layout_started = perf_counter()
     bounds, lane_y, heights, width, height = layout(p)
+    add_stage('layout_ms', layout_started)
     def shape(element_id, box, horizontal=False):
         attrs = {'id': allocate('Shape_' + element_id), 'bpmnElement': element_id}
         if horizontal:

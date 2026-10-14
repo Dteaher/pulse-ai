@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from .base import LLMProvider, ProviderError
 from .common import prompt_text, performance_prompt, validated_json, corrective_message, explicit_unknown
 from .performance import compact_process, operation_budget, call_context
-from ...telemetry import record_call
+from ...telemetry import record_call, utc_now
 from ...models import ProcessDefinition, ClarificationResult, ModificationResult, AuditResult, AmbiguityAnalysis, ProcessPreparation, ProcessPatch, ModificationPreparation
 
 
@@ -142,6 +142,7 @@ class VertexGeminiProvider(LLMProvider):
                  'json_corrective': call_context.get().get('json_corrective', False),
                  'fallback': call_context.get().get('fallback', False), 'input_tokens': None, 'output_tokens': None}
         started = perf_counter()
+        entry.update(started_at=utc_now(), attempt=self.attempt_count+1, ttft_ms=None, streaming=False, response_format='json_schema', retry_reason='json_validation' if call_context.get().get('json_corrective') else 'graph_validation' if entry['corrective'] else None)
         try:
             if self.performance_enabled:
                 loop = asyncio.get_running_loop()
@@ -187,7 +188,8 @@ class VertexGeminiProvider(LLMProvider):
             raise ProviderError(f'Vertex вернул HTTP {code}. Проверьте модель и настройки Google Cloud.') from exc
         finally:
             entry['duration_ms'] = round((perf_counter()-started)*1000, 2)
-            record_call(entry)
+            entry['ended_at'] = utc_now()
+            record_call(entry, secrets=(self.key,))
 
     async def parse_process(self, text, correction=''):
         return await self._request('extraction', {'description': text}, ProcessDefinition, correction)

@@ -3,6 +3,8 @@
 Processes remain independent control-flow graphs. Messages affect presentation
 alignment only, never graph reachability or incoming/outgoing sequence refs.
 """
+from time import perf_counter
+from .telemetry import add_stage
 import json
 from collections import defaultdict, deque
 from lxml import etree as E
@@ -61,7 +63,9 @@ def build_collaboration(p: ProcessDefinition) -> str:
         child(collab, 'bpmn:messageFlow', id=f.id, sourceRef=f.source, targetRef=f.target, name=f.name)
     diagram = child(root, 'bpmndi:BPMNDiagram', id=allocate('Diagram'))
     plane = child(diagram, 'bpmndi:BPMNPlane', id=allocate('Plane'), bpmnElement=p.id)
+    layout_started = perf_counter()
     bounds, lane_y, heights, pool_boxes = collaboration_layout(p, ordered)
+    add_stage('layout_ms', layout_started)
     def shape(key, box, horizontal=False):
         attrs = dict(id=allocate('Shape_' + key), bpmnElement=key)
         if horizontal: attrs['isHorizontal'] = 'true'

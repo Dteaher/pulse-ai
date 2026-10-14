@@ -7,7 +7,7 @@ from pydantic import ValidationError
 from .base import LLMProvider, ProviderError, LLMMessage
 from .common import validated_json, corrective_message, prompt_text, performance_prompt, explicit_unknown
 from .performance import compact_process, operation_budget, call_context
-from ...telemetry import record_call
+from ...telemetry import record_call, utc_now
 from .structured_output import response_content
 from ...models import ProcessDefinition, AuditResult, ClarificationResult, ModificationResult, AmbiguityAnalysis, ProcessPreparation, ProcessPatch, ModificationPreparation
 
@@ -210,7 +210,11 @@ class OpenAICompatibleProvider(LLMProvider):
                  'json_corrective': call_context.get().get('json_corrective', False),
                  'output_budget_retry': call_context.get().get('output_budget_retry', False),
                  'fallback': call_context.get().get('fallback', False),
-                 'input_tokens': None, 'output_tokens': None}
+                 'input_tokens': None, 'output_tokens': None,
+                 'started_at': utc_now(), 'attempt': before_attempts + 1,
+                 'ttft_ms': None, 'streaming': False,
+                 'retry_reason': 'json_validation' if call_context.get().get('json_corrective') else 'output_truncated' if call_context.get().get('output_budget_retry') else 'graph_validation' if self._corrective else None,
+                 'format_attempts': [body.get('response_format', {}).get('type', 'text')]}
         try:
             client = self.client()
             self.attempt_count += 1
@@ -228,6 +232,8 @@ class OpenAICompatibleProvider(LLMProvider):
                     body.pop('response_format', None)
                 if not body['messages'][0]['content'].endswith(schema_prompt):
                     body['messages'][0]['content'] += schema_prompt
+                entry['format_attempts'].append(body.get('response_format', {}).get('type', 'text'))
+                entry['retry_reason'] = 'unsupported_response_format'
                 self.attempt_count += 1
                 response = await client.post(self.base_url + '/chat/completions', headers=self.headers(), json=body)
             if self.debug_raw_response:
@@ -305,8 +311,9 @@ class OpenAICompatibleProvider(LLMProvider):
             entry['response_format'] = body.get('response_format', {}).get('type', 'text')
             entry['http_attempts'] = self.attempt_count - before_attempts
             entry['duration_ms'] = round((perf_counter()-started)*1000, 2)
-            self.call_metrics.append(entry.copy())
-            record_call(entry)
+            entry['ended_at'] = utc_now()
+            safe = record_call(entry, secrets=(self.key,))
+            self.call_metrics.append(safe.copy())
         # Pydantic ValidationError is corrected inside _request before returning.
 
     async def parse_process(self, text, correction=''):

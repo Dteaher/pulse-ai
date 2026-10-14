@@ -142,6 +142,8 @@ def create_app(settings=None, provider: LLMProvider | None = None):
                     result['timings'] = {key: 0 for key in result['timings']}
                 if result.get('metadata'):
                     result['metadata'] = result['metadata'].model_copy(update={'attempts': 0})
+        if active.llm_detailed_metrics_enabled and measured and result.get('metadata'):
+            result['metadata'] = result['metadata'].model_copy(update={'performance': measured.report()})
         encode_started = perf_counter()
         encoded = jsonable_encoder(result)
         if measured:

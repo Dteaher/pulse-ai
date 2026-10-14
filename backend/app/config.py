@@ -55,6 +55,7 @@ class Settings(BaseSettings):
     llm_business_coverage_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
     llm_doctor_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
     llm_corrective_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
+    llm_detailed_metrics_enabled: bool = False
     llm_performance_enabled: bool = False
     llm_debug_raw_response: bool = False
     llm_output_retry_enabled: bool = False

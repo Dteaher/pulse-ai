@@ -1,0 +1,41 @@
+[
+  {
+    "case": "simple",
+    "gpt61_seconds": 33.85,
+    "gpt61_http_status": 200,
+    "gpt61_bpmn": true,
+    "gpt61_usage": {
+      "input_tokens": 5363,
+      "output_tokens": 948,
+      "complete": true
+    },
+    "polza_cost_rub": 0.15072495,
+    "polza_seconds": 33.95
+  },
+  {
+    "case": "medium",
+    "gpt61_seconds": 97.01,
+    "gpt61_http_status": 200,
+    "gpt61_bpmn": true,
+    "gpt61_usage": {
+      "input_tokens": 5752,
+      "output_tokens": 2631,
+      "complete": true
+    },
+    "polza_cost_rub": 0.18378733,
+    "polza_seconds": 31.64
+  },
+  {
+    "case": "complex",
+    "gpt61_seconds": 128.46,
+    "gpt61_http_status": 502,
+    "gpt61_bpmn": false,
+    "gpt61_usage": {
+      "input_tokens": 1511,
+      "output_tokens": 148,
+      "complete": false
+    },
+    "polza_cost_rub": 0.44135415,
+    "polza_seconds": 50.79
+  }
+]

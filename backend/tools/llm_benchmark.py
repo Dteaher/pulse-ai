@@ -26,6 +26,7 @@ import app.process_routes as routes
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--continue-after-failed-complex', action='store_true', help='Explicit all-scenario diagnostics: medium may follow failed complex; simple must still pass')
     parser.add_argument('--max-generations', type=int, choices=range(1,11), default=5, help='Increase only after explicit approval')
     parser.add_argument('--model', default='gpt-6-sol')
     parser.add_argument('--provider', choices=['multiai', 'polza'], default='multiai')
@@ -50,7 +51,7 @@ def main():
     ledger_file = args.output / 'generation-ledger.json'
     ledger = json.loads(ledger_file.read_text()) if ledger_file.exists() else []
     if not args.coverage and not args.force_primary and args.case != 'simple':
-        prerequisite = 'simple' if args.case == 'complex' else 'complex'
+        prerequisite = 'simple' if args.case == 'complex' or args.continue_after_failed_complex else 'complex'
         successes = [item for item in ledger if prerequisite+'-'+args.provider+'-'+args.model in item['run'] and item.get('xml_received')]
         if not successes or not any((args.output/item['run']/'semantic-checks.json').exists() and json.loads((args.output/item['run']/'semantic-checks.json').read_text()).get('passed') for item in successes):
             raise SystemExit('STOP: prerequisite semantic benchmark has not passed')

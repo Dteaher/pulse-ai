@@ -49,7 +49,7 @@ def build_collaboration(p: ProcessDefinition) -> str:
         for f in p.flows:
             if membership[f.source] != pool.id: continue
             element = child(proc, 'bpmn:sequenceFlow', id=f.id, sourceRef=f.source, targetRef=f.target, name=f.name)
-            if f.condition and not f.is_default:
+            if f.condition:
                 write_condition(element, f.condition)
     collab = child(root, 'bpmn:collaboration', id=p.id, name=p.name)
     child(collab, 'bpmn:documentation').text = p.description
@@ -79,11 +79,11 @@ def build_collaboration(p: ProcessDefinition) -> str:
     def overlaps(a,b):
         x,y,w,h=a;tx,ty,tw,th=b
         return x<tx+tw and tx<x+w and y<ty+th and ty<y+h
-    def place_label(x,y,role,message=False):
+    def place_label(x,y,role,message=False,preferred=()):
         # Lane/gap corridors keep label rectangles outside activities. Pick the
         # closest free position; do not stack all branch labels at the source.
         ys = [y] if message else [y,lane_y[role]+5,lane_y[role]+40]
-        candidates = [(x+dx,cy,130,30) for cy in ys for dx in (0,145,-145,290,-290,435,-435)]
+        candidates = list(preferred) + [(x+dx,cy,130,30) for cy in ys for dx in (0,145,-145,290,-290,435,-435)]
         for box in candidates:
             if box[0]<185:continue
             if not any(overlaps(box,b) for b in list(bounds.values())+labels):
@@ -139,12 +139,25 @@ def build_collaboration(p: ProcessDefinition) -> str:
                 x,y=points[0][0]+8,points[0][1]-40
             if not message:
                 x,y=x,max(y,lane_y[node_roles[f.source]]+5)
-            box=place_label(x,y,node_roles[f.source],message)
+            preferred=[]
+            # Short conditional branches have no room for a 130px label in the
+            # narrow gateway/task gutter. Place it adjacent to its own target,
+            # rather than shifting it beyond unrelated actions or across lanes.
+            if not message and f.condition and 0 < tx-sx < 260:
+                px=tx+tw/2-65
+                py=ty-34 if ty+th/2 < sy+sh/2 else ty+th+4
+                pool_box=pool_boxes[membership[f.source]]
+                candidate=(px,py,130,30)
+                if px>=pool_box[0] and px+130<=pool_box[0]+pool_box[2] and py>=pool_box[1] and py+30<=pool_box[1]+pool_box[3]:
+                    preferred.append(candidate)
+            box=place_label(x,y,node_roles[f.source],message,preferred)
             child(label, 'dc:Bounds', **dict(zip(('x','y','width','height'),box)))
     xml = E.tostring(root, encoding='unicode', pretty_print=True)
     validate_xml(xml)
     from .xml_validation import validate_document, require_valid_document
     require_valid_document(validate_document(xml, complete_di=True, check_xsd=False))
+    from .logic_audit import require_xml_fidelity
+    require_xml_fidelity(p, xml)
     return xml
 
 

@@ -77,6 +77,7 @@
     {
       "id": "Reply",
       "type": "exclusive_gateway",
+      "decision_basis": "event",
       "name": "Какой ответ получен?",
       "participant_id": "Client",
       "source_text": "",

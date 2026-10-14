@@ -14,6 +14,11 @@ def is_message_wait(p, gateway):
         return True
     nodes = {n.id:n for n in p.nodes}
     outs = [f for f in p.flows if f.source == gateway.id]
+    # Receives after a data choice do not imply a race between future events.
+    # Explicit branch conditions/defaults are business evidence, never erase them
+    # merely because each successor also has an incoming message.
+    if any(f.condition or f.is_default for f in outs):
+        return False
     ins = [f for f in p.flows if f.target == gateway.id]
     message_targets = {f.target for f in p.message_flows}
     # A preceding receive already obtained data; its status may be a data decision.
@@ -90,8 +95,12 @@ def polish_process(process: ProcessDefinition) -> ProcessDefinition:
         initial=[f for f in messages if first_send(f.source)]
         if not other_inputs and messages:initial=messages[:1]
         if receiver.type!='receive_task' or receiver.participant_id!=start.participant_id or len(successors)!=1 or len(initial)!=1:continue
+        # Folding must not discard an outgoing message or a labelled transition.
+        # Such receives remain real activities in the canonical business graph.
+        if any(f.source==receiver.id for f in p.message_flows) or outs[0].name or successors[0].name:
+            continue
         start.event_definition='message'
-        start.name='Получено сообщение'+(': '+initial[0].name if initial[0].name else '')
+        start.name=receiver.name or 'Получено сообщение'+(': '+initial[0].name if initial[0].name else '')
         start.source_text=receiver.source_text or start.source_text
         initial[0].target=start.id
         if not other_inputs:

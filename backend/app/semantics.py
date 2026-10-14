@@ -82,7 +82,7 @@ def _validate_local_semantics(p: ProcessDefinition) -> list[Issue]:
                     continue
                 seen.add(key)
                 node = nodes[key]
-                if node.type.endswith('gateway'):
+                if node.type.endswith('gateway') and len(outgoing[key]) > 1:
                     continue
                 target_sign = None if node.type != 'end_event' and re.match(r'\s*(провер|оцен|рассмотр)', node.name, re.I) else outcome(node.name)
                 if target_sign is not None and target_sign != sign:

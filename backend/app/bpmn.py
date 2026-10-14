@@ -168,8 +168,7 @@ def layout(p: ProcessDefinition):
 
 def build_bpmn(p: ProcessDefinition) -> str:
     problems = [i for i in validate_process(p) if i.severity == 'error']
-    if p.pools and not problems:
-        from .quality import validate_labels
+    if not problems:
         from .semantics import validate_semantics
         problems += [i for i in validate_semantics(p) if i.severity == 'error']
     if problems:
@@ -213,7 +212,7 @@ def build_bpmn(p: ProcessDefinition) -> str:
             child(element, 'bpmn:messageEventDefinition', id=allocate('MessageEvent_' + n.id))
     for f in p.flows:
         element = child(process, 'bpmn:sequenceFlow', id=f.id, sourceRef=f.source, targetRef=f.target, name=f.name)
-        if f.condition and not f.is_default:
+        if f.condition:
             write_condition(element, f.condition)
     collaboration_id, pool_id = allocate('Collaboration'), allocate('Pool')
     collaboration = child(root, 'bpmn:collaboration', id=collaboration_id)
@@ -257,6 +256,8 @@ def build_bpmn(p: ProcessDefinition) -> str:
     validate_xml(xml)
     from .xml_validation import validate_document, require_valid_document
     require_valid_document(validate_document(xml, complete_di=True, check_xsd=False))
+    from .logic_audit import require_xml_fidelity
+    require_xml_fidelity(p, xml)
     return xml
 
 

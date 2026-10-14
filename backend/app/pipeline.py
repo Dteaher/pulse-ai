@@ -19,7 +19,7 @@ from .diagnostics import PipelineFailure
 logger = logging.getLogger('pulse.validation')
 
 
-async def generate_valid(call, *, semantic_check=False, provider=None, development=False, correction='', max_retries=1, source_text='', coverage_answers=None):
+async def generate_valid(call, *, semantic_check=False, provider=None, development=False, correction='', max_retries=1, source_text='', coverage_answers=None, audit_trace=None):
     started = perf_counter()
     last_reason = ''
     timings = {key: 0.0 for key in ('llm_parse_ms', 'normalization_ms', 'semantic_validation_ms', 'bpmn_build_ms', 'xsd_validation_ms', 'post_validation_ms')}
@@ -28,6 +28,9 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
         try:
             parse_started = perf_counter()
             process = await call(correction)
+            original = process.model_copy(deep=True) if audit_trace is not None else None
+            if audit_trace is not None:
+                audit_trace.append({'attempt': attempt + 1, 'stage': 'provider_output', 'process': original.model_dump()})
             timings['llm_parse_ms'] += round((perf_counter() - parse_started) * 1000, 2)
             # A business question is not an invalid graph. Never repair it by guessing.
             if any(a.severity == 'critical' for a in process.ambiguities):
@@ -35,6 +38,10 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
                         'attempts': attempt + 1, 'semantic_warnings': [], 'timings': timings}
             normalized = perf_counter()
             process = polish_process(process)
+            if audit_trace is not None:
+                from .logic_audit import process_diff
+                audit_trace.append({'attempt': attempt + 1, 'stage': 'normalization',
+                                    'process': process.model_dump(), 'changes': process_diff(original, process)})
             timings['normalization_ms'] += round((perf_counter() - normalized) * 1000, 2)
             add_stage('normalization_ms', normalized)
             priority = ['missing_branch', 'unclear_condition', 'unclear_parallelism', 'unclear_sequence', 'unclear_participant', 'unclear_result', 'unclear_end', 'other']
@@ -66,6 +73,9 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
                 if current:
                     current.validation_error_count += len(coverage_errors)
                     current.validation_codes.extend(i.code for i in coverage_errors)
+            if audit_trace is not None:
+                audit_trace.append({'attempt': attempt + 1, 'stage': 'validation',
+                                    'issues': [i.model_dump() for i in issues]})
             if development:
                 logger.info('process_validation duration_ms=%.1f', (perf_counter() - validation_started) * 1000)
                 metadata = provider.metadata if provider else None
@@ -88,7 +98,7 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
                             candidate = apply_repair(process, errors, patch)
                             async def repaired(_):
                                 return candidate
-                            checked_result = await generate_valid(repaired, semantic_check=semantic_check, provider=provider, max_retries=0, source_text=source_text, coverage_answers=coverage_answers)
+                            checked_result = await generate_valid(repaired, semantic_check=semantic_check, provider=provider, max_retries=0, source_text=source_text, coverage_answers=coverage_answers, audit_trace=audit_trace)
                             assert_preservation(process, checked_result['process'], patch)
                             if current:
                                 current.patch_success_count += 1
@@ -127,6 +137,12 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
             build_started = perf_counter()
             try:
                 xml = build_bpmn(process)
+                if audit_trace is not None:
+                    from .logic_audit import compare_process_xml
+                    audit_trace.append({'attempt': attempt + 1, 'stage': 'bpmn_xml', 'xml': xml,
+                                        'differences': compare_process_xml(process, xml)})
+                from .logic_audit import require_xml_fidelity
+                require_xml_fidelity(process, xml)
             except (ValueError, etree.LxmlError):
                 logger.exception('bpmn_build_failed attempt=%s', attempt + 1)
                 raise build_failure() from None
@@ -159,7 +175,7 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
             if development:
                 logger.info('validation attempt=%s corrective_retry=%s errors=%s', attempt + 1, attempt, correction)
     if provider is not None and provider.use_validation_fallback():
-        result = await generate_valid(call, semantic_check=semantic_check, provider=provider, development=development, correction=correction, max_retries=max_retries, source_text=source_text, coverage_answers=coverage_answers)
+        result = await generate_valid(call, semantic_check=semantic_check, provider=provider, development=development, correction=correction, max_retries=max_retries, source_text=source_text, coverage_answers=coverage_answers, audit_trace=audit_trace)
         result['attempts'] += max_retries + 1
         for key, duration in timings.items():
             result['timings'][key] = round(result['timings'].get(key, 0) + duration, 2)

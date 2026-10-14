@@ -1,4 +1,5 @@
 from .openai_compatible_provider import OpenAICompatibleProvider
+from .performance import operation_reasoning
 
 
 class MultiAIProvider(OpenAICompatibleProvider):
@@ -11,6 +12,5 @@ class MultiAIProvider(OpenAICompatibleProvider):
         self.reasoning_effort = reasoning_effort
 
     def request_options(self):
-        operation = 'corrective' if getattr(self, '_corrective', False) else getattr(self, '_operation', '')
-        effort = getattr(self, 'reasoning_by_operation', {}).get(operation) or self.reasoning_effort
+        effort = operation_reasoning(self)
         return {'reasoning_effort': effort} if effort else {}

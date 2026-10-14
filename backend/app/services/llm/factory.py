@@ -7,6 +7,8 @@ from .mock_provider import MockLLMProvider
 from .router import LLMRouter
 from .cooldown import cooldowns
 from .multiai_provider import MultiAIProvider
+from .polza_provider import PolzaProvider
+from .performance import OPERATION_FIELDS
 from .gemini_provider import GeminiProvider
 from .vertex_gemini_provider import VertexGeminiProvider
 
@@ -32,8 +34,9 @@ def _create(settings: Settings, name: str, *, fallback=False) -> LLMProvider:
         return OpenAIProvider(key, url, model, **options)
     if name == 'openai_compatible':
         return OpenAICompatibleProvider(key, url, model, **options)
-    if name == 'multiai':
-        return MultiAIProvider(key, url, model, reasoning_effort=settings.llm_reasoning_effort,
+    if name in ('multiai', 'polza'):
+        adapter = PolzaProvider if name == 'polza' else MultiAIProvider
+        return adapter(key, url, model, reasoning_effort=settings.llm_reasoning_effort,
                                **options)
     if name == 'gemini':
         return GeminiProvider(key, url, model, **options)
@@ -43,7 +46,7 @@ def _create(settings: Settings, name: str, *, fallback=False) -> LLMProvider:
     if name == 'yandex':
         folder_id = settings.fallback_llm_folder_id if fallback else settings.yandex_folder_id
         return YandexProvider(key, url, model, folder_id=folder_id, **options)
-    raise ProviderError('Неизвестный LLM_PROVIDER. Используйте multiai, vertex_gemini, gemini, openai, openai_compatible, yandex или mock.')
+    raise ProviderError('Неизвестный LLM_PROVIDER. Используйте polza, multiai, vertex_gemini, gemini, openai, openai_compatible, yandex или mock.')
 
 
 def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
@@ -63,14 +66,14 @@ def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
         provider.combined_parse_enabled = settings.llm_combined_parse_enabled
         provider.repair_max_tokens = settings.llm_repair_max_tokens
         if settings.llm_performance_enabled:
-            provider.operation_budgets = {'extraction': settings.llm_parse_max_tokens,
-                'preparation': settings.llm_parse_max_tokens, 'ambiguity': settings.llm_clarify_max_tokens,
-                'clarification': settings.llm_parse_max_tokens, 'modification': settings.llm_modify_max_tokens,
-                'audit': settings.llm_doctor_max_tokens, 'business_coverage': settings.llm_doctor_max_tokens, 'corrective': settings.llm_corrective_max_tokens}
-            provider.reasoning_by_operation = {'extraction': settings.llm_parse_reasoning_effort,
-                'preparation': settings.llm_parse_reasoning_effort, 'ambiguity': settings.llm_clarify_reasoning_effort,
-                'clarification': settings.llm_clarify_reasoning_effort, 'modification': settings.llm_modify_reasoning_effort,
-                'audit': settings.llm_doctor_reasoning_effort, 'corrective': settings.llm_corrective_reasoning_effort}
+            provider.operation_budgets = {
+                operation: getattr(settings, f'llm_{token_field}_max_tokens')
+                for operation, (token_field, _) in OPERATION_FIELDS.items()
+            }
+            provider.reasoning_by_operation = {
+                operation: getattr(settings, f'llm_{reasoning_field}_reasoning_effort')
+                for operation, (_, reasoning_field) in OPERATION_FIELDS.items()
+            }
         return provider
     policy(primary)
     primary.omit_token_limit = settings.primary_llm_omit_token_limit

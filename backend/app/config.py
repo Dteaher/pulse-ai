@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_BASE_URLS = {
     'openai': 'https://api.openai.com/v1',
     'yandex': 'https://ai.api.cloud.yandex.net/v1',
+    'polza': 'https://polza.ai/api/v1',
     'multiai': 'https://multiai.store/v1',
     'gemini': 'https://generativelanguage.googleapis.com/v1beta/openai',
 }
@@ -48,6 +49,7 @@ class Settings(BaseSettings):
     llm_parse_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
     llm_clarify_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
     llm_modify_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
+    llm_business_coverage_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
     llm_doctor_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
     llm_corrective_reasoning_effort: Literal['low', 'medium', 'high'] | None = None
     llm_performance_enabled: bool = False

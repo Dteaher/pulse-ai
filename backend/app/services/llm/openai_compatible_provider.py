@@ -196,7 +196,8 @@ class OpenAICompatibleProvider(LLMProvider):
         started = perf_counter()
         before_attempts = self.attempt_count
         entry = {'provider': self.name, 'model': self.model, 'operation': prompt,
-                 'reasoning_effort': body.get('reasoning_effort'),
+                 'reasoning_effort': body.get('reasoning_effort') or body.get('reasoning', {}).get('effort'),
+                 'response_format': body.get('response_format', {}).get('type', 'text'),
                  'system_prompt_chars': len(messages[0].content),
                  'user_payload_chars': sum(len(m.content) for m in messages[1:]),
                  'prompt_size_chars': sum(len(m.content) for m in messages),
@@ -245,6 +246,8 @@ class OpenAICompatibleProvider(LLMProvider):
             usage = data.get('usage') or {}
             usage = usage if isinstance(usage,dict) else {}
             entry['response_model'] = data.get('model')
+            entry['cost_rub'] = usage.get('cost_rub')
+            entry['response_format'] = body.get('response_format', {}).get('type', 'text')
             entry['input_tokens'] = usage.get('prompt_tokens', usage.get('input_tokens'))
             entry['output_tokens'] = usage.get('completion_tokens', usage.get('output_tokens'))
             details = usage.get('completion_tokens_details') or {}
@@ -294,6 +297,7 @@ class OpenAICompatibleProvider(LLMProvider):
         except (KeyError, IndexError, TypeError, json.JSONDecodeError) as exc:
             raise ValueError('Ответ провайдера не содержит корректный JSON.') from exc
         finally:
+            entry['response_format'] = body.get('response_format', {}).get('type', 'text')
             entry['http_attempts'] = self.attempt_count - before_attempts
             entry['duration_ms'] = round((perf_counter()-started)*1000, 2)
             record_call(entry)

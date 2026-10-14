@@ -1,6 +1,33 @@
 """Small operation policy; provider-specific wire options remain in adapters."""
 from contextvars import ContextVar
 
+OPERATION_FIELDS = {
+    'extraction': ('parse', 'parse'),
+    'preparation': ('parse', 'parse'),
+    'ambiguity': ('clarify', 'clarify'),
+    'clarification': ('parse', 'clarify'),
+    'modification': ('modify', 'modify'),
+    'audit': ('doctor', 'doctor'),
+    'business_coverage': ('doctor', 'business_coverage'),
+    'corrective': ('corrective', 'corrective'),
+}
+
+
+def operation_name(operation, corrective=False):
+    if corrective or operation == 'corrective_patch':
+        return 'corrective'
+    return {
+        'preparation_v2': 'preparation',
+        'modification_patch': 'modification',
+        'preparation_patch': 'modification',
+    }.get(operation, operation)
+
+
+def operation_reasoning(provider):
+    name = operation_name(getattr(provider, '_operation', ''), getattr(provider, '_corrective', False))
+    return getattr(provider, 'reasoning_by_operation', {}).get(name) or provider.reasoning_effort
+
+
 call_context = ContextVar('pulse_llm_call', default={})
 
 
@@ -14,7 +41,7 @@ def operation_budget(provider, operation, payload, corrective=False):
     if operation == 'structural_repair':
         return min(provider.max_tokens, getattr(provider, 'repair_max_tokens', 1600))
     budgets = getattr(provider, 'operation_budgets', {})
-    name = 'corrective' if corrective or operation == 'corrective_patch' else 'modification' if operation in ('modification_patch', 'preparation_patch') else operation
+    name = operation_name(operation, corrective)
     configured = budgets.get(name)
     if not configured:
         return provider.max_tokens

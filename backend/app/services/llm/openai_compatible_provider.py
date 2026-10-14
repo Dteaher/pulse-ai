@@ -47,10 +47,12 @@ class OpenAICompatibleProvider(LLMProvider):
     supports_preparation = True
     supports_structural_repair = True
 
-    def __init__(self, key, base_url, model, structured=None, timeout=90, max_tokens=16000, max_retries=2):
+    def __init__(self, key, base_url, model, structured=None, timeout=90, max_tokens=16000, max_retries=2, connect_timeout=10, trust_env=True):
         self.key, self.base_url, self.model = key.strip(), base_url.strip().rstrip('/'), model.strip()
         self.structured, self.timeout = structured, timeout
         self.max_tokens = max_tokens
+        self.connect_timeout = connect_timeout
+        self.trust_env = trust_env
         self.max_retries = max_retries
         self.attempt_count = 0
         self.performance_enabled = False
@@ -62,17 +64,19 @@ class OpenAICompatibleProvider(LLMProvider):
         self.parse_retry_max_tokens = 16000
         self.prompt_hints = ()
         self._clients = {}
+        self.call_metrics = []
 
     def new_request(self):
         from copy import copy
         result = copy(self)
         result.attempt_count = 0
+        result.call_metrics = []
         return result
 
     def client(self):
         loop = asyncio.get_running_loop()
         if loop not in self._clients or self._clients[loop].is_closed:
-            self._clients[loop] = httpx.AsyncClient(timeout=httpx.Timeout(self.timeout, connect=min(10, self.timeout), pool=min(10, self.timeout)))
+            self._clients[loop] = httpx.AsyncClient(trust_env=self.trust_env, timeout=httpx.Timeout(self.timeout, connect=min(self.connect_timeout, self.timeout), pool=min(10, self.timeout)))
         return self._clients[loop]
 
     async def close(self):
@@ -271,6 +275,7 @@ class OpenAICompatibleProvider(LLMProvider):
                 raise ProviderError('Модель отказалась обрабатывать запрос. Уточните описание процесса.')
             return validated_json(content, model_class)
         except httpx.TimeoutException as exc:
+            entry['timeout_phase'] = type(exc).__name__
             raise ProviderError('Модель не ответила вовремя. Повторите запрос или проверьте настройки провайдера.', retryable=True, reason='timeout') from exc
         except httpx.HTTPStatusError as exc:
             code = exc.response.status_code
@@ -300,6 +305,7 @@ class OpenAICompatibleProvider(LLMProvider):
             entry['response_format'] = body.get('response_format', {}).get('type', 'text')
             entry['http_attempts'] = self.attempt_count - before_attempts
             entry['duration_ms'] = round((perf_counter()-started)*1000, 2)
+            self.call_metrics.append(entry.copy())
             record_call(entry)
         # Pydantic ValidationError is corrected inside _request before returning.
 

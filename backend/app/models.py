@@ -156,6 +156,15 @@ class LLMMetadata(StrictModel):
     model_used: str
     fallback_used: bool = False
     attempts: int = Field(default=1, ge=0)
+    provider_requested: str | None = None
+    model_requested: str | None = None
+    fallback_reason: str | None = None
+    generation_duration_ms: float | None = None
+    input_tokens: int | None = None
+    output_tokens: int | None = None
+    cost_rub: float | None = None
+    business_coverage_provider_used: str | None = None
+    business_coverage_model_used: str | None = None
 
 
 class ClarificationResult(StrictModel):

@@ -1,0 +1,799 @@
+{
+  "id": "contract_process",
+  "name": "Подготовка договора",
+  "description": "Описательный процесс подготовки договора. Два Pool: внешний клиент и компания. В компании пять дорожек: оператор, юридический отдел, служба безопасности, руководитель, менеджер.\nКлиент начинает процесс, готовит заявку и отправляет её компании. Компания начинает процесс входящим сообщением «Заявка».\nОператор проверяет комплектность документов. XOR «Документы полные?»: если нет, оператор отправляет клиенту запрос доработки и ожидает исправленные документы. Клиент получает запрос, исправляет документы и отправляет их компании. Оператор получает исправленные документы и возвращается именно к проверке комплектности в текущем процессе.\nЕсли документы полные, запускаются одновременно две проверки: юридический отдел проверяет юридическую корректность, служба безопасности проверяет риски. Использовать AND split и AND join: обе проверки должны закончиться прежде, чем руководитель рассмотрит заявку.\nРуководитель рассматривает результаты обеих проверок и принимает решение XOR «Заявка одобрена?». Если заявка отклонена, менеджер отправляет клиенту уведомление об отказе, компания заканчивает процесс результатом «Отказ отправлен». Клиент получает отказ и заканчивает свой процесс результатом «Отказ получен».\nЕсли заявка одобрена, менеджер составляет проект договора и передаёт его руководителю на согласование внутри компании. Руководитель проверяет проект договора и принимает отдельное XOR-решение «Договор согласован?». Если нет, менеджер дорабатывает договор и повторно передаёт руководителю. Возврат ведёт именно к проверке проекта договора, не к решению по заявке и не к проверке документов. Если да, менеджер отправляет клиенту согласованный договор; компания завершает процесс результатом «Договор отправлен».\nКлиент после первоначальной или повторной отправки документов ждёт одно из трёх внешних сообщений: запрос доработки, отказ, договор. Для этого ожидания нужен событийный шлюз. При получении договора клиент проверяет договор и завершает свой процесс результатом «Договор получен».\nПять MessageFlow: первичная заявка, запрос доработки, исправленные документы, отказ, согласованный договор. Передачи менеджер–руководитель проходят SequenceFlow между дорожками одного Pool, не MessageFlow.\nВетки «одобрено» и «отклонено» альтернативные, не синхронизируются AND join. Циклы исправления документов и доработки договора не имеют заданного лимита; не придумывать лимит, новые роли, условия стоимости, дополнительные согласования или другие действия.",
+  "participants": [
+    {
+      "id": "client",
+      "name": "Клиент",
+      "type": "external",
+      "kind": "external",
+      "pool_id": "client_pool"
+    },
+    {
+      "id": "operator",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "company_pool"
+    },
+    {
+      "id": "legal_department",
+      "name": "Юридический отдел",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "company_pool"
+    },
+    {
+      "id": "security_service",
+      "name": "Служба безопасности",
+      "type": "department",
+      "kind": "internal",
+      "pool_id": "company_pool"
+    },
+    {
+      "id": "manager",
+      "name": "Менеджер",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "company_pool"
+    },
+    {
+      "id": "leader",
+      "name": "Руководитель",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "company_pool"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "client_start",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начало процесса",
+      "participant_id": "client",
+      "source_text": "Клиент начинает процесс",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "prepare_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подготовить заявку",
+      "participant_id": "client",
+      "source_text": "готовит заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_application",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить заявку компании",
+      "participant_id": "client",
+      "source_text": "отправляет её компании",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "client_wait_gateway",
+      "type": "event_based_gateway",
+      "event_definition": "none",
+      "decision_basis": "event",
+      "name": "Ожидание сообщения",
+      "participant_id": "client",
+      "source_text": "Клиент после первоначальной или повторной отправки документов ждёт одно из трёх внешних сообщений: запрос доработки, отказ, договор. Для этого ожидания нужен событийный шлюз.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "receive_revision_request",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить запрос доработки",
+      "participant_id": "client",
+      "source_text": "Клиент получает запрос",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "revise_documents",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Исправить документы",
+      "participant_id": "client",
+      "source_text": "исправляет документы",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_corrected_documents",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить исправленные документы",
+      "participant_id": "client",
+      "source_text": "отправляет их компании",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "receive_refusal",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить отказ",
+      "participant_id": "client",
+      "source_text": "Клиент получает отказ",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "client_refusal_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отказ получен",
+      "participant_id": "client",
+      "source_text": "заканчивает свой процесс результатом «Отказ получен»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "receive_contract",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить договор",
+      "participant_id": "client",
+      "source_text": "При получении договора",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "check_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить договор",
+      "participant_id": "client",
+      "source_text": "клиент проверяет договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "client_contract_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Договор получен",
+      "participant_id": "client",
+      "source_text": "завершает свой процесс результатом «Договор получен»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "company_start",
+      "type": "start_event",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Заявка",
+      "participant_id": "operator",
+      "source_text": "Компания начинает процесс входящим сообщением «Заявка».",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "check_completeness",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить комплектность документов",
+      "participant_id": "operator",
+      "source_text": "Оператор проверяет комплектность документов.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "documents_complete_gateway",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Документы полные?",
+      "participant_id": "operator",
+      "source_text": "XOR «Документы полные?»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_revision_request",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить клиенту запрос доработки",
+      "participant_id": "operator",
+      "source_text": "оператор отправляет клиенту запрос доработки",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "receive_corrected_documents",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить исправленные документы",
+      "participant_id": "operator",
+      "source_text": "Оператор получает исправленные документы",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "checks_split",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Запустить проверки",
+      "participant_id": "operator",
+      "source_text": "Если документы полные, запускаются одновременно две проверки",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "legal_check",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить юридическую корректность",
+      "participant_id": "legal_department",
+      "source_text": "юридический отдел проверяет юридическую корректность",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "security_check",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить риски",
+      "participant_id": "security_service",
+      "source_text": "служба безопасности проверяет риски",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "checks_join",
+      "type": "parallel_gateway",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Объединить результаты проверок",
+      "participant_id": "operator",
+      "source_text": "обе проверки должны закончиться прежде, чем руководитель рассмотрит заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "review_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Рассмотреть результаты проверок",
+      "participant_id": "leader",
+      "source_text": "Руководитель рассматривает результаты обеих проверок",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "decide_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Принять решение по заявке",
+      "participant_id": "leader",
+      "source_text": "принимает решение XOR «Заявка одобрена?»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "application_approved_gateway",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Заявка одобрена?",
+      "participant_id": "leader",
+      "source_text": "XOR «Заявка одобрена?»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_refusal",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить клиенту уведомление об отказе",
+      "participant_id": "manager",
+      "source_text": "менеджер отправляет клиенту уведомление об отказе",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "company_refusal_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отказ отправлен",
+      "participant_id": "manager",
+      "source_text": "компания заканчивает процесс результатом «Отказ отправлен»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "draft_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Составить проект договора",
+      "participant_id": "manager",
+      "source_text": "менеджер составляет проект договора",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "submit_contract_for_approval",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Передать проект руководителю на согласование",
+      "participant_id": "manager",
+      "source_text": "передаёт его руководителю на согласование внутри компании",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "check_draft_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить проект договора",
+      "participant_id": "leader",
+      "source_text": "Руководитель проверяет проект договора",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "decide_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Принять решение о согласовании договора",
+      "participant_id": "leader",
+      "source_text": "принимает отдельное XOR-решение «Договор согласован?»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "contract_approved_gateway",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Договор согласован?",
+      "participant_id": "leader",
+      "source_text": "XOR-решение «Договор согласован?»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "revise_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Доработать договор",
+      "participant_id": "manager",
+      "source_text": "менеджер дорабатывает договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "resubmit_contract",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Повторно передать договор руководителю",
+      "participant_id": "manager",
+      "source_text": "повторно передаёт руководителю",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_approved_contract",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить клиенту согласованный договор",
+      "participant_id": "manager",
+      "source_text": "менеджер отправляет клиенту согласованный договор",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "company_contract_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Договор отправлен",
+      "participant_id": "manager",
+      "source_text": "компания завершает процесс результатом «Договор отправлен»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "Merge_client_wait_gateway",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Объединить пути",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "cf1",
+      "source": "client_start",
+      "target": "prepare_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf2",
+      "source": "prepare_application",
+      "target": "send_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf3",
+      "source": "send_application",
+      "target": "Merge_client_wait_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf4",
+      "source": "client_wait_gateway",
+      "target": "receive_revision_request",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf5",
+      "source": "receive_revision_request",
+      "target": "revise_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf6",
+      "source": "revise_documents",
+      "target": "send_corrected_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf7",
+      "source": "send_corrected_documents",
+      "target": "Merge_client_wait_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf8",
+      "source": "client_wait_gateway",
+      "target": "receive_refusal",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf9",
+      "source": "receive_refusal",
+      "target": "client_refusal_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf10",
+      "source": "client_wait_gateway",
+      "target": "receive_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf11",
+      "source": "receive_contract",
+      "target": "check_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf12",
+      "source": "check_contract",
+      "target": "client_contract_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf13",
+      "source": "company_start",
+      "target": "check_completeness",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf14",
+      "source": "check_completeness",
+      "target": "documents_complete_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf15",
+      "source": "documents_complete_gateway",
+      "target": "send_revision_request",
+      "name": "Нет",
+      "condition": "Документы неполные",
+      "is_default": false
+    },
+    {
+      "id": "cf16",
+      "source": "send_revision_request",
+      "target": "receive_corrected_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf17",
+      "source": "receive_corrected_documents",
+      "target": "check_completeness",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf18",
+      "source": "documents_complete_gateway",
+      "target": "checks_split",
+      "name": "Да",
+      "condition": "Документы полные",
+      "is_default": false
+    },
+    {
+      "id": "cf19",
+      "source": "checks_split",
+      "target": "legal_check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf20",
+      "source": "checks_split",
+      "target": "security_check",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf21",
+      "source": "legal_check",
+      "target": "checks_join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf22",
+      "source": "security_check",
+      "target": "checks_join",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf23",
+      "source": "checks_join",
+      "target": "review_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf24",
+      "source": "review_application",
+      "target": "decide_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf25",
+      "source": "decide_application",
+      "target": "application_approved_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf26",
+      "source": "application_approved_gateway",
+      "target": "send_refusal",
+      "name": "Отклонена",
+      "condition": "Заявка отклонена",
+      "is_default": false
+    },
+    {
+      "id": "cf27",
+      "source": "send_refusal",
+      "target": "company_refusal_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf28",
+      "source": "application_approved_gateway",
+      "target": "draft_contract",
+      "name": "Одобрена",
+      "condition": "Заявка одобрена",
+      "is_default": false
+    },
+    {
+      "id": "cf29",
+      "source": "draft_contract",
+      "target": "submit_contract_for_approval",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf30",
+      "source": "submit_contract_for_approval",
+      "target": "check_draft_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf31",
+      "source": "check_draft_contract",
+      "target": "decide_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf32",
+      "source": "decide_contract",
+      "target": "contract_approved_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf33",
+      "source": "contract_approved_gateway",
+      "target": "revise_contract",
+      "name": "Нет",
+      "condition": "Договор не согласован",
+      "is_default": false
+    },
+    {
+      "id": "cf34",
+      "source": "revise_contract",
+      "target": "resubmit_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf35",
+      "source": "resubmit_contract",
+      "target": "check_draft_contract",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf36",
+      "source": "contract_approved_gateway",
+      "target": "send_approved_contract",
+      "name": "Да",
+      "condition": "Договор согласован",
+      "is_default": false
+    },
+    {
+      "id": "cf37",
+      "source": "send_approved_contract",
+      "target": "company_contract_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_Merge_client_wait_gateway",
+      "source": "Merge_client_wait_gateway",
+      "target": "client_wait_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "client_pool",
+      "name": "Клиент",
+      "kind": "external"
+    },
+    {
+      "id": "company_pool",
+      "name": "Компания",
+      "kind": "internal"
+    }
+  ],
+  "message_flows": [
+    {
+      "id": "mf1",
+      "source": "send_application",
+      "target": "company_start",
+      "name": "Заявка"
+    },
+    {
+      "id": "mf2",
+      "source": "send_revision_request",
+      "target": "receive_revision_request",
+      "name": "Запрос доработки"
+    },
+    {
+      "id": "mf3",
+      "source": "send_corrected_documents",
+      "target": "receive_corrected_documents",
+      "name": "Исправленные документы"
+    },
+    {
+      "id": "mf4",
+      "source": "send_refusal",
+      "target": "receive_refusal",
+      "name": "Отказ"
+    },
+    {
+      "id": "mf5",
+      "source": "send_approved_contract",
+      "target": "receive_contract",
+      "name": "Согласованный договор"
+    }
+  ],
+  "ambiguities": [],
+  "assumptions": []
+}

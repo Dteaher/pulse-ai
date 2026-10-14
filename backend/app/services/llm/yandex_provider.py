@@ -5,13 +5,13 @@ class YandexProvider(OpenAICompatibleProvider):
     """Translate the common contract to Yandex AI Studio's compatible API."""
     name = 'yandex'
 
-    def __init__(self, key, base_url, model, structured=None, timeout=90, folder_id='', max_tokens=16000, max_retries=2):
+    def __init__(self, key, base_url, model, structured=None, timeout=90, folder_id='', max_tokens=16000, max_retries=2, connect_timeout=10, trust_env=True):
         self.folder_id = folder_id.strip()
         model = model.strip()
         if not self.folder_id and model.startswith('gpt://'):
             self.folder_id = model.split('/')[2]
         model_uri = f'gpt://{self.folder_id}/{model}' if model and not model.startswith('gpt://') and self.folder_id else model
-        super().__init__(key, base_url, model_uri, structured, timeout, max_tokens, max_retries)
+        super().__init__(key, base_url, model_uri, structured, timeout, max_tokens, max_retries, connect_timeout=connect_timeout, trust_env=trust_env)
 
     def missing_settings(self):
         missing = [name for name, value in [('LLM_API_KEY', self.key), ('YANDEX_FOLDER_ID или каталог в LLM_MODEL', self.folder_id), ('LLM_MODEL', self.model), ('LLM_BASE_URL', self.base_url)] if not value]

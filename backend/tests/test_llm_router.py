@@ -48,7 +48,12 @@ def test_router_failover_and_metadata(monkeypatch, failure):
     response = TestClient(create_app(settings())).post('/api/process/generate', json={'text': 'Описание заявки'})
     assert response.status_code == 200, response.text
     fallback = failure != 'success'
-    assert response.json()['metadata'] == {
+    metadata = response.json()['metadata']
+    assert metadata['provider_requested'] == 'openai_compatible'
+    assert metadata['model_requested'] == 'openai/gpt-oss-120b:free'
+    assert metadata['generation_duration_ms'] >= 0
+    assert metadata['cost_rub'] is None
+    assert {key: metadata[key] for key in ('provider_used', 'model_used', 'fallback_used', 'attempts')} == {
         'provider_used': 'yandex' if fallback else 'openai_compatible',
         'model_used': 'gpt://folder/backup' if fallback else 'openai/gpt-oss-120b:free',
         'fallback_used': fallback,

@@ -1,0 +1,414 @@
+{
+  "id": "application_process",
+  "name": "Подача и регистрация заявки",
+  "description": "Два независимых участника (два Pool): внешний клиент и компания. Внутри компании одна дорожка — оператор.\nКлиент начинает свой процесс, составляет заявку и отправляет её компании. Компания запускает свой процесс получением этой заявки, после чего оператор проверяет документы.\nОператор решает «Документы полные?». Если неполные, оператор отправляет клиенту запрос исправления и ждёт исправленную заявку.\nКлиент после отправки ждёт одно из двух внешних сообщений: запрос исправления или подтверждение принятия заявки. При запросе исправления клиент исправляет документы, отправляет исправленную заявку компании и снова ждёт один из этих двух ответов.\nОператор после получения исправленной заявки возвращается именно к проверке документов, а не к старту нового процесса.\nЕсли документы полные, оператор регистрирует заявку, отправляет клиенту подтверждение принятия и завершает процесс компании результатом «Заявка зарегистрирована».\nКлиент после получения подтверждения завершает процесс результатом «Подтверждение получено».\nПервичная заявка, запрос исправления, исправленная заявка и подтверждение — четыре связи MessageFlow между Pool. Внутри Pool только SequenceFlow. Все решения по документам — XOR. Проверки не параллельны. У цикла нет установленного лимита повторов; это допустимое допущение, не нужно придумывать дополнительное решение.",
+  "participants": [
+    {
+      "id": "client",
+      "name": "Клиент",
+      "type": "external",
+      "kind": "external",
+      "pool_id": "client_pool"
+    },
+    {
+      "id": "operator",
+      "name": "Оператор",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "company_pool"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "client_start",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Начало процесса",
+      "participant_id": "client",
+      "source_text": "Клиент начинает свой процесс",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "prepare_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Составить заявку",
+      "participant_id": "client",
+      "source_text": "составляет заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_application",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить заявку",
+      "participant_id": "client",
+      "source_text": "отправляет её компании",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "client_wait_gateway",
+      "type": "event_based_gateway",
+      "event_definition": "none",
+      "decision_basis": "event",
+      "name": "Дождаться ответа компании",
+      "participant_id": "client",
+      "source_text": "Клиент после отправки ждёт одно из двух внешних сообщений: запрос исправления или подтверждение принятия заявки.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "receive_correction_request",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить запрос исправления",
+      "participant_id": "client",
+      "source_text": "При запросе исправления",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "correct_documents",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Исправить документы",
+      "participant_id": "client",
+      "source_text": "клиент исправляет документы",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_corrected_application",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить исправленную заявку",
+      "participant_id": "client",
+      "source_text": "отправляет исправленную заявку компании",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "receive_confirmation",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить подтверждение принятия",
+      "participant_id": "client",
+      "source_text": "после получения подтверждения",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "client_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Подтверждение получено",
+      "participant_id": "client",
+      "source_text": "завершает процесс результатом «Подтверждение получено»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "company_start",
+      "type": "start_event",
+      "event_definition": "message",
+      "decision_basis": "unspecified",
+      "name": "Получена заявка",
+      "participant_id": "operator",
+      "source_text": "Компания запускает свой процесс получением этой заявки",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "check_documents",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить документы",
+      "participant_id": "operator",
+      "source_text": "оператор проверяет документы",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "documents_complete_gateway",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Документы полные?",
+      "participant_id": "operator",
+      "source_text": "Оператор решает «Документы полные?»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_correction_request",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить запрос исправления",
+      "participant_id": "operator",
+      "source_text": "оператор отправляет клиенту запрос исправления",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "receive_corrected_application",
+      "type": "receive_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Получить исправленную заявку",
+      "participant_id": "operator",
+      "source_text": "ждёт исправленную заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "register_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Зарегистрировать заявку",
+      "participant_id": "operator",
+      "source_text": "оператор регистрирует заявку",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_acceptance_confirmation",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить подтверждение принятия",
+      "participant_id": "operator",
+      "source_text": "отправляет клиенту подтверждение принятия",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "company_end",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Заявка зарегистрирована",
+      "participant_id": "operator",
+      "source_text": "завершает процесс компании результатом «Заявка зарегистрирована»",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "Merge_client_wait_gateway",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Объединить пути",
+      "participant_id": "client",
+      "source_text": "",
+      "confidence": "confirmation_required",
+      "inferred": true
+    }
+  ],
+  "flows": [
+    {
+      "id": "cf1",
+      "source": "client_start",
+      "target": "prepare_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf2",
+      "source": "prepare_application",
+      "target": "send_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf3",
+      "source": "send_application",
+      "target": "Merge_client_wait_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf4",
+      "source": "client_wait_gateway",
+      "target": "receive_correction_request",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf5",
+      "source": "receive_correction_request",
+      "target": "correct_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf6",
+      "source": "correct_documents",
+      "target": "send_corrected_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf7",
+      "source": "send_corrected_application",
+      "target": "Merge_client_wait_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf8",
+      "source": "client_wait_gateway",
+      "target": "receive_confirmation",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf9",
+      "source": "receive_confirmation",
+      "target": "client_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf10",
+      "source": "company_start",
+      "target": "check_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf11",
+      "source": "check_documents",
+      "target": "documents_complete_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf12",
+      "source": "documents_complete_gateway",
+      "target": "register_application",
+      "name": "Да, документы полные",
+      "condition": "Документы полные",
+      "is_default": false
+    },
+    {
+      "id": "cf13",
+      "source": "documents_complete_gateway",
+      "target": "send_correction_request",
+      "name": "Нет, документы неполные",
+      "condition": "Документы неполные",
+      "is_default": false
+    },
+    {
+      "id": "cf14",
+      "source": "send_correction_request",
+      "target": "receive_corrected_application",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf15",
+      "source": "receive_corrected_application",
+      "target": "check_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf16",
+      "source": "register_application",
+      "target": "send_acceptance_confirmation",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "cf17",
+      "source": "send_acceptance_confirmation",
+      "target": "company_end",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "Flow_Merge_client_wait_gateway",
+      "source": "Merge_client_wait_gateway",
+      "target": "client_wait_gateway",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "client_pool",
+      "name": "Клиент",
+      "kind": "external"
+    },
+    {
+      "id": "company_pool",
+      "name": "Компания",
+      "kind": "internal"
+    }
+  ],
+  "message_flows": [
+    {
+      "id": "mf1",
+      "source": "send_application",
+      "target": "company_start",
+      "name": "Первичная заявка"
+    },
+    {
+      "id": "mf2",
+      "source": "send_correction_request",
+      "target": "receive_correction_request",
+      "name": "Запрос исправления"
+    },
+    {
+      "id": "mf3",
+      "source": "send_corrected_application",
+      "target": "receive_corrected_application",
+      "name": "Исправленная заявка"
+    },
+    {
+      "id": "mf4",
+      "source": "send_acceptance_confirmation",
+      "target": "receive_confirmation",
+      "name": "Подтверждение принятия"
+    }
+  ],
+  "ambiguities": [],
+  "assumptions": [
+    {
+      "id": "A1",
+      "text": "У цикла исправления нет установленного лимита повторов.",
+      "source": "user_accepted",
+      "confidence": 1.0
+    }
+  ]
+}

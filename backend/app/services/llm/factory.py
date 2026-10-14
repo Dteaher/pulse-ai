@@ -23,7 +23,7 @@ def _create(settings: Settings, name: str, *, fallback=False) -> LLMProvider:
         key = settings.primary_llm_api_key or key
         model = settings.primary_llm_model or model
         url = settings.primary_llm_base_url or url
-    options = dict(structured=structured, timeout=settings.llm_timeout, max_tokens=settings.llm_max_tokens, max_retries=settings.llm_max_retries)
+    options = dict(structured=structured, timeout=settings.llm_timeout, connect_timeout=settings.llm_connect_timeout, trust_env=settings.llm_trust_env, max_tokens=settings.llm_max_tokens, max_retries=settings.llm_max_retries)
     if name == 'mock':
         if fallback:
             raise ProviderError('Mock нельзя использовать как резерв реальной модели.')
@@ -77,7 +77,7 @@ def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
         return provider
     policy(primary)
     primary.omit_token_limit = settings.primary_llm_omit_token_limit
-    budget = settings.llm_request_budget if settings.llm_performance_enabled else None
+    budget = settings.llm_request_budget
     if not settings.llm_fallback_enabled or not settings.fallback_llm_provider.strip():
         return LLMRouter(primary, cooldowns=cooldowns, budget=budget, fallback_reserve=settings.llm_fallback_reserve)
     fallback = _create(settings, settings.fallback_llm_provider.strip().replace('-', '_'), fallback=True)

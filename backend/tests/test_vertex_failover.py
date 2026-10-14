@@ -68,7 +68,11 @@ def test_compatible_vertex_failover_same_pipeline(monkeypatch, status, primary):
     assert response.status_code == 200, response.text
     result = response.json()
     backup = status != 200
-    assert result['metadata'] == {'provider_used': 'vertex_gemini' if backup else primary,
+    metadata = result['metadata']
+    assert metadata['provider_requested'] == primary
+    assert metadata['model_requested'] == 'gpt-6.1-sol'
+    assert metadata['generation_duration_ms'] >= 0
+    assert {key: metadata[key] for key in ('provider_used', 'model_used', 'fallback_used', 'attempts')} == {'provider_used': 'vertex_gemini' if backup else primary,
         'model_used': 'gemini-2.5-flash' if backup else 'gpt-6.1-sol',
         'fallback_used': backup, 'attempts': 2 if backup else 1}
     validate_xml(result['xml'])

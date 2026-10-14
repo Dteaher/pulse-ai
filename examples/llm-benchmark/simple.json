@@ -1,0 +1,172 @@
+{
+  "id": "process_application",
+  "name": "Обработка заявки",
+  "description": "Компания обрабатывает заявку. Все действия выполняет оператор компании.\nПроцесс начинается, когда заявка зарегистрирована. Оператор проверяет комплектность документов.\nЗатем принимает решение «Документы полные?». Если документы полные, оператор регистрирует заявку в работе, затем процесс заканчивается результатом «Заявка принята в работу».\nЕсли документы неполные, оператор отправляет уведомление об отказе, затем процесс заканчивается результатом «Отказ отправлен».\nЭто альтернативные исходы: выполняется только одна ветка. Параллельных действий и циклов нет.",
+  "participants": [
+    {
+      "id": "operator",
+      "name": "Оператор компании",
+      "type": "role",
+      "kind": "internal",
+      "pool_id": "company_pool"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "start_registered",
+      "type": "start_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Заявка зарегистрирована",
+      "participant_id": "operator",
+      "source_text": "Процесс начинается, когда заявка зарегистрирована.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "check_documents",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Проверить комплектность документов",
+      "participant_id": "operator",
+      "source_text": "Оператор проверяет комплектность документов.",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "decide_completeness",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Принять решение о комплектности документов",
+      "participant_id": "operator",
+      "source_text": "Затем принимает решение «Документы полные?».",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "gateway_complete",
+      "type": "exclusive_gateway",
+      "event_definition": "none",
+      "decision_basis": "data",
+      "name": "Документы полные?",
+      "participant_id": "operator",
+      "source_text": "Затем принимает решение «Документы полные?».",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "register_application",
+      "type": "user_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Зарегистрировать заявку в работе",
+      "participant_id": "operator",
+      "source_text": "Если документы полные, оператор регистрирует заявку в работе",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "end_accepted",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Заявка принята в работу",
+      "participant_id": "operator",
+      "source_text": "процесс заканчивается результатом «Заявка принята в работу».",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "send_refusal",
+      "type": "send_task",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отправить уведомление об отказе",
+      "participant_id": "operator",
+      "source_text": "Если документы неполные, оператор отправляет уведомление об отказе",
+      "confidence": "high",
+      "inferred": false
+    },
+    {
+      "id": "end_refused",
+      "type": "end_event",
+      "event_definition": "none",
+      "decision_basis": "unspecified",
+      "name": "Отказ отправлен",
+      "participant_id": "operator",
+      "source_text": "процесс заканчивается результатом «Отказ отправлен».",
+      "confidence": "high",
+      "inferred": false
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow_start_check",
+      "source": "start_registered",
+      "target": "check_documents",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_check_decide",
+      "source": "check_documents",
+      "target": "decide_completeness",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_decide_gateway",
+      "source": "decide_completeness",
+      "target": "gateway_complete",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_complete_register",
+      "source": "gateway_complete",
+      "target": "register_application",
+      "name": "Документы полные",
+      "condition": "Документы полные",
+      "is_default": false
+    },
+    {
+      "id": "flow_register_end",
+      "source": "register_application",
+      "target": "end_accepted",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    },
+    {
+      "id": "flow_incomplete_refusal",
+      "source": "gateway_complete",
+      "target": "send_refusal",
+      "name": "Документы неполные",
+      "condition": "Документы неполные",
+      "is_default": false
+    },
+    {
+      "id": "flow_refusal_end",
+      "source": "send_refusal",
+      "target": "end_refused",
+      "name": "",
+      "condition": null,
+      "is_default": false
+    }
+  ],
+  "pools": [
+    {
+      "id": "company_pool",
+      "name": "Компания",
+      "kind": "internal"
+    }
+  ],
+  "message_flows": [],
+  "ambiguities": [],
+  "assumptions": []
+}

@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 from typing import Literal
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
@@ -14,7 +15,7 @@ DEFAULT_BASE_URLS = {
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=ROOT / '.env', extra='ignore')
+    model_config = SettingsConfigDict(env_file=ROOT / '.env', extra='ignore', env_ignore_empty=True)
     app_env: str = 'development'
     pulse_access_token: str = Field(default='', repr=False)
     api_limits_enabled: bool = True
@@ -43,6 +44,8 @@ class Settings(BaseSettings):
     llm_base_url: str = ''
     llm_model: str = ''
     llm_structured_output: bool | None = None
+    llm_trust_env: bool = True
+    llm_connect_timeout: int = Field(default=10, ge=1, le=120)
     llm_timeout: int = Field(default=90, ge=1, le=600)
     llm_max_tokens: int = Field(default=16000, ge=512, le=64000)
     llm_reasoning_effort: Literal['low', 'medium', 'high', 'xhigh', 'max'] | None = None
@@ -72,6 +75,16 @@ class Settings(BaseSettings):
     performance_cache_entries: int = Field(default=64, ge=0, le=256)
     performance_cache_ttl: int = Field(default=300, ge=1, le=3600)
     yandex_folder_id: str = ''
+
+    def __init__(self, **values):
+        # Explicit overrides retain priority; the local profile is opt-in.
+        selected_file = os.environ.get('PULSE_ENV_FILE')
+        if '_env_file' not in values and selected_file:
+            selected = Path(selected_file).expanduser().resolve()
+            if not selected.is_file():
+                raise ValueError('PULSE_ENV_FILE должен указывать на существующий локальный профиль.')
+            values['_env_file'] = selected
+        super().__init__(**values)
 
     @classmethod
     def settings_customise_sources(cls, settings_cls, init_settings, env_settings, dotenv_settings, file_secret_settings):

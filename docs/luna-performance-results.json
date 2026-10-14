@@ -1,0 +1,263 @@
+{
+  "status": "PARTIAL_BUDGET_EXHAUSTED",
+  "paid_api_calls": 5,
+  "runs": [
+    {
+      "run": "1-simple-polza-openai_gpt-6-luna",
+      "seconds": 15.6,
+      "http_status": 200,
+      "wire_calls": 2,
+      "semantic_check": {
+        "passed": true,
+        "checks": [
+          "actions",
+          "role",
+          "XOR outcomes",
+          "two ends",
+          "XML fidelity"
+        ]
+      },
+      "calls": [
+        {
+          "provider": "polza",
+          "model": "openai/gpt-6-luna",
+          "operation": "ambiguity",
+          "reasoning_effort": "low",
+          "response_format": "json_schema",
+          "system_prompt_chars": 2187,
+          "user_payload_chars": 609,
+          "prompt_size_chars": 2796,
+          "schema_chars": 2207,
+          "max_tokens": 1500,
+          "corrective": false,
+          "json_corrective": false,
+          "output_budget_retry": false,
+          "fallback": false,
+          "input_tokens": 1067,
+          "output_tokens": 55,
+          "started_at": "2026-10-14T18:35:04.535298+00:00",
+          "attempt": 1,
+          "ttft_ms": null,
+          "streaming": false,
+          "retry_reason": null,
+          "format_attempts": [
+            "json_schema"
+          ],
+          "http_status": 200,
+          "response_model": "openai/gpt-6-luna",
+          "cost_rub": 0.01917109,
+          "reasoning_tokens": 25,
+          "finish_reason": "stop",
+          "http_attempts": 1,
+          "duration_ms": 2612.31,
+          "ended_at": "2026-10-14T18:35:07.147848+00:00"
+        },
+        {
+          "provider": "polza",
+          "model": "openai/gpt-6-luna",
+          "operation": "extraction",
+          "reasoning_effort": "low",
+          "response_format": "json_schema",
+          "system_prompt_chars": 13395,
+          "user_payload_chars": 713,
+          "prompt_size_chars": 14108,
+          "schema_chars": 5768,
+          "max_tokens": 8000,
+          "corrective": false,
+          "json_corrective": false,
+          "output_budget_retry": false,
+          "fallback": false,
+          "input_tokens": 4272,
+          "output_tokens": 1583,
+          "started_at": "2026-10-14T18:35:07.151562+00:00",
+          "attempt": 2,
+          "ttft_ms": null,
+          "streaming": false,
+          "retry_reason": null,
+          "format_attempts": [
+            "json_schema"
+          ],
+          "http_status": 200,
+          "response_model": "openai/gpt-6-luna",
+          "cost_rub": 0.15802141,
+          "reasoning_tokens": 167,
+          "finish_reason": "stop",
+          "http_attempts": 1,
+          "duration_ms": 12928.01,
+          "ended_at": "2026-10-14T18:35:20.079577+00:00"
+        }
+      ],
+      "local_stages": {
+        "normalization_ms": 0.21,
+        "process_validation_ms": 0.35,
+        "semantic_validation_ms": 0.57,
+        "layout_ms": 0.08,
+        "bpmn_build_ms": 13.96,
+        "xsd_validation_ms": 8.91,
+        "reference_validation_ms": 2.15,
+        "di_validation_ms": 0.65
+      },
+      "usage_complete": true
+    },
+    {
+      "run": "2-simple-multiai-gpt-6-luna",
+      "seconds": 35.55,
+      "http_status": 200,
+      "wire_calls": 2,
+      "semantic_check": {
+        "passed": true,
+        "checks": [
+          "actions",
+          "role",
+          "XOR outcomes",
+          "two ends",
+          "XML fidelity"
+        ]
+      },
+      "calls": [
+        {
+          "provider": "multiai",
+          "model": "gpt-6-luna",
+          "operation": "ambiguity",
+          "reasoning_effort": "low",
+          "response_format": "json_schema",
+          "system_prompt_chars": 2187,
+          "user_payload_chars": 609,
+          "prompt_size_chars": 2796,
+          "schema_chars": 2207,
+          "max_tokens": 1500,
+          "corrective": false,
+          "json_corrective": false,
+          "output_budget_retry": false,
+          "fallback": false,
+          "input_tokens": 1079,
+          "output_tokens": 28,
+          "started_at": "2026-10-14T18:36:20.528819+00:00",
+          "attempt": 1,
+          "ttft_ms": null,
+          "streaming": false,
+          "retry_reason": null,
+          "format_attempts": [
+            "json_schema"
+          ],
+          "http_status": 200,
+          "response_model": "gpt-6-luna",
+          "cost_rub": null,
+          "reasoning_tokens": null,
+          "finish_reason": "stop",
+          "http_attempts": 1,
+          "duration_ms": 4751.5,
+          "ended_at": "2026-10-14T18:36:25.280817+00:00"
+        },
+        {
+          "provider": "multiai",
+          "model": "gpt-6-luna",
+          "operation": "extraction",
+          "reasoning_effort": "low",
+          "response_format": "json_schema",
+          "system_prompt_chars": 13395,
+          "user_payload_chars": 713,
+          "prompt_size_chars": 14108,
+          "schema_chars": 5768,
+          "max_tokens": 8000,
+          "corrective": false,
+          "json_corrective": false,
+          "output_budget_retry": false,
+          "fallback": false,
+          "input_tokens": 4284,
+          "output_tokens": 933,
+          "started_at": "2026-10-14T18:36:25.284530+00:00",
+          "attempt": 2,
+          "ttft_ms": null,
+          "streaming": false,
+          "retry_reason": null,
+          "format_attempts": [
+            "json_schema"
+          ],
+          "http_status": 200,
+          "response_model": "gpt-6-luna",
+          "cost_rub": null,
+          "reasoning_tokens": null,
+          "finish_reason": "stop",
+          "http_attempts": 1,
+          "duration_ms": 30745.39,
+          "ended_at": "2026-10-14T18:36:56.030135+00:00"
+        }
+      ],
+      "local_stages": {
+        "normalization_ms": 0.26,
+        "process_validation_ms": 0.42,
+        "semantic_validation_ms": 0.62,
+        "layout_ms": 0.11,
+        "bpmn_build_ms": 14.34,
+        "xsd_validation_ms": 9.31,
+        "reference_validation_ms": 2.27,
+        "di_validation_ms": 0.74
+      },
+      "usage_complete": true
+    },
+    {
+      "run": "3-simple-multiai-gpt-6-luna-combined",
+      "seconds": 39.13,
+      "http_status": 200,
+      "wire_calls": 1,
+      "semantic_check": {
+        "passed": true,
+        "checks": [
+          "actions",
+          "role",
+          "XOR outcomes",
+          "two ends",
+          "XML fidelity"
+        ]
+      },
+      "calls": [
+        {
+          "provider": "multiai",
+          "model": "gpt-6-luna",
+          "operation": "preparation_v2",
+          "reasoning_effort": "low",
+          "response_format": "json_schema",
+          "system_prompt_chars": 16727,
+          "user_payload_chars": 609,
+          "prompt_size_chars": 17336,
+          "schema_chars": 7018,
+          "max_tokens": 8000,
+          "corrective": false,
+          "json_corrective": false,
+          "output_budget_retry": false,
+          "fallback": false,
+          "input_tokens": 5273,
+          "output_tokens": 1122,
+          "started_at": "2026-10-14T18:37:23.249566+00:00",
+          "attempt": 1,
+          "ttft_ms": null,
+          "streaming": false,
+          "retry_reason": null,
+          "format_attempts": [
+            "json_schema"
+          ],
+          "http_status": 200,
+          "response_model": "gpt-6-luna",
+          "cost_rub": null,
+          "reasoning_tokens": null,
+          "finish_reason": "stop",
+          "http_attempts": 1,
+          "duration_ms": 39070.73,
+          "ended_at": "2026-10-14T18:38:02.320027+00:00"
+        }
+      ],
+      "local_stages": {
+        "normalization_ms": 0.2,
+        "process_validation_ms": 0.44,
+        "semantic_validation_ms": 0.77,
+        "layout_ms": 0.09,
+        "bpmn_build_ms": 14.97,
+        "xsd_validation_ms": 9.72,
+        "reference_validation_ms": 2.31,
+        "di_validation_ms": 0.71
+      },
+      "usage_complete": true
+    }
+  ]
+}

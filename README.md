@@ -126,3 +126,12 @@ PULSE Industrial — возможная будущая адаптация для
 ### Polza и MultiAI
 
 Поддерживается `PRIMARY_LLM_PROVIDER=polza` с адресом `https://polza.ai/api/v1`; резервный `FALLBACK_LLM_PROVIDER=multiai` использует собственный ключ, модель и URL. Пример настроек находится в `.env.example`. Polza передаёт уровень рассуждения в нативном формате своего API, сохраняя общий контракт ProcessDefinition. Результаты ограниченной реальной проверки и ограничения: [отчёт](docs/polza-check.md).
+
+
+#### Локальный профиль Polza → MultiAI
+
+Рабочий `.env` можно оставить нетронутым. Секретный `.env.local` исключён из Git. Для его явного выбора перед запуском backend в PowerShell задайте `$env:PULSE_ENV_FILE = (Resolve-Path ../.env.local).Path` (из папки `backend`), затем запустите `../.venv/Scripts/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8002`. Без `PULSE_ENV_FILE` сохраняется обычная загрузка `.env`. Настройки окружения имеют приоритет над профилем.
+
+Benchmark: из корня проекта `.venv/Scripts/python.exe backend/tools/llm_benchmark.py --model gpt-6-sol --case simple`. Ключи читаются из игнорируемого `.env.benchmark`, cache/fallback выключены; `--force-primary timeout` включает искусственный отказ Polza и настоящий резервный запрос. По умолчанию ledger ограничивает проход пятью полными генерациями; увеличение `--max-generations` требует отдельного разрешения владельца. Артефакты сохраняются в `.runtime/polza-final`. Полная матрица и ограничения описаны в `docs/polza-final.md`.
+
+Рекомендуемый набор переменных хостинга: `deploy/amvera-polza.env.example`. Это не готовый файл с секретами: ключи и `PULSE_ACCESS_TOKEN` задаются в Amvera отдельно. Подтверждённого ограничения ingress Amvera пока нет. Production deploy не выполнялся.

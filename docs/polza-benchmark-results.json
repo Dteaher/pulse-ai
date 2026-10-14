@@ -1,0 +1,261 @@
+{
+  "date": "2026-10-14",
+  "generation_runs": [
+    {
+      "run": "1-simple-multiai-gpt-6-sol",
+      "seconds": 74.14,
+      "http_status": 200,
+      "xml": true,
+      "calls": [
+        {
+          "operation": "ambiguity",
+          "provider": "multiai",
+          "model": "gpt-6-sol",
+          "duration_ms": 17794.97,
+          "http_status": 200,
+          "input_tokens": 1079,
+          "output_tokens": 28,
+          "cost_rub": null,
+          "timeout_phase": null
+        },
+        {
+          "operation": "extraction",
+          "provider": "multiai",
+          "model": "gpt-6-sol",
+          "duration_ms": 56269.58,
+          "http_status": 200,
+          "input_tokens": 4284,
+          "output_tokens": 1044,
+          "cost_rub": null,
+          "timeout_phase": null
+        }
+      ]
+    },
+    {
+      "run": "2-complex-multiai-gpt-6-sol",
+      "seconds": 10.1,
+      "http_status": 502,
+      "xml": false,
+      "calls": [
+        {
+          "operation": "ambiguity",
+          "provider": "multiai",
+          "model": "gpt-6-sol",
+          "duration_ms": 10061.15,
+          "http_status": null,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_rub": null,
+          "timeout_phase": null
+        }
+      ]
+    },
+    {
+      "run": "3-simple-multiai-gpt-6-astra",
+      "seconds": 98.74,
+      "http_status": 200,
+      "xml": true,
+      "calls": [
+        {
+          "operation": "ambiguity",
+          "provider": "multiai",
+          "model": "gpt-6-astra",
+          "duration_ms": 37748.67,
+          "http_status": 200,
+          "input_tokens": 1079,
+          "output_tokens": 28,
+          "cost_rub": null,
+          "timeout_phase": null
+        },
+        {
+          "operation": "extraction",
+          "provider": "multiai",
+          "model": "gpt-6-astra",
+          "duration_ms": 60921.89,
+          "http_status": 200,
+          "input_tokens": 4284,
+          "output_tokens": 1042,
+          "cost_rub": null,
+          "timeout_phase": null
+        }
+      ]
+    },
+    {
+      "run": "4-complex-multiai-gpt-6-astra",
+      "seconds": 144.42,
+      "http_status": 200,
+      "xml": true,
+      "calls": [
+        {
+          "operation": "ambiguity",
+          "provider": "multiai",
+          "model": "gpt-6-astra",
+          "duration_ms": 30692.45,
+          "http_status": 200,
+          "input_tokens": 1511,
+          "output_tokens": 174,
+          "cost_rub": null,
+          "timeout_phase": null
+        },
+        {
+          "operation": "extraction",
+          "provider": "multiai",
+          "model": "gpt-6-astra",
+          "duration_ms": 113637.08,
+          "http_status": 200,
+          "input_tokens": 4716,
+          "output_tokens": 5725,
+          "cost_rub": null,
+          "timeout_phase": null
+        }
+      ]
+    },
+    {
+      "run": "5-medium-multiai-gpt-6-astra-fallback-timeout",
+      "seconds": 10.13,
+      "http_status": 502,
+      "xml": false,
+      "calls": [
+        {
+          "operation": "ambiguity",
+          "provider": "polza",
+          "model": "openai/gpt-6-luna",
+          "duration_ms": 51.36,
+          "http_status": null,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_rub": null,
+          "timeout_phase": "ReadTimeout"
+        },
+        {
+          "operation": "ambiguity",
+          "provider": "multiai",
+          "model": "gpt-6-astra",
+          "duration_ms": 10038.04,
+          "http_status": null,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_rub": null,
+          "timeout_phase": "ConnectTimeout"
+        }
+      ]
+    },
+    {
+      "run": "6-medium-multiai-gpt-6-astra-fallback-timeout",
+      "seconds": 74.51,
+      "http_status": 200,
+      "xml": true,
+      "calls": [
+        {
+          "operation": "ambiguity",
+          "provider": "polza",
+          "model": "openai/gpt-6-luna",
+          "duration_ms": 50.63,
+          "http_status": null,
+          "input_tokens": null,
+          "output_tokens": null,
+          "cost_rub": null,
+          "timeout_phase": "ReadTimeout"
+        },
+        {
+          "operation": "ambiguity",
+          "provider": "multiai",
+          "model": "gpt-6-astra",
+          "duration_ms": 3332.83,
+          "http_status": 200,
+          "input_tokens": 1255,
+          "output_tokens": 28,
+          "cost_rub": null,
+          "timeout_phase": null
+        },
+        {
+          "operation": "extraction",
+          "provider": "multiai",
+          "model": "gpt-6-astra",
+          "duration_ms": 71048.18,
+          "http_status": 200,
+          "input_tokens": 4460,
+          "output_tokens": 3412,
+          "cost_rub": null,
+          "timeout_phase": null
+        }
+      ]
+    }
+  ],
+  "coverage_successes": [
+    {
+      "run": "coverage-multiai-simple-missing-action-simple",
+      "gaps": 1,
+      "calls": [
+        {
+          "duration_ms": 14258.14,
+          "model": "gpt-6-astra",
+          "provider": "multiai",
+          "input_tokens": 1257,
+          "output_tokens": 165,
+          "cost_rub": null
+        }
+      ]
+    },
+    {
+      "run": "coverage-polza-complex-response",
+      "gaps": 0,
+      "calls": [
+        {
+          "duration_ms": 6285.96,
+          "model": "openai/gpt-6-luna",
+          "provider": "polza",
+          "input_tokens": 4170,
+          "output_tokens": 278,
+          "cost_rub": 0.07870818
+        }
+      ]
+    },
+    {
+      "run": "coverage-polza-simple-correct-simple",
+      "gaps": 0,
+      "calls": [
+        {
+          "duration_ms": 3850.77,
+          "model": "openai/gpt-6-luna",
+          "provider": "polza",
+          "input_tokens": 1306,
+          "output_tokens": 99,
+          "cost_rub": 0.02535579
+        }
+      ]
+    },
+    {
+      "run": "coverage-polza-simple-missing-action-simple",
+      "gaps": 1,
+      "calls": [
+        {
+          "duration_ms": 3373.96,
+          "model": "openai/gpt-6-luna",
+          "provider": "polza",
+          "input_tokens": 1245,
+          "output_tokens": 192,
+          "cost_rub": 0.0299906
+        }
+      ]
+    },
+    {
+      "run": "coverage-retry\\coverage-multiai-complex-response",
+      "gaps": 0,
+      "calls": [
+        {
+          "duration_ms": 34848.71,
+          "model": "gpt-6-astra",
+          "provider": "multiai",
+          "input_tokens": 4547,
+          "output_tokens": 252,
+          "cost_rub": null
+        }
+      ]
+    }
+  ],
+  "coverage_failures": [
+    "coverage-multiai-complex-response"
+  ],
+  "prices_rub_available": false
+}

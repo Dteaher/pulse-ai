@@ -6,6 +6,8 @@ import asyncio
 import hashlib
 import json
 import logging
+import os
+import re
 import sys
 from pathlib import Path
 from time import perf_counter
@@ -15,17 +17,22 @@ from dotenv import dotenv_values
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'backend'))
+# The module-level ASGI app must not read production credentials on import.
+os.environ['PULSE_ENV_FILE'] = str(ROOT / ('.env.benchmark' if (ROOT/'.env.benchmark').exists() else '.env.example'))
 from app.config import Settings
 from app.main import create_app
 from app.pipeline import generate_valid
 from app.models import ProcessDefinition
 from benchmark_semantics import evaluate
+from benchmark_budget import reserve_api_attempt
 from app.services.llm.factory import get_llm_provider
 import app.process_routes as routes
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--max-total-wire-calls', type=int, default=None, help='Shared POST budget across this output directory, including retries')
+    parser.add_argument('--combined-parse', action='store_true', help='Enable existing opt-in ParseDecision optimization only for this run')
     parser.add_argument('--continue-after-failed-complex', action='store_true', help='Explicit all-scenario diagnostics: medium may follow failed complex; simple must still pass')
     parser.add_argument('--max-generations', type=int, choices=range(1,11), default=5, help='Increase only after explicit approval')
     parser.add_argument('--model', default='gpt-6-sol')
@@ -48,16 +55,21 @@ def main():
         if entry is None or entry.get('availability') not in (None, 'available'):
             raise SystemExit('STOP: model not available in authenticated catalog')
         (args.output/'multiai-model-catalog.json').write_text(json.dumps(entry, ensure_ascii=False, indent=2), encoding='utf8')
+    selected_model = 'openai/gpt-6-luna' if args.provider == 'polza' else args.model
+    safe_model = re.sub(r'[^a-zA-Z0-9._-]', '_', selected_model)
+    wire_ledger_file = args.output / 'paid-wire-ledger.json'
     ledger_file = args.output / 'generation-ledger.json'
     ledger = json.loads(ledger_file.read_text()) if ledger_file.exists() else []
     if not args.coverage and not args.force_primary and args.case != 'simple':
         prerequisite = 'simple' if args.case == 'complex' or args.continue_after_failed_complex else 'complex'
-        successes = [item for item in ledger if prerequisite+'-'+args.provider+'-'+args.model in item['run'] and item.get('xml_received')]
+        successes = [item for item in ledger if prerequisite+'-'+args.provider+'-'+safe_model in item['run'] and item.get('xml_received')]
         if not successes or not any((args.output/item['run']/'semantic-checks.json').exists() and json.loads((args.output/item['run']/'semantic-checks.json').read_text()).get('passed') for item in successes):
             raise SystemExit('STOP: prerequisite semantic benchmark has not passed')
     if not args.coverage and len(ledger) >= args.max_generations:
         raise SystemExit('STOP: five full generations already used; use a new approved budget/output directory.')
-    run_id = f'{len(ledger)+1}-{args.case}-{args.provider}-{args.model}' if not args.coverage else f'coverage-{args.provider}-{args.case}-{args.coverage.stem}'
+    run_id = f'{len(ledger)+1}-{args.case}-{args.provider}-{safe_model}' if not args.coverage else f'coverage-{args.provider}-{args.case}-{args.coverage.stem}'
+    if args.combined_parse:
+        run_id += '-combined'
     if args.force_primary:
         run_id += '-fallback-' + args.force_primary
     out = args.output / run_id
@@ -100,6 +112,7 @@ def main():
                 if args.force_primary == 'network':
                     raise httpx.ConnectError('Injected primary network error', request=request)
                 return httpx.Response(int(args.force_primary), request=request, json={'error':'Injected primary failure'})
+            reserve_api_attempt(wire_ledger_file, args.max_total_wire_calls, run=run_id, provider=request.url.host)
             wire_count += 1
             if wire_count > 6:
                 raise RuntimeError('Wire call limit exceeded')
@@ -124,7 +137,7 @@ def main():
     httpx.AsyncClient = client
     async def run():
         is_polza = args.provider == 'polza' or bool(args.force_primary)
-        s = Settings(_env_file=None, app_env='benchmark', api_limits_enabled=False,
+        s = Settings(_env_file=args.credentials, app_env='benchmark', api_limits_enabled=False,
             primary_llm_provider='polza' if is_polza else 'multiai',
             primary_llm_base_url='https://polza.ai/api/v1' if is_polza else 'https://multiai.store/v1',
             primary_llm_model='openai/gpt-6-luna' if is_polza else args.model,
@@ -133,7 +146,7 @@ def main():
             fallback_llm_model=args.model if args.force_primary else '',
             fallback_llm_base_url='https://multiai.store/v1', fallback_llm_api_key=creds.get('FALLBACK_LLM_API_KEY',''),
             llm_fallback_enabled=bool(args.force_primary), llm_structured_output=None,
-            llm_performance_enabled=True, llm_reasoning_effort='low', llm_timeout=120,
+            llm_performance_enabled=True, llm_detailed_metrics_enabled=True, llm_combined_parse_enabled=args.combined_parse, llm_reasoning_effort='low', llm_timeout=120,
             llm_request_budget=360, llm_fallback_reserve=120, llm_connect_timeout=30, llm_trust_env=False,
             llm_max_tokens=8000, llm_parse_max_tokens=8000, llm_max_retries=1, llm_graph_max_retries=1,
             llm_business_coverage_enabled=False, performance_cache_entries=0, llm_debug_raw_response=False)
@@ -177,7 +190,10 @@ def main():
             ledger[-1].update(summary);save(ledger_file,ledger)
         assert checksum == hashlib.sha256(production.read_bytes()).hexdigest()
         save(out/'summary.json',summary)
-        print(json.dumps(summary,ensure_ascii=True),flush=True)
+        console_summary = {**summary}
+        if console_summary.get('metadata'):
+            console_summary['metadata'] = {k:v for k,v in console_summary['metadata'].items() if k != 'performance'}
+        print(json.dumps(console_summary,ensure_ascii=True),flush=True)
     try:
         asyncio.run(run())
     except Exception as exc:

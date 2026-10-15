@@ -82,4 +82,5 @@ def get_llm_provider(settings: Settings | None = None) -> LLMProvider:
         return LLMRouter(primary, cooldowns=cooldowns, budget=budget, fallback_reserve=settings.llm_fallback_reserve)
     fallback = _create(settings, settings.fallback_llm_provider.strip().replace('-', '_'), fallback=True)
     policy(fallback)
+    fallback.schema_in_prompt = settings.fallback_llm_schema_in_prompt
     return LLMRouter(primary, fallback, cooldowns, budget=budget, fallback_reserve=settings.llm_fallback_reserve)

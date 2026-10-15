@@ -1,0 +1,26 @@
+[
+  {
+    "run": "1-simple-multiai-claude-opus-5-5",
+    "seconds": 37.15,
+    "http_status": 502,
+    "xml_received": false,
+    "metadata": null,
+    "wire_calls": 1
+  },
+  {
+    "run": "2-medium-multiai-claude-opus-5-5",
+    "seconds": 108.38,
+    "http_status": 502,
+    "xml_received": false,
+    "metadata": null,
+    "wire_calls": 3
+  },
+  {
+    "run": "3-complex-multiai-claude-opus-5-5",
+    "seconds": 33.23,
+    "http_status": 502,
+    "xml_received": false,
+    "metadata": null,
+    "wire_calls": 2
+  }
+]

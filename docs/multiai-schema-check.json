@@ -1,0 +1,61 @@
+[
+  {
+    "run": "1-simple-multiai-gpt-6-luna-fallback-timeout",
+    "seconds": 25.56,
+    "http_status": 200,
+    "xml_received": true,
+    "wire_calls": 2,
+    "checks": {
+      "passed": true,
+      "checks": [
+        "actions",
+        "role",
+        "XOR outcomes",
+        "two ends",
+        "XML fidelity"
+      ]
+    }
+  },
+  {
+    "run": "2-simple-multiai-gpt-6.1-sol-fallback-timeout",
+    "seconds": 30.08,
+    "http_status": 502,
+    "xml_received": false,
+    "wire_calls": 1,
+    "checks": null
+  },
+  {
+    "run": "3-simple-multiai-claude-opus-5-fallback-timeout",
+    "seconds": 31.8,
+    "http_status": 200,
+    "xml_received": true,
+    "wire_calls": 2,
+    "checks": {
+      "passed": true,
+      "checks": [
+        "actions",
+        "role",
+        "XOR outcomes",
+        "two ends",
+        "XML fidelity"
+      ]
+    }
+  },
+  {
+    "run": "4-simple-multiai-gpt-6.1-sol-fallback-timeout",
+    "seconds": 25.2,
+    "http_status": 200,
+    "xml_received": true,
+    "wire_calls": 2,
+    "checks": {
+      "passed": true,
+      "checks": [
+        "actions",
+        "role",
+        "XOR outcomes",
+        "two ends",
+        "XML fidelity"
+      ]
+    }
+  }
+]

@@ -294,6 +294,8 @@ def import_process(xml: str, previous: ProcessDefinition | None = None):
                        'CROSS_POOL_SEQUENCE_FLOW', 'INVALID_DEFAULT_REFERENCE'}
     require_valid_document([i for i in diagnostics if i.code in integrity_codes])
     root = parse_xml(xml)
+    from .formal_messages import strip_derived_messages
+    strip_derived_messages(root)
     processes = root.findall('bpmn:process', NS)
     if len(processes) > 1 or (previous and previous.pools) or root.findall('.//bpmn:messageFlow', NS) or any(pool.findtext('bpmn:documentation', default='', namespaces=NS).startswith('PULSE:') for pool in root.findall('.//bpmn:participant', NS)):
         from .collaboration import import_collaboration

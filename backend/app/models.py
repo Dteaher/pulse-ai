@@ -125,6 +125,11 @@ class Issue(StrictModel):
     message: str = Field(min_length=1, max_length=1000)
     node_ids: list[str] = Field(default_factory=list, max_length=150)
     origin: Literal['rule', 'llm'] = 'rule'
+    element_ids: list[str] = Field(default_factory=list, max_length=150)
+    description: str = ''
+    reason: str = ''
+    suggestion: str = ''
+    confidence: float | None = Field(default=None, ge=0, le=1)
 
     @model_validator(mode='after')
     def diagnostic_classification(self):
@@ -143,6 +148,10 @@ class Issue(StrictModel):
                              'business_information' if self.type == 'CLARIFICATION_REQUIRED' else
                              self.source.lower())
         self.suggested_fix = self.suggested_fix or ('Уточните бизнес-правило.' if self.type in {'CLARIFICATION_REQUIRED','BUSINESS_WARNING'} else 'Проверьте указанные элементы и их связи.')
+        self.element_ids = self.element_ids or list(dict.fromkeys(self.node_ids + [i for i in (self.node_id, self.flow_id, self.gateway_id) if i]))
+        self.description = self.description or self.message
+        self.suggestion = self.suggestion or self.suggested_fix
+        self.reason = self.reason or ('Нарушение нотации или целостности ссылок BPMN.' if self.source == 'BPMN_SPEC' else 'XML не соответствует схеме обмена BPMN.' if self.source == 'XSD' else 'Некорректная геометрия затрудняет отображение диаграммы.' if self.source == 'LAYOUT' else 'Проверка ограничена текущим BPMN subset; рекомендация не доказывает ошибку исполнения.')
         return self
 
 

@@ -1,0 +1,83 @@
+[
+  {
+    "run": "1-simple-multiai-claude-fable-5-1",
+    "seconds": 59.29,
+    "xml_received": false,
+    "wire_calls": 3,
+    "error": "Модель вернула некорректный JSON после 1 попыток исправления.",
+    "calls": [
+      {
+        "operation": "ambiguity",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": null
+      },
+      {
+        "operation": "extraction",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": null
+      },
+      {
+        "operation": "extraction",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": "json_validation"
+      }
+    ]
+  },
+  {
+    "run": "2-medium-multiai-claude-fable-5-1",
+    "seconds": 92.64,
+    "xml_received": false,
+    "wire_calls": 3,
+    "error": "Модель вернула некорректный JSON после 1 попыток исправления.",
+    "calls": [
+      {
+        "operation": "ambiguity",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": null
+      },
+      {
+        "operation": "extraction",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": null
+      },
+      {
+        "operation": "extraction",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": "json_validation"
+      }
+    ]
+  },
+  {
+    "run": "3-complex-multiai-claude-fable-5-1",
+    "seconds": 139.67,
+    "xml_received": false,
+    "wire_calls": 3,
+    "error": "Модель не ответила в пределах бюджета запроса.",
+    "calls": [
+      {
+        "operation": "ambiguity",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": null
+      },
+      {
+        "operation": "extraction",
+        "http_status": 200,
+        "response_model": "claude-fable-5-1",
+        "retry_reason": null
+      },
+      {
+        "operation": "extraction",
+        "http_status": null,
+        "response_model": null,
+        "retry_reason": "json_validation"
+      }
+    ]
+  }
+]

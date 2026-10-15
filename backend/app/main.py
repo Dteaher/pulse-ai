@@ -52,6 +52,7 @@ def create_app(settings=None, provider: LLMProvider | None = None):
     app = FastAPI(title='PULSE — AI Business Process Engineer', version='0.2.0', lifespan=lifespan)
     app.add_middleware(RequestGuard, settings=s)
     app.state.provider = provider or get_llm_provider(s)
+    app.state.bpmn_formal_messages_enabled = s.bpmn_formal_messages_enabled
     app.state.settings_key = hashlib.sha256(s.model_dump_json().encode()).hexdigest()
     app.state.retired_providers = []
     app.state.provider_users = {}
@@ -218,6 +219,13 @@ def create_app(settings=None, provider: LLMProvider | None = None):
     @app.get('/api/examples')
     def examples():
         return [{'name': name, 'text': text} for name, text in zip(['Обработка заявки', 'Подключение к электросети', 'Описание с неоднозначностями'], TEXTS)]
+
+    from .execution.models import ExecutionReadinessRequest, ExecutionReadinessResult
+    from .execution.readiness import assess_readiness
+
+    @app.post('/api/process/execution-readiness', response_model=ExecutionReadinessResult)
+    def execution_readiness(body: ExecutionReadinessRequest):
+        return assess_readiness(body)
 
     from .process_routes import register_process_routes
     register_process_routes(app, current_connection, cached)

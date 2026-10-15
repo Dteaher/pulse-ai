@@ -63,6 +63,7 @@ class OpenAICompatibleProvider(LLMProvider):
         self.omit_token_limit = False
         self.parse_retry_max_tokens = 16000
         self.prompt_hints = ()
+        self.schema_in_prompt = False
         self._clients = {}
         self.call_metrics = []
 
@@ -176,9 +177,9 @@ class OpenAICompatibleProvider(LLMProvider):
         if self.prompt_hints:
             system += '\n' + '\n'.join(self.prompt_hints)
         schema_prompt = '\nJSON Schema:\n' + json.dumps(schema, ensure_ascii=False, separators=(',', ':'))
-        # Native structured output already supplies the schema. Repeating it in
-        # the prompt wastes context and the provider's token budget.
-        messages = [LLMMessage('system', system + (schema_prompt if self.structured is False else '')),
+        # Native structured output normally supplies the schema. Opt-in prompt
+        # duplication supports fallback APIs that return incompatible shapes.
+        messages = [LLMMessage('system', system + (schema_prompt if self.structured is False or self.schema_in_prompt else '')),
                     LLMMessage('user', json.dumps(payload, ensure_ascii=False, separators=(',', ':')))]
         if correction:
             messages.append(LLMMessage('user', 'Исправь ошибки предыдущего результата: ' + correction))

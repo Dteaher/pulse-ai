@@ -1,0 +1,130 @@
+[
+  {
+    "run": "1-simple-multiai-claude-fable-5-1-fallback-timeout",
+    "seconds": 17.45,
+    "http_status": 200,
+    "xml_received": true,
+    "wire_calls": 2,
+    "metadata": {
+      "provider_used": "multiai",
+      "model_used": "claude-fable-5-1",
+      "fallback_used": true,
+      "attempts": 3,
+      "provider_requested": "polza",
+      "model_requested": "openai/gpt-6-luna",
+      "fallback_reason": "timeout",
+      "generation_duration_ms": 17422.0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_rub": null,
+      "business_coverage_provider_used": null,
+      "business_coverage_model_used": null
+    },
+    "semantic_checks": {
+      "passed": true,
+      "checks": [
+        "actions",
+        "role",
+        "XOR outcomes",
+        "two ends",
+        "XML fidelity"
+      ]
+    },
+    "questions": [],
+    "token_cap_sent": [
+      null,
+      null
+    ]
+  },
+  {
+    "run": "2-medium-multiai-claude-fable-5-1-fallback-timeout",
+    "seconds": 57.36,
+    "http_status": 200,
+    "xml_received": true,
+    "wire_calls": 2,
+    "metadata": {
+      "provider_used": "multiai",
+      "model_used": "claude-fable-5-1",
+      "fallback_used": true,
+      "attempts": 3,
+      "provider_requested": "polza",
+      "model_requested": "openai/gpt-6-luna",
+      "fallback_reason": "timeout",
+      "generation_duration_ms": 57313.0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_rub": null,
+      "business_coverage_provider_used": null,
+      "business_coverage_model_used": null
+    },
+    "semantic_checks": {
+      "passed": true,
+      "checks": [
+        "roles",
+        "XOR outcomes",
+        "document loop",
+        "event wait",
+        "four MessageFlow",
+        "XML fidelity"
+      ]
+    },
+    "questions": [],
+    "token_cap_sent": [
+      null,
+      null
+    ]
+  },
+  {
+    "run": "3-complex-multiai-claude-fable-5-1-fallback-timeout",
+    "seconds": 86.61,
+    "http_status": 200,
+    "xml_received": false,
+    "wire_calls": 2,
+    "metadata": {
+      "provider_used": "multiai",
+      "model_used": "claude-fable-5-1",
+      "fallback_used": true,
+      "attempts": 3,
+      "provider_requested": "polza",
+      "model_requested": "openai/gpt-6-luna",
+      "fallback_reason": "timeout",
+      "generation_duration_ms": 86578.0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_rub": null,
+      "business_coverage_provider_used": null,
+      "business_coverage_model_used": null
+    },
+    "semantic_checks": null,
+    "questions": [
+      {
+        "id": "amb_contract_rejection",
+        "question": "Что происходит, если руководитель не согласует договор после его проверки и доработки менеджером?",
+        "type": "missing_branch",
+        "related_node_ids": [
+          "contract_approved_gateway",
+          "manager_rework_contract"
+        ],
+        "severity": "critical",
+        "suggested_answers": [
+          "Цикл доработки продолжается без ограничения до согласования договора",
+          "Компания завершает процесс с результатом «Договор не согласован» и уведомляет клиента",
+          "Используется другой исход, который нужно указать"
+        ],
+        "allow_custom_answer": true,
+        "assumption": "",
+        "reason": "Для решения «Договор согласован?» явно описаны ветка «нет» и возврат на доработку, но конечный исход отказа от согласования не указан.",
+        "source_excerpt": "Руководитель проверяет проект договора и принимает отдельное XOR-решение «Договор согласован?». Если нет, менеджер дорабатывает договор и повторно передаёт руководителю. Если да, менеджер отправляет клиенту согласованный договор.",
+        "related_participants": [
+          "Руководитель",
+          "Менеджер",
+          "Клиент"
+        ]
+      }
+    ],
+    "token_cap_sent": [
+      null,
+      null
+    ]
+  }
+]

@@ -31,6 +31,10 @@ import app.process_routes as routes
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--reasoning-effort', choices=['low','medium','high','xhigh','max'], default='low', help='Use only a level supported by the authenticated model catalog')
+    parser.add_argument('--fallback-schema-in-prompt', action='store_true', help='Explicit schema only on forced fallback')
+    parser.add_argument('--diagnostic-all-cases', action='store_true', help='Explicitly authorised independent scenario diagnostics; retain budget but skip prerequisite success gate')
+    parser.add_argument('--omit-token-limit', action='store_true', help='Omit provider output token cap in an explicitly authorised benchmark')
     parser.add_argument('--max-total-wire-calls', type=int, default=None, help='Shared POST budget across this output directory, including retries')
     parser.add_argument('--combined-parse', action='store_true', help='Enable existing opt-in ParseDecision optimization only for this run')
     parser.add_argument('--continue-after-failed-complex', action='store_true', help='Explicit all-scenario diagnostics: medium may follow failed complex; simple must still pass')
@@ -48,7 +52,8 @@ def main():
     secrets = [v for k, v in creds.items() if v and (k.endswith('API_KEY') or k == 'PULSE_ACCESS_TOKEN')]
     logging.disable(logging.CRITICAL)
     if args.provider == 'multiai' or args.force_primary:
-        catalog = httpx.get('https://multiai.store/v1/models', headers={'Authorization':'Bearer '+creds['FALLBACK_LLM_API_KEY']}, timeout=30)
+        with httpx.Client(trust_env=False, timeout=30) as catalog_client:
+            catalog = catalog_client.get('https://multiai.store/v1/models', headers={'Authorization':'Bearer '+creds['FALLBACK_LLM_API_KEY']})
         if not catalog.is_success:
             raise SystemExit('STOP: authenticated catalog unavailable')
         entry = next((m for m in catalog.json().get('data', []) if m.get('id') == args.model), None)
@@ -60,7 +65,7 @@ def main():
     wire_ledger_file = args.output / 'paid-wire-ledger.json'
     ledger_file = args.output / 'generation-ledger.json'
     ledger = json.loads(ledger_file.read_text()) if ledger_file.exists() else []
-    if not args.coverage and not args.force_primary and args.case != 'simple':
+    if not args.coverage and not args.force_primary and args.case != 'simple' and not args.diagnostic_all_cases:
         prerequisite = 'simple' if args.case == 'complex' or args.continue_after_failed_complex else 'complex'
         successes = [item for item in ledger if prerequisite+'-'+args.provider+'-'+safe_model in item['run'] and item.get('xml_received')]
         if not successes or not any((args.output/item['run']/'semantic-checks.json').exists() and json.loads((args.output/item['run']/'semantic-checks.json').read_text()).get('passed') for item in successes):
@@ -142,11 +147,12 @@ def main():
             primary_llm_base_url='https://polza.ai/api/v1' if is_polza else 'https://multiai.store/v1',
             primary_llm_model='openai/gpt-6-luna' if is_polza else args.model,
             primary_llm_api_key=creds['PRIMARY_LLM_API_KEY' if is_polza else 'FALLBACK_LLM_API_KEY'],
+            fallback_llm_schema_in_prompt=args.fallback_schema_in_prompt,
             fallback_llm_provider='multiai' if args.force_primary else '',
             fallback_llm_model=args.model if args.force_primary else '',
             fallback_llm_base_url='https://multiai.store/v1', fallback_llm_api_key=creds.get('FALLBACK_LLM_API_KEY',''),
-            llm_fallback_enabled=bool(args.force_primary), llm_structured_output=None,
-            llm_performance_enabled=True, llm_detailed_metrics_enabled=True, llm_combined_parse_enabled=args.combined_parse, llm_reasoning_effort='low', llm_timeout=120,
+            llm_fallback_enabled=bool(args.force_primary), llm_structured_output=None, primary_llm_omit_token_limit=args.omit_token_limit,
+            llm_performance_enabled=True, llm_detailed_metrics_enabled=True, llm_combined_parse_enabled=args.combined_parse, llm_reasoning_effort=args.reasoning_effort, llm_timeout=120,
             llm_request_budget=360, llm_fallback_reserve=120, llm_connect_timeout=30, llm_trust_env=False,
             llm_max_tokens=8000, llm_parse_max_tokens=8000, llm_max_retries=1, llm_graph_max_retries=1,
             llm_business_coverage_enabled=False, performance_cache_entries=0, llm_debug_raw_response=False)
@@ -171,7 +177,10 @@ def main():
             save(out/'calls.json', metrics)
             summary = {'run':run_id, 'seconds':round(perf_counter()-started,2), 'gaps':len(result.gaps), 'wire_calls':wire_count}
         else:
-            app = create_app(s)
+            benchmark_provider = get_llm_provider(s)
+            if args.force_primary and args.omit_token_limit:
+                benchmark_provider.fallback.omit_token_limit = True
+            app = create_app(s, provider=benchmark_provider)
             async with app.router.lifespan_context(app):
                 async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),base_url='http://pulse.local',timeout=None) as session:
                     response = await session.post('/api/process/generate', json={'text':text})

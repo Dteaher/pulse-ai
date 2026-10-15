@@ -43,7 +43,9 @@ export default function Finding({
               }[issue.source || 'MODEL_QUALITY']}
         </span>
       </span>
-      <span className="finding-message">{issue.message}</span>
+      <span className="finding-message">{issue.description || issue.message}</span>
+      {issue.reason && <span className="finding-evidence">{issue.reason}</span>}
+      {issue.suggestion && <span className="finding-evidence">{issue.suggestion}</span>}
       {!!names.length && <span className="finding-evidence">{names.join(' · ')}</span>}
       {!!issue.node_ids.length && (
         <span className="issue-link">

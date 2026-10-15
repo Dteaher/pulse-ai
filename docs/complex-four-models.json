@@ -1,0 +1,122 @@
+{
+  "fixture": "examples/llm-benchmark/complex.txt",
+  "text_sha256": "70a424089762ddb4ea8893f4dc75287307c328054bd6dedd97756253a090a75f",
+  "runs": [
+    {
+      "run": "1-complex-multiai-gpt-6-luna-fallback-timeout",
+      "seconds": 80.81,
+      "http_status": 502,
+      "xml_received": false,
+      "wire_calls": 3,
+      "metadata": {},
+      "semantic_checks": null,
+      "diagnostic_codes": [
+        "DEAD_END",
+        "INVALID_EVENT_GATEWAY_TOPOLOGY",
+        "INVALID_GATEWAY_TOPOLOGY",
+        "NO_PATH_TO_END",
+        "ORPHAN_NODE",
+        "UNREACHABLE_NODE"
+      ]
+    },
+    {
+      "run": "2-complex-multiai-gpt-6.1-sol-fallback-timeout",
+      "seconds": 65.81,
+      "http_status": 200,
+      "xml_received": true,
+      "wire_calls": 2,
+      "metadata": {
+        "provider_used": "multiai",
+        "model_used": "gpt-6.1-sol",
+        "fallback_used": true,
+        "attempts": 3,
+        "provider_requested": "polza",
+        "model_requested": "openai/gpt-6-luna",
+        "fallback_reason": "timeout",
+        "generation_duration_ms": 65750.0,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_rub": null,
+        "business_coverage_provider_used": null,
+        "business_coverage_model_used": null
+      },
+      "semantic_checks": {
+        "passed": false,
+        "reason": "Missing/ambiguous action: получ.*исправ"
+      },
+      "diagnostic_codes": []
+    },
+    {
+      "run": "3-complex-multiai-claude-opus-5-fallback-timeout",
+      "seconds": 79.89,
+      "http_status": 200,
+      "xml_received": true,
+      "wire_calls": 2,
+      "metadata": {
+        "provider_used": "multiai",
+        "model_used": "claude-opus-5",
+        "fallback_used": true,
+        "attempts": 3,
+        "provider_requested": "polza",
+        "model_requested": "openai/gpt-6-luna",
+        "fallback_reason": "timeout",
+        "generation_duration_ms": 79859.0,
+        "input_tokens": null,
+        "output_tokens": null,
+        "cost_rub": null,
+        "business_coverage_provider_used": null,
+        "business_coverage_model_used": null
+      },
+      "semantic_checks": {
+        "passed": true,
+        "checks": [
+          "six roles",
+          "actions",
+          "XOR outcomes",
+          "AND split/join",
+          "two loops",
+          "event wait",
+          "five MessageFlow",
+          "XML fidelity"
+        ]
+      },
+      "diagnostic_codes": []
+    },
+    {
+      "run": "4-complex-polza-openai_gpt-6-luna",
+      "seconds": 54.6,
+      "http_status": 200,
+      "xml_received": true,
+      "wire_calls": 2,
+      "metadata": {
+        "provider_used": "polza",
+        "model_used": "openai/gpt-6-luna",
+        "fallback_used": false,
+        "attempts": 2,
+        "provider_requested": "polza",
+        "model_requested": "openai/gpt-6-luna",
+        "fallback_reason": null,
+        "generation_duration_ms": 54563.0,
+        "input_tokens": 6203,
+        "output_tokens": 6629,
+        "cost_rub": 0.4875901,
+        "business_coverage_provider_used": null,
+        "business_coverage_model_used": null
+      },
+      "semantic_checks": {
+        "passed": true,
+        "checks": [
+          "six roles",
+          "actions",
+          "XOR outcomes",
+          "AND split/join",
+          "two loops",
+          "event wait",
+          "five MessageFlow",
+          "XML fidelity"
+        ]
+      },
+      "diagnostic_codes": []
+    }
+  ]
+}

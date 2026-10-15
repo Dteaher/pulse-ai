@@ -111,10 +111,16 @@ export interface Issue {
   column?: number | null;
   message: string;
   node_ids: string[];
+  element_ids?: string[];
+  description?: string;
+  reason?: string;
+  suggestion?: string;
+  category?: string;
+  confidence?: number | null;
   origin: string;
 }
 export interface Audit {
-  technical: Record<string, boolean>;
+  technical: Record<string, boolean | null>;
   issues: Issue[];
   llm_audit: boolean;
   notice: string;

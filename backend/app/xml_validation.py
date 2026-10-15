@@ -72,6 +72,10 @@ def validate_document(xml: str, *, complete_di=False, check_xsd=True) -> list[Is
             expected = {'messageRef': {'message'}, 'processRef': {'process'},
                         'participantRef': {'participant'}, 'default': {'sequenceFlow'},
                         'incoming': {'sequenceFlow'}, 'outgoing': {'sequenceFlow'}}.get(ref_kind)
+            if ref_kind in {'sourceRef', 'targetRef'}:
+                expected = FLOW_NODES if local(el) == 'sequenceFlow' else ACTIVITIES | EVENTS | {'participant'} if local(el) == 'messageFlow' else expected
+            if ref_kind == 'flowNodeRef':
+                expected = FLOW_NODES
             wrong_type = target is not None and (
                 (expected is not None and local(target) not in expected) or
                 (ref_kind == 'eventDefinitionRef' and not local(target).endswith('EventDefinition')))
@@ -88,12 +92,13 @@ def validate_document(xml: str, *, complete_di=False, check_xsd=True) -> list[Is
             line=index[key].sourceline, node_ids=[key]))
     if issues:
         return issues
+    derived_messages = bool(root.findall('bpmn:message', NS)) and root.get('exporter') == 'PULSE' and all((m.findtext('bpmn:documentation', namespaces=NS) or '').startswith('PULSE:derived-message-flow:') for m in root.findall('bpmn:message', NS))
     unsupported = [el for process in root.findall('bpmn:process', NS) for el in process
                    if local(el) not in FLOW_NODES | {'documentation', 'laneSet', 'sequenceFlow'}]
     unsupported += [el for el in elements if E.QName(el).namespace == NS['bpmn'] and local(el).endswith('EventDefinition') and local(el) != 'messageEventDefinition']
     unsupported += [el for el in elements if E.QName(el).namespace == NS['bpmn'] and (
         local(el) in {'childLaneSet', 'standardLoopCharacteristics', 'multiInstanceLoopCharacteristics'} or
-        (local(el) == 'messageEventDefinition' and el.get('messageRef')) or
+        (local(el) == 'messageEventDefinition' and el.get('messageRef') and not derived_messages) or
         (local(el) == 'participant' and not el.get('processRef')) or
         (local(el) == 'eventBasedGateway' and (el.get('instantiate') in {'true','1'} or el.get('eventGatewayType') == 'Parallel')))]
     if unsupported:

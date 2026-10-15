@@ -36,7 +36,7 @@ def register_process_routes(app, current_connection, cached):
             if correction:
                 return attach_assumptions(await selected.parse_process(body.text, focused_correction(correction, state)), state)
             return attach_assumptions(await selected.parse_process(body.text, extraction_context(state) + '\n' + correction), state)
-        result = await generate_valid(call, source_text=body.text, coverage_answers=state.answers, provider=selected, development=active.app_env == 'development', max_retries=min(active.llm_max_retries, active.llm_graph_max_retries))
+        result = await generate_valid(call, source_text=body.text, coverage_answers=state.answers, provider=selected, development=active.app_env == 'development', max_retries=min(active.llm_max_retries, active.llm_graph_max_retries), formal_messages=active.bpmn_formal_messages_enabled)
         result['timings'].update(timings)
         result['timings']['total_ms'] = round((perf_counter() - started) * 1000, 2)
         return {**result, 'metadata': selected.metadata, 'clarification_round': 0, 'clarification_limit_reached': False, 'accepted_assumptions': []}
@@ -86,7 +86,7 @@ def register_process_routes(app, current_connection, cached):
                 else:
                     candidate = prepared if prepared is not None and not correction else await selected.parse_process(state.original_text, correction or context_text)
                 return attach_assumptions(candidate, state)
-            result = await generate_valid(resolved_call, source_text=state.original_text if body.operation != 'modify' else '', coverage_answers=state.answers, semantic_check=body.operation == 'modify', provider=selected, max_retries=min(active.llm_max_retries, active.llm_graph_max_retries))
+            result = await generate_valid(resolved_call, source_text=state.original_text if body.operation != 'modify' else '', coverage_answers=state.answers, semantic_check=body.operation == 'modify', provider=selected, max_retries=min(active.llm_max_retries, active.llm_graph_max_retries), formal_messages=active.bpmn_formal_messages_enabled)
             result['timings'].update(timings)
             result['timings']['total_ms'] = round((perf_counter()-started)*1000, 2)
             return {**result, 'metadata': selected.metadata, 'clarification_round': round_number,
@@ -115,7 +115,7 @@ def register_process_routes(app, current_connection, cached):
         draft.ambiguities = [a for a in draft.ambiguities if a.id not in accepted]
         draft.assumptions = list({a.id: a for a in draft.assumptions + [accepted_assumption(q) for q in assumptions]}.values())
         if not draft.ambiguities and (not body.answers or body.continue_with_draft):
-            result = await generate_valid(lambda _: _resolved(draft), semantic_check=body.operation == 'modify')
+            result = await generate_valid(lambda _: _resolved(draft), semantic_check=body.operation == 'modify', formal_messages=active.bpmn_formal_messages_enabled)
             return {**result, 'changes': changes_between(base, draft).changes if body.operation == 'modify' else [], 'clarification_round': body.clarification_round, 'clarification_limit_reached': False, 'accepted_assumptions': assumptions, 'metadata': None}
         if body.clarification_round >= limit:
             raise ValueError('Достигнут лимит уточнений. Продолжите с текущим черновиком или измените описание.')
@@ -134,7 +134,7 @@ def register_process_routes(app, current_connection, cached):
                 check_membership(base, candidate, body.instruction)
             return candidate
         try:
-            result = await generate_valid(call, source_text=(body.original_text or body.process.description) if body.operation != 'modify' else '', coverage_answers=body.answers, semantic_check=body.operation == 'modify', provider=selected, development=active.app_env == 'development', max_retries=min(active.llm_max_retries, active.llm_graph_max_retries))
+            result = await generate_valid(call, source_text=(body.original_text or body.process.description) if body.operation != 'modify' else '', coverage_answers=body.answers, semantic_check=body.operation == 'modify', provider=selected, development=active.app_env == 'development', max_retries=min(active.llm_max_retries, active.llm_graph_max_retries), formal_messages=active.bpmn_formal_messages_enabled)
         except ProviderError as exc:
             if body.operation == 'modify':
                 failure = ProviderError('Изменение не удалось применить. Текущая версия процесса сохранена. ' + str(exc))
@@ -159,7 +159,7 @@ def register_process_routes(app, current_connection, cached):
             from .commands import rename_command
             candidate = rename_command(body.process, body.command)
             if candidate is not None:
-                result = await generate_valid(lambda _: _resolved(candidate), semantic_check=True, max_retries=0)
+                result = await generate_valid(lambda _: _resolved(candidate), semantic_check=True, max_retries=0, formal_messages=active.bpmn_formal_messages_enabled)
                 return {**result, 'changes': changes_between(body.process, result['process']).changes,
                         'metadata': None, 'accepted_assumptions': body.accepted_assumptions}
         state, timings, prepared = await prepare(selected, body.command, context={'operation': 'modify',
@@ -176,7 +176,7 @@ def register_process_routes(app, current_connection, cached):
             check_membership(body.process, candidate, body.command)
             return candidate
         try:
-            result = await generate_valid(call, semantic_check=True, provider=selected, development=active.app_env == 'development', max_retries=min(active.llm_max_retries, active.llm_graph_max_retries))
+            result = await generate_valid(call, semantic_check=True, provider=selected, development=active.app_env == 'development', max_retries=min(active.llm_max_retries, active.llm_graph_max_retries), formal_messages=active.bpmn_formal_messages_enabled)
         except ProviderError as exc:
             failure = ProviderError('Изменение не удалось применить. Текущая версия процесса сохранена. ' + str(exc))
             failure.diagnostics = getattr(exc, 'diagnostics', [])
@@ -193,7 +193,11 @@ def register_process_routes(app, current_connection, cached):
         if any(i.severity == 'error' for i in issues):
             raise PipelineFailure('В схеме есть некорректные элементы или связи.', issues)
         try:
-            return {'xml': build_bpmn(body.process)}
+            xml = build_bpmn(body.process)
+            if app.state.bpmn_formal_messages_enabled:
+                from .formal_messages import add_formal_messages
+                xml = add_formal_messages(xml)
+            return {'xml': xml}
         except (ValueError, etree.LxmlError):
             logger.exception('bpmn_export_failed')
             raise build_failure() from None
@@ -204,9 +208,10 @@ def register_process_routes(app, current_connection, cached):
 
     @app.post('/api/process/audit')
     async def audit_endpoint(body: ImportRequest, request: Request, connection=Depends(current_connection)):
-        return await cached(request, 'audit', body, connection, lambda: audit(body, connection[1]))
+        return await cached(request, 'audit', body, connection, lambda: audit(body, connection[1], connection[0]))
 
-    async def audit(body, selected):
+    async def audit(body, selected, active):
+        from .doctor import doctor_rules, diagnostic_payload
         xsd_issues = validate_xsd(body.xml)
         xml_ok = not xsd_issues
         document_issues = xsd_issues or validate_document(body.xml, check_xsd=False)
@@ -215,24 +220,33 @@ def register_process_routes(app, current_connection, cached):
         except (ValueError, ValidationError, etree.LxmlError) as exc:
             document_issues += getattr(exc, 'diagnostics', [])
             if document_issues:
-                return {'technical': {'BPMN XML / XSD': xml_ok, 'Граф / связи / события / шлюзы': False, 'Участники': False},
-                        'issues': document_issues, 'llm_audit': False,
-                        'notice': 'Сначала исправьте XML и ссылки элементов. Бизнес-аудит не выполнялся.', 'metadata': None}
+                return {'technical': {'BPMN XML / XSD': xml_ok, 'Граф / связи / события / шлюзы': None if not any(i.severity == 'error' for i in document_issues) else False, 'Участники': None},
+                        'issues': [diagnostic_payload(i) for i in document_issues + doctor_rules(body.xml, execution_preparation=active.doctor_execution_preparation_enabled)] if xml_ok else [diagnostic_payload(i) for i in document_issues], 'llm_audit': False,
+                        'notice': 'Расширенная семантика вне AI subset: проверка графа частичная; исходный XML сохранён.' if not any(i.severity == 'error' for i in document_issues) else 'Сначала исправьте XML и ссылки элементов. Бизнес-аудит не выполнялся.', 'metadata': None}
             raise
         graph_issues = validate_process(p)
         if not any(i.severity == 'error' for i in graph_issues):
             from .semantics import validate_semantics
-            graph_issues += validate_semantics(p)
-        issues = document_issues + graph_issues + audit_rules(p)
+            semantic = validate_semantics(p)
+            for issue in semantic:
+                if issue.code == "PARALLEL_JOIN_MISMATCH":
+                    issue.severity = "warning"
+                    issue.confidence = 0.6
+                    issue.reason = "Ограничение структурного анализа PULSE, не доказательство токеновой блокировки."
+            graph_issues += semantic
+        issues = document_issues + graph_issues + doctor_rules(body.xml, execution_preparation=active.doctor_execution_preparation_enabled)
         business_available = False
         notice = ''
         try:
+            if not active.doctor_llm_audit_enabled:
+                raise ProviderError('LLM-аудит выключен; показаны детерминированные правила.')
             if any(i.severity == 'error' for i in graph_issues + document_issues):
                 raise ProviderError('Сначала исправьте технические ошибки схемы.')
             report = await selected.audit_process(p)
             valid_ids = {n.id for n in p.nodes}
             for issue in report.issues:
                 issue.node_ids = [i for i in issue.node_ids if i in valid_ids]
+                issue.element_ids = list(issue.node_ids)
                 issue.origin = 'llm'
                 issue.source = 'BUSINESS_LOGIC'
                 issue.type = 'CLARIFICATION_REQUIRED' if issue.severity == 'clarification' else 'BUSINESS_WARNING'
@@ -242,9 +256,9 @@ def register_process_routes(app, current_connection, cached):
             issues.extend(report.issues)
             business_available = selected.business_audit_available
         except (ProviderError, ValueError, ValidationError):
-            notice = 'Сначала исправьте технические ошибки схемы; бизнес-аудит не выполнялся.' if any(i.severity == 'error' for i in graph_issues + document_issues) else 'Аудит модели недоступен. Показаны результаты программных правил.'
+            notice = 'Сначала исправьте технические ошибки схемы; бизнес-аудит не выполнялся.' if any(i.severity == 'error' for i in graph_issues + document_issues) else 'LLM-аудит выключен. Показаны детерминированные правила.' if not active.doctor_llm_audit_enabled else 'Аудит модели недоступен. Показаны результаты программных правил.'
         return {'technical': {'BPMN XML / XSD': xml_ok, 'Граф / связи / события / шлюзы': not any(i.severity == 'error' for i in graph_issues + document_issues),
                               'Участники': not any('участник' in i.message.lower() for i in graph_issues)},
-                'issues': [classify(i) for i in issues], 'llm_audit': business_available, 'notice': notice,
+                'issues': [diagnostic_payload(classify(i)) for i in issues], 'llm_audit': business_available, 'notice': notice,
                 'metadata': selected.metadata if business_available else None}
 

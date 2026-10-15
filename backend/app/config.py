@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     api_requests_per_minute: int = Field(default=10, ge=1, le=100)
     api_requests_per_day: int = Field(default=100, ge=1, le=10000)
     api_max_body_bytes: int = Field(default=2_000_000, ge=1024, le=10_000_000)
+    bpmn_formal_messages_enabled: bool = False
+    doctor_execution_preparation_enabled: bool = False
+    doctor_llm_audit_enabled: bool = False
     llm_provider: str = 'openai_compatible'
     primary_llm_provider: str = ''
     primary_llm_model: str | None = None
@@ -40,6 +43,7 @@ class Settings(BaseSettings):
     fallback_llm_model: str = ''
     fallback_llm_folder_id: str = ''
     fallback_llm_structured_output: bool | None = None
+    fallback_llm_schema_in_prompt: bool = False
     llm_api_key: str = Field(default='', repr=False)
     llm_base_url: str = ''
     llm_model: str = ''

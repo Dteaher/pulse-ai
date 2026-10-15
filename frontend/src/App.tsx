@@ -22,6 +22,7 @@ import {
   Undo2,
   X,
   CircleAlert,
+  Info,
   FileText,
   MousePointer2,
 } from 'lucide-react';
@@ -1313,8 +1314,8 @@ export default function App() {
                         Импорт в bpmn-js
                       </div>
                       {Object.entries(audit.technical).map(([label, ok]) => (
-                        <div key={label} className={ok ? '' : 'failed'}>
-                          {ok ? <Check size={16} /> : <CircleAlert size={16} />} {label}
+                        <div key={label} className={ok === false ? 'failed' : ''}>
+                          {ok === null ? <Info size={16} /> : ok ? <Check size={16} /> : <CircleAlert size={16} />} {label}{ok === null ? ' · частично проверено' : ''}
                         </div>
                       ))}
                     </div>

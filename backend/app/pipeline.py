@@ -19,7 +19,7 @@ from .diagnostics import PipelineFailure
 logger = logging.getLogger('pulse.validation')
 
 
-async def generate_valid(call, *, semantic_check=False, provider=None, development=False, correction='', max_retries=1, source_text='', coverage_answers=None, audit_trace=None):
+async def generate_valid(call, *, semantic_check=False, provider=None, development=False, correction='', max_retries=1, source_text='', coverage_answers=None, audit_trace=None, formal_messages=False):
     started = perf_counter()
     last_reason = ''
     timings = {key: 0.0 for key in ('llm_parse_ms', 'normalization_ms', 'semantic_validation_ms', 'bpmn_build_ms', 'xsd_validation_ms', 'post_validation_ms')}
@@ -102,7 +102,7 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
                             candidate = apply_repair(process, errors, patch)
                             async def repaired(_):
                                 return candidate
-                            checked_result = await generate_valid(repaired, semantic_check=semantic_check, provider=provider, max_retries=0, source_text=source_text, coverage_answers=coverage_answers, audit_trace=audit_trace)
+                            checked_result = await generate_valid(repaired, semantic_check=semantic_check, provider=provider, max_retries=0, source_text=source_text, coverage_answers=coverage_answers, audit_trace=audit_trace, formal_messages=formal_messages)
                             assert_preservation(process, checked_result['process'], patch)
                             if current:
                                 current.patch_success_count += 1
@@ -141,6 +141,9 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
             build_started = perf_counter()
             try:
                 xml = build_bpmn(process)
+                if formal_messages:
+                    from .formal_messages import add_formal_messages
+                    xml = add_formal_messages(xml)
                 if audit_trace is not None:
                     from .logic_audit import compare_process_xml
                     audit_trace.append({'attempt': attempt + 1, 'stage': 'bpmn_xml', 'xml': xml,
@@ -179,7 +182,7 @@ async def generate_valid(call, *, semantic_check=False, provider=None, developme
             if development:
                 logger.info('validation attempt=%s corrective_retry=%s reason=model_schema_validation', attempt + 1, attempt)
     if provider is not None and provider.use_validation_fallback():
-        result = await generate_valid(call, semantic_check=semantic_check, provider=provider, development=development, correction=correction, max_retries=max_retries, source_text=source_text, coverage_answers=coverage_answers, audit_trace=audit_trace)
+        result = await generate_valid(call, semantic_check=semantic_check, provider=provider, development=development, correction=correction, max_retries=max_retries, source_text=source_text, coverage_answers=coverage_answers, audit_trace=audit_trace, formal_messages=formal_messages)
         result['attempts'] += max_retries + 1
         for key, duration in timings.items():
             result['timings'][key] = round(result['timings'].get(key, 0) + duration, 2)
